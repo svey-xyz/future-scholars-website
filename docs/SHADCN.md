@@ -13,28 +13,23 @@ This doc is the source of truth for the migration. Completed phases are compacte
 - Phase 3 — Dark mode wiring — **DONE**
 - Phase 4 — Component refactors — **DONE**
 - Phase 5 — Route refactors — **DONE**
-- Phase 6 — A11y + perf — **PENDING**
-- Phase 7 — Cleanup + verify — **PENDING**
+- Phase 6 — A11y + perf — **DONE**
+- Phase 7 — Cleanup + verify — **DONE** (host build + Lighthouse pending — see RUN THIS NEXT)
 
 ---
 
 ## ⚠️ RUN THIS NEXT
 
-`frontend/package.json` was edited to drop `next-themes ^0.4.4` and add `@teispace/next-themes ^0.5.0` (the sandbox can't write into the host's mounted `node_modules`). From repo root:
+Sandbox can't run `next build` (Sanity CLI config refuses to load there) and can't run Lighthouse. Both are Phase 7 follow-ups that have to happen on the host. From repo root:
 
 ```
-npm install
-```
-
-Then:
-
-```
-npm run lint
-npm run type-check
+npm run build --workspace=frontend
 npm run dev
 ```
 
-Visit `http://localhost:3000` — palette is shadcn neutral, ModeToggle (top right) toggles light/dark/system with zero-FOUC SSR, Visual Editing still works at `:3333`, and the React 19 script-tag warning is gone.
+Then visit `http://localhost:3000`, exercise `/`, a `page` doc, `/posts/[slug]`, and the Presentation Tool with Draft Mode. Confirm `data-sanity` overlays still light up and optimistic `pageBuilder` reconciliation by `_key` survives. Finally, run Lighthouse on `/` in both light and dark — target ≥95.
+
+Lint + type-check are already green (sandbox).
 
 ---
 
@@ -177,27 +172,34 @@ Verification (with the package temporarily copied into `node_modules` from the n
 
 ---
 
-## Phase 6 — A11y + perf (WCAG AAA where feasible)
+## Phase 6 — DONE
 
-- Keep shadcn's `focus-visible:ring-1 focus-visible:ring-ring` — don't override.
-- Audit `--muted-foreground` contrast in dark mode; bump lightness if AAA body text (~7:1) fails.
-- Mobile `Sheet` trigger: `aria-label="Open menu"`. ModeToggle button: `sr-only` label already in place.
-- `NavigationMenu` keyboard-nav free.
-- Full-card `Link` in `Posts`: add `aria-label={post.title}` to avoid empty-link-text SR announcements.
-- Skeletons reduce CLS on `/` and post pages.
+A11y audit: most items were already satisfied by Phases 3–5. One concrete bump landed. Ongoing accessibility rules are codified in [docs/A11Y.md](./A11Y.md) — this section is the migration record, A11Y.md is the standing source of truth.
+
+- **Contrast audit (`--muted-foreground`)** —
+  - Dark: `hsl(0 0% 63.9%)` on `hsl(0 0% 3.9%)` = **7.83:1** → already AAA body. Untouched.
+  - Light: `hsl(0 0% 45.1%)` on `hsl(0 0% 100%)` = **4.74:1** → AA only, fails AAA body. Bumped lightness `45.1% → 34%` → **~7.26:1**, AAA body. shadcn's stock neutral palette was generous on this token in light mode; the new value still reads as "subtle" against `--foreground` (3.9%) so visual hierarchy is preserved.
+- **Focus rings** — shadcn's `focus-visible:ring-1 focus-visible:ring-ring` retained on every component (button, card link overlay, dropdown items, sheet trigger). The full-card link `<span>` in `Posts.tsx` carries the same ring utilities so keyboard focus is visible on Cards even though the anchor itself has no visual chrome.
+- **Mobile `Sheet` trigger** — `aria-label="Open menu"` confirmed on the `Bars3Icon` button (`MobileMenu.tsx`).
+- **`ModeToggle`** — both `aria-label="Toggle theme"` and a `sr-only` label present on the trigger; aria-label wins, sr-only is harmless fallback.
+- **`NavigationMenu`** — Radix primitives, keyboard-nav free out of the box; no overrides.
+- **Full-card `Link` in `Posts`** — `aria-label={title ?? undefined}` already in place from Phase 4; verified.
+- **Icons** — `GithubIcon` has `aria-hidden="true"`; Heroicons inside buttons render alongside visible text labels so they don't need aria.
+- **Skeletons** — `/` and `/posts/[slug]` use Skeleton boundaries matching final card footprint (Phase 5), so CLS stays near zero on streamed lists.
+
+Files edited: `frontend/app/globals.css` (one token).
 
 ---
 
-## Phase 7 — Cleanup + verify
+## Phase 7 — DONE (host-side verify pending)
 
-1. Delete `frontend/tailwind.config.ts` if `tsc` still passes. Otherwise leave it (the v4 source of truth is `globals.css`).
-2. Remove `/public/images/tile-grid-black.png`, `/tile-1-black.png`, `/tile-1-white.png` if unreferenced.
-3. Run:
-   - `npm run lint`
-   - `npm run type-check`
-   - `npm run build --workspace=frontend`
-   - `npm run dev` — exercise `/`, a `page` doc, `/posts/[slug]`, and Presentation Tool with Draft Mode. Verify `data-sanity` overlays, optimistic `pageBuilder` reconciliation by `_key`.
-4. Lighthouse pass on `/` light + dark, target ≥95.
+- **`frontend/tailwind.config.ts` deleted.** Confirmed `tsc --noEmit` passes in both workspaces after removal — the v4 source of truth is `app/globals.css` (`@theme inline` block + `@plugin '@tailwindcss/typography'`).
+- **All four tile PNGs deleted** from `frontend/public/images/`: `tile-1-black.png`, `tile-1-white.png`, `tile-grid-black.png`, `tile-grid-white.png`. Grep across `frontend/` and `studio/` showed zero references — they were leftovers from the pre-shadcn background-tile pattern that Phases 4–5 removed.
+- **Lint + type-check** ran clean in-sandbox (`npx eslint app components lib --ignore-pattern '**/._*'` and `npm run type-check`). AppleDouble `._*` files only exist in the mount view, not on the host, so the host's `npm run lint` will not see them.
+- **`npm run build --workspace=frontend`** could not run in the sandbox: Sanity CLI's `sanity typegen generate` (executed via `prebuild`) errors on config load. Build must be run on the host.
+- **Lighthouse** is host-only — pending. Target ≥95 on `/` in both light and dark.
+
+Files removed: `frontend/tailwind.config.ts`, `frontend/public/images/tile-{1,grid}-{black,white}.png`.
 
 ---
 
@@ -207,5 +209,6 @@ Verification (with the package temporarily copied into `node_modules` from the n
 - **Edited in phases 1–3**: `frontend/package.json`, `frontend/app/globals.css`, `frontend/app/layout.tsx`.
 - **Added in phase 4**: `frontend/app/components/icons/GithubIcon.tsx`.
 - **Edited in phase 5**: `frontend/app/page.tsx`, `frontend/app/[slug]/page.tsx`, `frontend/app/posts/[slug]/page.tsx`.
-- **Maybe delete in Phase 7**: `frontend/tailwind.config.ts`, three tile PNGs.
+- **Deleted in phase 7**: `frontend/tailwind.config.ts`, `frontend/public/images/tile-{1,grid}-{black,white}.png` (four files; the doc previously listed three but a fourth `tile-grid-white.png` was also unreferenced).
+- **Edited in phase 6**: `frontend/app/globals.css` (`--muted-foreground` light-mode lightness `45.1% → 34%` for AAA).
 - **Untouched**: `frontend/sanity/**`, `studio/**`, `sanity.types.ts`, `sanity.schema.json`.

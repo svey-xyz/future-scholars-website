@@ -14,6 +14,7 @@ This template includes a [Next.js](https://nextjs.org/) app with a [Sanity Studi
 - **AI-powered Media Support:** Auto-generate alt text with [Sanity AI Assist](https://www.sanity.io/ai-assist).
 - **On-demand Publishing:** No waiting for rebuilds—new content is live instantly with Incremental Static Revalidation.
 - **Easy Media Management:** [Integrated Unsplash support](https://www.sanity.io/plugins/sanity-plugin-asset-source-unsplash) for seamless media handling.
+- **Accessibility-first:** WCAG 2.2 AAA where feasible — see [docs/A11Y.md](docs/A11Y.md) for the rules and per-PR checklist.
 
 ## Demo
 
@@ -97,6 +98,13 @@ You have the freedom to deploy your Next.js app to your hosting provider of choi
 Now that you’ve deployed your Next.js application and Sanity Studio, you can optionally invite a collaborator to your Studio. Open up [Manage](https://www.sanity.io/manage), select your project and click "Invite project members"
 
 They will be able to access the deployed Studio, where you can collaborate together on creating content.
+
+## Project docs
+
+- [`docs/A11Y.md`](docs/A11Y.md) — accessibility rules, contrast tokens, ARIA conventions, per-PR checklist. **Read before any UI change.**
+- [`docs/SHADCN.md`](docs/SHADCN.md) — shadcn/ui migration log and locked decisions.
+- [`CLAUDE.md`](CLAUDE.md) — repo-wide conventions for AI agents and contributors.
+- [`AGENTS.md`](AGENTS.md) — agent-facing tier-1 rules.
 
 ## Resources
 
