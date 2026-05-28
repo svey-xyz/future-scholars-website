@@ -4,6 +4,7 @@ import Cta from '@/app/components/Cta'
 import Info from '@/app/components/InfoSection'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
+import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert'
 
 type BlockProps = {
   index: number
@@ -47,12 +48,14 @@ export default function BlockRenderer({block, index, pageId, pageType}: BlockPro
     )
   }
   // Block doesn't exist yet
-  return React.createElement(
-    () => (
-      <div className="w-full bg-gray-100 text-center text-gray-500 p-20 rounded">
-        A &ldquo;{block._type}&rdquo; block hasn&apos;t been created
-      </div>
-    ),
-    {key: block._key},
+  return (
+    <div key={block._key} className="container my-12">
+      <Alert variant="destructive">
+        <AlertTitle>Unknown block</AlertTitle>
+        <AlertDescription>
+          A &ldquo;{block._type}&rdquo; block hasn&apos;t been created yet.
+        </AlertDescription>
+      </Alert>
+    </div>
   )
 }

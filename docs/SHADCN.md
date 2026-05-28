@@ -11,8 +11,8 @@ This doc is the source of truth for the migration. Completed phases are compacte
 - Phase 1 — Install + init shadcn — **DONE**
 - Phase 2 — Add component set — **DONE**
 - Phase 3 — Dark mode wiring — **DONE**
-- Phase 4 — Component refactors — **PENDING**
-- Phase 5 — Route refactors — **PENDING**
+- Phase 4 — Component refactors — **DONE**
+- Phase 5 — Route refactors — **DONE**
 - Phase 6 — A11y + perf — **PENDING**
 - Phase 7 — Cleanup + verify — **PENDING**
 
@@ -104,67 +104,42 @@ Mapping (used in Phase 4):
 
 ---
 
-## Phase 4 — Component refactors
+## Phase 4 — DONE
 
-Contract for each: Server Component unless hooks are required; every `data-sanity={dataAttr(...).toString()}` preserved verbatim; prop shapes unchanged.
+All 16 component files refactored. `frontend/app/components/icons/GithubIcon.tsx` added.
 
-### `Header.tsx`
-`NavigationMenu` at `sm:`+. `Sheet` (triggered by `Button` with `Bars3Icon`) on mobile. Site title stays as left `Link`. GitHub button: `<Button asChild size="lg" className="rounded-full">…</Button>` wrapping the external `<a>`. Drop the inline GitHub SVG into `frontend/app/components/icons/GithubIcon.tsx`. Mount `<ModeToggle/>` on the right. Shell stays `fixed h-24 backdrop-blur` but swap `bg-white/80` → `bg-background/80`.
+Key landed decisions Phase 5 depends on:
 
-### `Footer.tsx`
-Drop `bg-gray-50` + `tile-grid-black.png` overlay (no dark equivalent). Use `bg-muted`. CTAs become `<Button asChild>` variants (`default`, `link`). Add `Separator` between heading and CTA row.
+- **Header** — desktop `NavigationMenu` + `Sheet` mobile drawer (`Bars3Icon` trigger, `Open menu` aria-label). `ModeToggle` sits between nav and GitHub `Button`. Shell now `bg-background/80 backdrop-blur-lg`. Single `navLinks` array drives both desktop and mobile (currently just `/about`).
+- **Footer** — `bg-muted`, tile PNG gone, vertical `Separator` on `lg:`+, GitHub = `Button asChild size="lg" rounded-full`, Next.js docs = `Button asChild variant="link"`.
+- **Cta** — `<section className={cn('relative', isDark && 'dark bg-background text-foreground')}>`. Tile overlay removed entirely. Eyebrow is `<Badge variant="secondary">` wrapped in a flex container so it doesn't stretch. Button is `Button asChild size="lg" rounded-full` wrapping `ResolvedLink`. Body `PortableText` no longer needs `dark:prose-invert` (parent `.dark` cascades it).
+- **Posts** — `Card` with relative positioning + absolute `Link` span; `aria-label={title}` on the link. `CardFooter` has `border-t pt-4`. Empty author slot kept (renders empty `<span/>`) so the time still right-aligns. Hover state is `hover:bg-accent/40`. Suspense Skeleton fallback is added in Phase 5 routes, not in this file.
+- **Avatar** — radix `AvatarRoot` sizing wrapper, `SanityImage` inside as the image content (bypassing `AvatarImage` because that primitive forwards to native `<img>` and won't accept `_ref`). `AvatarFallback` shows uppercase initials (`?` fallback if no name).
+- **PortableText** — inline `HeadingAnchor` helper renders `<Button asChild variant="ghost" size="icon">` with `LinkIcon`. Positioned `absolute left-0 top-1/2 -translate-y-1/2 -ml-10`. Prose `text-brand` gone; uses `prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40 dark:prose-invert`.
+- **Onboarding / PageOnboarding** — collapsed onto a single `OnboardingShell` (`Card`+`CardHeader`/`CardContent`/`CardFooter`); both exported variants just pass props. Sanity logo kept verbatim. Presentation branch still emits `data-sanity={createDataAttribute(...)}` on the button.
+- **GetStartedCode** — extracted `SNIPPET` const; replaced hand-rolled tooltip with shadcn `Tooltip` ("Copy snippet") and replaced `showTooltip` state with `toast.success('Copied to clipboard')` / `toast.error('Copy failed')`. Wrapper is `bg-muted` rounded pill. Icon swapped to `ClipboardIcon` from `@heroicons/react/24/outline`.
+- **BlockRenderer** — unknown block wrapped in `<div className="container my-12"><Alert variant="destructive">…</Alert></div>` with `AlertTitle`/`AlertDescription`.
+- **SideBySideIcons** — only change is `text-brand` → `text-primary`.
+- **DraftModeToast**, **ResolvedLink**, **Date**, **SanityImage** — untouched.
 
-### `Cta.tsx`
-Keep `isDark` / `isImageFirst` logic. Pill link → `<Button asChild size="lg" className="rounded-full"><ResolvedLink …>…</ResolvedLink></Button>`. `isDark` wrapper becomes `<section className={cn('relative', isDark && 'dark bg-background text-foreground')}>`. Eyebrow → `<Badge variant="secondary">`. Tile overlay gated `dark:` only or removed.
-
-### `InfoSection.tsx`
-Color swaps only: `text-gray-900/70` → `text-muted-foreground`.
-
-### `Posts.tsx`
-Each `<Post>` becomes `Card` / `CardHeader` / `CardTitle` / `CardDescription` / `CardFooter`. Preserve the full-card-click `<Link><span className="absolute inset-0 z-10"/></Link>` + add `aria-label={title}` for SR. Suspense fallback: 2–3 `Skeleton` card placeholders.
-
-### `Avatar.tsx`
-shadcn `Avatar` shell with `SanityImage` inside the image slot (`AvatarImage` only accepts `src`; SanityImage builds URLs from `_ref`). `AvatarFallback` shows initials. `text-gray-500` → `text-muted-foreground`.
-
-### `PortableText.tsx`
-Heading anchor inline SVG → `<Button asChild variant="ghost" size="icon"><a href={`#${_key}`}><LinkIcon/></a></Button>`. Drop `prose-a:text-brand`; use `prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40`. Keep `dark:prose-invert`.
-
-### `Onboarding.tsx` / `PageOnboarding`
-Orange card → `Card` + `CardHeader`/`CardContent`/`CardFooter`. Inline link/button pair → `<Button asChild>` / `<Button>` with `PlusIcon`. Keep Sanity logo SVG.
-
-### `GetStartedCode.tsx`
-Wrap snippet + button in `Card` (or `bg-muted` div). Replace hand-rolled tooltip with shadcn `Tooltip`. Replace local `showTooltip` state with `toast.success('Copied!')`.
-
-### `DraftModeToast.tsx`
-Logic unchanged — `Toaster` source already swapped in layout.
-
-### `BlockRenderer.tsx`
-Unknown-block `<div>` → `<Alert variant="destructive">`.
-
-### `ResolvedLink.tsx`
-No internal change. Becomes a child of `<Button asChild>` at call sites.
-
-### `SideBySideIcons.tsx`
-Inline SVG `text-brand` → `text-primary`. Animation untouched.
-
-### `Date.tsx`, `SanityImage.tsx`
-No changes.
+Verification ran clean: `tsc --noEmit` exits 0; ESLint clean against `app components lib` (the macOS `._*` AppleDouble cruft on the mounted volume produces parse errors but isn't on the host's lint path — npm scripts on the host won't see them).
 
 ---
 
-## Phase 5 — Route refactors
+## Phase 5 — DONE
 
-### `app/page.tsx`
-Drop the tiled hero background + white gradient overlay; clean centered hero on `bg-background`. Title decorations: keep, but `decoration-brand` / `text-framework` → `decoration-foreground` / `text-foreground`. "Sanity Documentation" link → `<Button asChild variant="link">`. Suspense fallback uses `Skeleton`.
+All three route files refactored. `app/layout.tsx` untouched (Phase 3 already covered it; the `<section className="min-h-screen pt-24">` wrapper stays).
 
-### `app/[slug]/page.tsx`
-Remove `<Head>` — App Router page, it's a no-op (latent bug). `border-gray-100` → `border-border`, `text-gray-600` → `text-muted-foreground`.
+Key landed decisions Phase 6 depends on:
 
-### `app/posts/[slug]/page.tsx`
-Same gray-token swap. Article wrapper: `prose dark:prose-invert max-w-none`.
+- **`app/page.tsx`** — tile bg + white gradient overlay removed; hero is a flat `<section className="bg-background">`. "A starter template for" eyebrow is now `bg-muted text-muted-foreground` (was `bg-white`). Both `Sanity` and `Next.js` links use `decoration-foreground` underlines + `hover:text-foreground/80` (brand/framework colors dropped). Body prose switched from `text-gray-700` to `text-foreground` + `dark:prose-invert`. "Sanity Documentation" inline link replaced with `<Button asChild variant="link" size="sm">` wrapping the anchor; inline external-link SVG replaced with `<ArrowTopRightOnSquareIcon>` (Heroicons outline). Bottom posts band: `border-t border-border bg-muted/40` (was `border-gray-100 bg-gray-50`). Suspense fallback is a local `<PostsSkeleton/>` rendering one `Skeleton` heading + one subheading + two `h-40 rounded-xl` card skeletons.
+- **`app/[slug]/page.tsx`** — `<Head>` import and the no-op `<Head><title>` block removed (latent App-Router bug fixed). `border-gray-100` → `border-border`. `text-gray-900` → `text-foreground`. `text-gray-600` → `text-muted-foreground`. `PageOnboarding` empty-state path untouched. The redundant outer `<div className="">` was dropped — `container` is the first child of the `my-12 lg:my-24` wrapper.
+- **`app/posts/[slug]/page.tsx`** — same gray-token swaps (`border-border`, `text-foreground`, `bg-muted/40` for the bottom band). Article container is now `<article className="prose max-w-none dark:prose-invert">`; the cover image inside gets `not-prose` so prose doesn't manage its margins (prose still applies to nested `PortableText` via its own wrapper, which is fine — nested prose works in tailwind-typography v0.5+). Local `<MorePostsSkeleton/>` added for the `<Suspense>` boundary (heading skeleton + two card skeletons).
+- Skeleton shapes match the actual `Card` footprint (~`h-40 w-full rounded-xl`) so CLS is near-zero on slow fetches.
 
-### `app/layout.tsx`
-Phase 3 already covers the structural changes. Wrapper is `<section className="min-h-screen pt-24">`; can stay or move padding into `<main>`.
+Verification ran clean: `tsc --noEmit` exits 0; ESLint (`app components lib`, ignoring AppleDouble `._*` cruft on the mounted volume) returns no errors.
+
+---
 
 ---
 
@@ -196,7 +171,7 @@ Phase 3 already covers the structural changes. Wrapper is `<section className="m
 
 - **Added in phases 1–3**: `frontend/components.json`, `frontend/lib/utils.ts`, `frontend/components/ui/{alert,avatar,badge,button,card,dropdown-menu,navigation-menu,separator,sheet,skeleton,sonner,tooltip}.tsx`, `frontend/app/providers.tsx`, `frontend/app/components/ModeToggle.tsx`.
 - **Edited in phases 1–3**: `frontend/package.json`, `frontend/app/globals.css`, `frontend/app/layout.tsx`.
-- **Still to add in phases 4–5**: `frontend/app/components/icons/GithubIcon.tsx`.
-- **Still to edit in phases 4–5**: all 16 files under `frontend/app/components/`, plus `frontend/app/page.tsx`, `frontend/app/[slug]/page.tsx`, `frontend/app/posts/[slug]/page.tsx`.
+- **Added in phase 4**: `frontend/app/components/icons/GithubIcon.tsx`.
+- **Edited in phase 5**: `frontend/app/page.tsx`, `frontend/app/[slug]/page.tsx`, `frontend/app/posts/[slug]/page.tsx`.
 - **Maybe delete in Phase 7**: `frontend/tailwind.config.ts`, three tile PNGs.
 - **Untouched**: `frontend/sanity/**`, `studio/**`, `sanity.types.ts`, `sanity.schema.json`.
