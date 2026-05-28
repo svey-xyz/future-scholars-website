@@ -40,9 +40,9 @@ const Post = ({post}: {post: AllPostsQueryResult[number]}) => {
         ) : (
           <span />
         )}
-        <time className="text-muted-foreground text-xs font-mono" dateTime={date}>
+        <span className="text-muted-foreground text-xs font-mono">
           <DateComponent dateString={date} />
-        </time>
+        </span>
       </CardFooter>
     </Card>
   )

@@ -1,5 +1,4 @@
 import Link from 'next/link'
-import {Bars3Icon} from '@heroicons/react/24/outline'
 
 import {sanityFetch} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
@@ -11,17 +10,11 @@ import {
   NavigationMenuList,
 } from '@/components/ui/navigation-menu'
 import {Separator} from '@/components/ui/separator'
-import {
-  Sheet,
-  SheetContent,
-  SheetHeader,
-  SheetTitle,
-  SheetTrigger,
-} from '@/components/ui/sheet'
 import GithubIcon from '@/app/components/icons/GithubIcon'
+import MobileMenu from '@/app/components/MobileMenu'
 import ModeToggle from '@/app/components/ModeToggle'
 
-const navLinks = [{href: '/about', label: 'About'}]
+const navLinks = [{href: '/about', label: 'About'}] as const
 const githubHref = 'https://github.com/sanity-io/sanity-template-nextjs-clean'
 
 export default async function Header() {
@@ -67,42 +60,7 @@ export default async function Header() {
               </a>
             </Button>
 
-            {/* Mobile menu */}
-            <Sheet>
-              <SheetTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="sm:hidden"
-                  aria-label="Open menu"
-                >
-                  <Bars3Icon className="h-5 w-5" />
-                </Button>
-              </SheetTrigger>
-              <SheetContent side="right" className="flex flex-col gap-6">
-                <SheetHeader>
-                  <SheetTitle>Menu</SheetTitle>
-                </SheetHeader>
-                <nav className="flex flex-col gap-1">
-                  {navLinks.map((link) => (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      className="rounded-md px-3 py-2 text-base font-medium hover:bg-accent hover:text-accent-foreground"
-                    >
-                      {link.label}
-                    </Link>
-                  ))}
-                </nav>
-                <Separator />
-                <Button asChild size="lg" className="rounded-full">
-                  <a href={githubHref} target="_blank" rel="noopener noreferrer">
-                    <span>View on GitHub</span>
-                    <GithubIcon className="h-5 w-5" />
-                  </a>
-                </Button>
-              </SheetContent>
-            </Sheet>
+            <MobileMenu navLinks={navLinks} githubHref={githubHref} />
           </div>
         </div>
       </div>

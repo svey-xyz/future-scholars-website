@@ -1,6 +1,6 @@
 'use client'
 
-import {useTheme} from 'next-themes'
+import {useTheme} from '@teispace/next-themes'
 import {ComputerDesktopIcon, MoonIcon, SunIcon} from '@heroicons/react/24/outline'
 
 import {Button} from '@/components/ui/button'

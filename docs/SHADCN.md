@@ -20,15 +20,13 @@ This doc is the source of truth for the migration. Completed phases are compacte
 
 ## ⚠️ RUN THIS NEXT
 
-The sandbox can't write into the host's mounted `node_modules` (EPERM on macOS perms), so deps were added to `frontend/package.json` but not installed. From repo root:
+`frontend/package.json` was edited to drop `next-themes ^0.4.4` and add `@teispace/next-themes ^0.5.0` (the sandbox can't write into the host's mounted `node_modules`). From repo root:
 
 ```
 npm install
 ```
 
-This pulls in: `@heroicons/react`, `@radix-ui/react-{avatar,dialog,dropdown-menu,navigation-menu,separator,slot,tooltip}`, `class-variance-authority`, `clsx`, `tailwind-merge`, `tw-animate-css`, `next-themes`.
-
-After install, sanity check before Phase 4:
+Then:
 
 ```
 npm run lint
@@ -36,7 +34,7 @@ npm run type-check
 npm run dev
 ```
 
-Then visit `http://localhost:3000` — palette should now be shadcn neutral, ModeToggle (top right) toggles light/dark/system, Visual Editing still works at `:3333`.
+Visit `http://localhost:3000` — palette is shadcn neutral, ModeToggle (top right) toggles light/dark/system with zero-FOUC SSR, Visual Editing still works at `:3333`, and the React 19 script-tag warning is gone.
 
 ---
 
@@ -45,7 +43,7 @@ Then visit `http://localhost:3000` — palette should now be shadcn neutral, Mod
 - Style `new-york`, base color `neutral`, CSS variables on, RSC on. Alias `@/components/ui`, utils at `@/lib/utils`.
 - `iconLibrary: "heroicons"` in `components.json`. shadcn's stock new-york source ships lucide-react in `sheet`, `dropdown-menu`, `navigation-menu` — substituted with Heroicons (`XMarkIcon`, `CheckIcon`, `ChevronRightIcon`, `ChevronDownIcon`) and replaced lucide's `Circle` with an inline `<span class="rounded-full bg-current">` in `DropdownMenuRadioItem`.
 - Brand palette intentionally dropped. If `#f50` returns, re-add as a single `--accent` override later — explicit follow-up, not part of this migration.
-- Dark mode via `next-themes` with `attribute="class"`, `defaultTheme="system"`. `.dark` tokens defined in `globals.css`. Existing `@custom-variant dark (&:where(.dark, .dark *))` retained.
+- Dark mode via `@teispace/next-themes` (drop-in replacement for paco's `next-themes` — resolves the React 19 inline-script warning, ships hybrid cookie+localStorage storage for zero-FOUC SSR, and exposes `getTheme()` + `getThemeScript()` from the `/server` entry). `attribute="class"`, `defaultTheme="system"`. `.dark` tokens defined in `globals.css`. Existing `@custom-variant dark (&:where(.dark, .dark *))` retained — no need to import the lib's tailwind preset since we use class-strategy only.
 - Fonts `Inter` + `IBM Plex Mono` aliased into shadcn via `--font-sans` / `--font-mono` inside `@theme inline`.
 - The CLI `shadcn init` was bypassed: latest CLI prompts for unsupported new-york style and requires registry auth we don't have in-sandbox. Files were written manually from canonical `/r/styles/new-york/{name}.json` sources, which match what `shadcn add` would have written.
 - `tailwindcss-animate` (v3-era) → `tw-animate-css` (v4 fork). Component animation utility classes (`animate-in`, `fade-in-0`, `slide-in-from-*`, `data-[state=open]:animate-in`, etc.) are provided by tw-animate-css.
@@ -94,12 +92,13 @@ Mapping (used in Phase 4):
 
 ## Phase 3 — DONE
 
-- `frontend/app/providers.tsx` — `'use client'` wrapping `next-themes`'s `ThemeProvider` with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`.
+- Dark mode wired via `@teispace/next-themes` (swapped from paco's `next-themes` to fix a React 19 inline-script warning that surfaced during Phase 5 dev — see Phase 5b below).
 - `frontend/app/components/ModeToggle.tsx` — `DropdownMenu` of Light / Dark / System using `SunIcon`, `MoonIcon`, `ComputerDesktopIcon` from `@heroicons/react/24/outline`. `sr-only` "Toggle theme" label. Not yet mounted in Header — that happens in Phase 4.
 - `frontend/app/layout.tsx`:
   - `<html>` gained `suppressHydrationWarning`, lost `bg-white text-black`.
   - `<body>` gained `bg-background text-foreground antialiased`.
-  - `<Providers>` wraps everything below `<body>`. `<SanityLive>` stays mounted at the same depth.
+  - `<ThemeProvider>` (imported directly from `@teispace/next-themes` — it ships its own `'use client'` boundary, so layout stays a server component) wraps everything below `<body>` with `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`, and `initialTheme={await getTheme()}`. The anti-FOUC script is injected via `useServerInsertedHTML` — **do not** render `<script>` in JSX (e.g. inside an explicit `<head>`) or React 19 emits "Encountered a script tag while rendering React component", and the extra JSX node shifts Radix's `useId()` counter, which then mismatches between server and client (cause of a Sheet trigger hydration error during Phase 5b dev). `<SanityLive>` stays mounted at the same depth.
+  - `frontend/app/providers.tsx` deleted — no longer needed.
   - `Toaster` import switched from `sonner` → `@/components/ui/sonner` so toasts are theme-aware. `DraftModeToast.tsx` logic untouched.
 
 ---
@@ -138,6 +137,41 @@ Key landed decisions Phase 6 depends on:
 - Skeleton shapes match the actual `Card` footprint (~`h-40 w-full rounded-xl`) so CLS is near-zero on slow fetches.
 
 Verification ran clean: `tsc --noEmit` exits 0; ESLint (`app components lib`, ignoring AppleDouble `._*` cruft on the mounted volume) returns no errors.
+
+---
+
+## Phase 5b — `next-themes` → `@teispace/next-themes` swap
+
+Dev-server surfaced two warnings after Phase 5 landed:
+
+1. **Hydration mismatch** — `Posts.tsx` wrapped `<DateComponent>` (which itself renders `<time>`) in another `<time>` element. Nested `<time>` is invalid HTML. Fixed by switching the outer wrapper to `<span>`; `DateComponent`'s inner `<time dateTime>` keeps the semantics.
+2. **"Encountered a script tag while rendering React component"** — paco's `next-themes` v0.4.6 renders its anti-FOUC `<script>` inside the React tree via `React.createElement('script', ...)`. React 19 emits a dev-only warning for any `<script>` element in JSX (it won't execute on hydration). Suppressing it isn't possible from userland.
+
+Swapped `next-themes ^0.4.4` → `@teispace/next-themes ^0.5.0` in `frontend/package.json`. The replacement is a drop-in fork with:
+
+- Anti-FOUC script via `useServerInsertedHTML` (or `getThemeScript()` in `<head>` for zero-flicker streaming).
+- Hybrid cookie+localStorage storage so the server reads the same theme the client does — eliminates the need for `'use client'` wrappers around the provider.
+- `useSyncExternalStore` for the store, so React 19 `Activity` / `cacheComponents` don't stale it.
+- Same `useTheme()` / `ThemeProvider` surface — no consumer changes beyond the import path.
+
+Files touched:
+
+- `frontend/package.json` — `next-themes` removed, `@teispace/next-themes ^0.5.0` added.
+- `frontend/app/layout.tsx` — direct `<ThemeProvider>` import (no client wrapper), `getTheme()` server-side seed, anti-FOUC script injected via `useServerInsertedHTML` (the default — **don't** render `<script>` JSX in `<head>` or you re-trip the React 19 warning *and* shift the `useId()` counter that Radix relies on, breaking the Sheet trigger). The provider keeps `attribute="class"`, `defaultTheme="system"`, `enableSystem`, `disableTransitionOnChange`.
+- `frontend/app/providers.tsx` — deleted.
+- `frontend/app/components/ModeToggle.tsx` — `'next-themes'` import → `'@teispace/next-themes'`.
+- `frontend/components/ui/sonner.tsx` — same import swap.
+- `frontend/app/components/Posts.tsx` — outer `<time>` wrapper around `<DateComponent/>` swapped for `<span>`.
+
+**Mobile-menu Sheet was extracted into a client island.** After the swap, a hydration mismatch persisted on the SheetTrigger button — `Header` (server) → `<Sheet>` (Radix Dialog, client) → `<SheetTrigger asChild>` → `<Button>`. The DialogTrigger composes a fresh ref function every render (`useComposedRefs(forwardedRef, context.triggerRef)`) and pipes it through Slot/SlotClone onto the `<button>`; with React 19's stricter hydration diff (and an empty diff-summary that only shows `+` lines on the button), the composed-ref/Slot tree fails to match between SSR and CSR for the trigger. The whole subtree is sm-only (`sm:hidden`) and stateless until interaction, so the pragmatic fix is to render it client-only:
+
+- New `frontend/app/components/MobileMenu.tsx` (`'use client'`) owns the entire `<Sheet>` + trigger + content. It gates render on a `useSyncExternalStore(subscribe, () => true, () => false)` snapshot (chosen over `useState` + `useEffect` to dodge the `react-hooks/set-state-in-effect` ESLint rule and skip an extra render).
+- Pre-mount it renders an `h-9 w-9 sm:hidden` placeholder so the header doesn't reflow when the button slots in.
+- `frontend/app/components/Header.tsx` now just renders `<MobileMenu navLinks={navLinks} githubHref={githubHref} />` — Header stays a Server Component, the rest of the desktop nav still SSRs normally.
+
+**Next step (requires host run):** `npm install` from repo root to fetch the new dependency. Then `npm run dev` should be free of both the React 19 script warning and the SheetTrigger hydration error.
+
+Verification (with the package temporarily copied into `node_modules` from the npm tarball): `tsc --noEmit` exits 0; ESLint clean.
 
 ---
 

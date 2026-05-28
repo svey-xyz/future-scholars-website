@@ -6,8 +6,9 @@ import {Inter, IBM_Plex_Mono} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
+import {ThemeProvider} from '@teispace/next-themes'
+import {getTheme} from '@teispace/next-themes/server'
 
-import {Providers} from '@/app/providers'
 import {Toaster} from '@/components/ui/sonner'
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
@@ -68,6 +69,7 @@ const ibmPlexMono = IBM_Plex_Mono({
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
   const {isEnabled: isDraftMode} = await draftMode()
+  const initialTheme = (await getTheme()) ?? undefined
 
   return (
     <html
@@ -76,7 +78,13 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       suppressHydrationWarning
     >
       <body className="bg-background text-foreground antialiased">
-        <Providers>
+        <ThemeProvider
+          attribute="class"
+          defaultTheme="system"
+          enableSystem
+          disableTransitionOnChange
+          initialTheme={initialTheme}
+        >
           <section className="min-h-screen pt-24">
             {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
             <Toaster />
@@ -93,7 +101,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             <main className="">{children}</main>
             <Footer />
           </section>
-        </Providers>
+        </ThemeProvider>
         <SpeedInsights />
       </body>
     </html>

@@ -18,6 +18,7 @@
     "frontend"
   ],
   "scripts": {
+    "clean": "rm -rf node_modules */node_modules package-lock.json */package-lock.json **/dist **/.next **/.vercel **/.turbo **/.cache **/.temp **/tmp",
     "dev": "npx run-p --print-label dev:*",
     "dev:next": "npm run dev --workspace=frontend",
     "dev:studio": "npm run dev --workspace=studio",
