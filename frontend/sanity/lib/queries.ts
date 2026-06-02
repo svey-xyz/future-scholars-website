@@ -56,6 +56,59 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+      _type == "hero" => {
+        ...,
+        buttons[]{
+          ...,
+          ${linkFields}
+        }
+      },
+      _type == "featuresGrid" => {
+        ...,
+        features[]{
+          ...,
+          ${linkFields}
+        }
+      },
+      _type == "faq" => {
+        ...,
+        items[]{
+          ...,
+          answer[]{
+            ...,
+            markDefs[]{
+              ...,
+              ${linkReference}
+            }
+          }
+        }
+      },
+      _type == "postsArchive" => {
+        ...,
+        category->{_id, title, "slug": slug.current},
+        "posts": select(
+          source == "picked" => posts[]->{ ${postFields} },
+          source == "all" => *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc){
+            ${postFields}
+          },
+          *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc)[0...24]{
+            ${postFields}
+          }
+        )
+      },
+      _type == "authorsArchive" => {
+        ...,
+        "authors": select(
+          source == "picked" => authors[]->{
+            _id, firstName, lastName, picture,
+            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])
+          },
+          *[_type == "person"] | order(lastName asc, firstName asc)[0...48]{
+            _id, firstName, lastName, picture,
+            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])
+          }
+        )
+      },
     },
   }
 `)

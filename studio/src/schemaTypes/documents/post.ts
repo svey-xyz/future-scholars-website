@@ -1,6 +1,6 @@
 import {DocumentTextIcon} from '@sanity/icons'
 import {format, parseISO} from 'date-fns'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Post} from '../../../sanity.types'
 
 /**
@@ -82,6 +82,12 @@ export const post = defineType({
       title: 'Author',
       type: 'reference',
       to: [{type: 'person'}],
+    }),
+    defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
     }),
   ],
   // List preview configuration. https://www.sanity.io/docs/previews-list-views

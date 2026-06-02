@@ -2,6 +2,14 @@ import React from 'react'
 
 import Cta from '@/app/components/Cta'
 import Info from '@/app/components/InfoSection'
+import Hero from '@/app/components/Hero'
+import FeaturesGrid from '@/app/components/FeaturesGrid'
+import Stats from '@/app/components/Stats'
+import Testimonials from '@/app/components/Testimonials'
+import Gallery from '@/app/components/Gallery'
+import Faq from '@/app/components/Faq'
+import PostsArchive from '@/app/components/PostsArchive'
+import AuthorsArchive from '@/app/components/AuthorsArchive'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert'
@@ -18,8 +26,16 @@ type BlocksType = {
 }
 
 const Blocks = {
+  hero: Hero,
   callToAction: Cta,
   infoSection: Info,
+  featuresGrid: FeaturesGrid,
+  stats: Stats,
+  testimonials: Testimonials,
+  gallery: Gallery,
+  faq: Faq,
+  postsArchive: PostsArchive,
+  authorsArchive: AuthorsArchive,
 } as BlocksType
 
 /**

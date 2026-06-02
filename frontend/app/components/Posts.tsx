@@ -1,61 +1,9 @@
-import {ViewTransition} from 'react'
-import Link from 'next/link'
-
 import {sanityFetch} from '@/sanity/lib/live'
 import {morePostsQuery, allPostsQuery} from '@/sanity/lib/queries'
 import {AllPostsQueryResult} from '@/sanity.types'
-import DateComponent from '@/app/components/Date'
-import OnBoarding from '@/app/components/Onboarding'
-import Avatar from '@/app/components/Avatar'
-import {dataAttr} from '@/sanity/lib/utils'
-import {
-  Card,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from '@/components/ui/card'
-
-const Post = ({post}: {post: AllPostsQueryResult[number]}) => {
-  const {_id, title, slug, excerpt, date, author} = post
-
-  return (
-    <Card
-      data-sanity={dataAttr({id: _id, type: 'post', path: 'title'}).toString()}
-      className="relative flex flex-col justify-between transition-colors hover:bg-accent/40"
-    >
-      <Link
-        href={`/posts/${slug}`}
-        aria-label={title ?? undefined}
-        transitionTypes={['nav-forward']}
-      >
-        <span className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
-      </Link>
-      <CardHeader>
-        {/* Shared-element morph: this title morphs into the <h1> on the post
-            detail page (matching name in app/posts/[slug]/page.tsx). */}
-        <ViewTransition name={`post-title-${slug}`} share="morph">
-          <CardTitle className="text-2xl">{title}</CardTitle>
-        </ViewTransition>
-        {excerpt && (
-          <CardDescription className="line-clamp-3 max-w-[70ch] leading-6">
-            {excerpt}
-          </CardDescription>
-        )}
-      </CardHeader>
-      <CardFooter className="flex items-center justify-between border-t pt-4">
-        {author && author.firstName && author.lastName ? (
-          <Avatar person={author} small={true} />
-        ) : (
-          <span />
-        )}
-        <span className="text-muted-foreground text-xs font-mono">
-          <DateComponent dateString={date} />
-        </span>
-      </CardFooter>
-    </Card>
-  )
-}
+import {OnboardingShell} from '@/app/components/Onboarding'
+import PostCard from '@/app/components/PostCard'
+import {studioUrl} from '@/sanity/lib/api'
 
 const Posts = ({
   children,
@@ -86,7 +34,7 @@ export const MorePosts = async ({skip, limit}: {skip: string; limit: number}) =>
   return (
     <Posts heading={`Recent Posts (${data?.length})`}>
       {data?.map((post: AllPostsQueryResult[number]) => (
-        <Post key={post._id} post={post} />
+        <PostCard key={post._id} post={post} />
       ))}
     </Posts>
   )
@@ -96,7 +44,20 @@ export const AllPosts = async () => {
   const {data} = await sanityFetch({query: allPostsQuery})
 
   if (!data || data.length === 0) {
-    return <OnBoarding />
+    return (
+      <OnboardingShell
+        message={{
+          title: 'No posts yet',
+          description: 'Get started by creating your first post in Sanity Studio.',
+        }}
+        link={{
+          title: 'Create Post',
+          href: `${studioUrl}/structure/intent/create/template=post;type=post;path=title`,
+        }}
+        type="post"
+        path="title"
+      />
+    )
   }
 
   return (
@@ -105,7 +66,7 @@ export const AllPosts = async () => {
       subHeading={`${data.length === 1 ? 'This blog post is' : `These ${data.length} blog posts are`} populated from your Sanity Studio.`}
     >
       {data.map((post: AllPostsQueryResult[number]) => (
-        <Post key={post._id} post={post} />
+        <PostCard key={post._id} post={post} />
       ))}
     </Posts>
   )
