@@ -200,6 +200,17 @@ export const settings = defineType({
         }),
       ],
     }),
+		defineField({
+			title: 'Blurb',
+			name: 'blurb',
+			type: 'string',
+			description: 'Concise description of the site, used primarily for SEO and metadata.',
+		}),
+		defineField({
+			title: 'Contact',
+			name: 'contact',
+			type: 'contact',
+		}),
   ],
   preview: {
     prepare() {
