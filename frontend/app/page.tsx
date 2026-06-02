@@ -13,6 +13,8 @@ import {sanityFetch} from '@/sanity/lib/live'
 import {dataAttr} from '@/sanity/lib/utils'
 import PageRoute from '@/app/[slug]/page'
 import { Metadata } from 'next'
+import { OnboardingShell } from '@/app/components/Onboarding'
+import { studioUrl } from '@/sanity/lib/api'
 
 /**
  * Generate the static params for the page.
@@ -62,8 +64,19 @@ export default async function Page() {
 
 	if (!settings || !settings.homepage?.slug) {
 		return (
-			<div className="text-center">
-				No homepage set.
+			 <div className="py-40">
+				<OnboardingShell
+					message={{
+						title: `A homepage is not set yet`,
+						description: 'Get started by setting a homepage in the Sanity Studio site settings.',
+					}}
+					link={{
+						title: 'Set Homepage',
+						href: `${studioUrl}/structure/intent/edit/id=siteSettings;type=siteSettings;path=homepage`,
+					}}
+					type="siteSettings"
+					path="homepage"
+				/>
 			</div>
 		)
 	}

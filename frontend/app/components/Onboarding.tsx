@@ -63,7 +63,7 @@ type OnboardingMessageProps = {
   path?: string
 }
 
-function OnboardingShell({
+export function OnboardingShell({
   message,
   link,
   type,
@@ -101,36 +101,4 @@ function OnboardingShell({
   )
 }
 
-export default function Onboarding() {
-  return (
-    <OnboardingShell
-      message={{
-        title: 'No posts yet',
-        description: 'Get started by creating a new post.',
-      }}
-      link={{
-        title: 'Create Post',
-        href: `${studioUrl}/structure/intent/create/template=post;type=post;path=title`,
-      }}
-      type="post"
-      path="title"
-    />
-  )
-}
 
-export function PageOnboarding() {
-  return (
-    <OnboardingShell
-      message={{
-        title: 'About Page (/about) does not exist yet',
-        description: 'Get started by creating an about page.',
-      }}
-      link={{
-        title: 'Create Page',
-        href: `${studioUrl}/structure/intent/create/template=page;type=page;path=name`,
-      }}
-      type="page"
-      path="name"
-    />
-  )
-}

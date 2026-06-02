@@ -4,7 +4,9 @@ import PageBuilderPage from '@/app/components/PageBuilder'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getPageQuery, pagesSlugs} from '@/sanity/lib/queries'
 import {GetPageQueryResult} from '@/sanity.types'
-import {PageOnboarding} from '@/app/components/Onboarding'
+import {OnboardingShell} from '@/app/components/Onboarding'
+import { studioUrl } from '@/sanity/lib/api'
+import { title } from 'process'
 
 type Props = {
   params: Promise<{slug: string}>
@@ -50,7 +52,18 @@ export default async function Page(props: Props) {
   if (!page?._id) {
     return (
       <div className="py-40">
-        <PageOnboarding />
+				<OnboardingShell
+					message={{
+						title: `/${params.slug} does not exist yet`,
+						description: 'Get started by creating a new page.',
+					}}
+					link={{
+						title: 'Create Page',
+						href: `${studioUrl}/structure/intent/create/template=page;type=page;path=name`,
+					}}
+					type="page"
+					path="name"
+				/>
       </div>
     )
   }
