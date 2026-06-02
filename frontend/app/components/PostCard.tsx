@@ -19,7 +19,7 @@ export default function PostCard({post}: {post: AllPostsQueryResult[number]}) {
   return (
     <Card
       data-sanity={dataAttr({id: _id, type: 'post', path: 'title'}).toString()}
-      className="relative flex flex-col justify-between transition-colors hover:bg-accent/40"
+      className="relative flex h-full flex-col justify-between transition-[transform,box-shadow,border-color,background-color] duration-300 will-change-transform hover:bg-accent/40 hover:border-primary/30 hover:shadow-lg motion-safe:hover:-translate-y-1"
     >
       <Link
         href={`/posts/${slug}`}

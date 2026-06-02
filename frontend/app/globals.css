@@ -223,3 +223,224 @@
     animation-delay: 0s !important;
   }
 }
+
+/* =========================================================================
+   Scroll reveal & micro-interactions  (page-builder blocks)
+   Bold, expressive motion with a two-path reveal:
+     1. CSS scroll-driven (animation-timeline: view()) — zero JS, primary.
+     2. IntersectionObserver fallback (app/components/RevealObserver.tsx) for
+        engines without scroll-timeline support. A pre-paint script in
+        layout.tsx sets [data-reveal-js] on <html> ONLY when (a) the engine
+        lacks scroll-timeline and (b) motion is allowed, so the observer path
+        and its initial hidden state never apply to no-JS or reduced-motion
+        users. Exactly one path runs; content is fully visible otherwise.
+   Per-item cascade is driven by the inline `--reveal-i` custom property.
+   Everything is gated behind prefers-reduced-motion: no-preference, mirroring
+   the view-transition posture above. See docs/A11Y.md + docs/TRANSITIONS.md.
+   ========================================================================= */
+
+@property --reveal-i {
+  syntax: '<integer>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  /* ---- Reveal keyframes (shared by both paths) ---- */
+  @keyframes a-reveal-up {
+    from {
+      opacity: 0;
+      transform: translateY(2.75rem) scale(0.96);
+      filter: blur(8px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  @keyframes a-reveal-left {
+    from {
+      opacity: 0;
+      transform: translateX(-3rem);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  @keyframes a-reveal-right {
+    from {
+      opacity: 0;
+      transform: translateX(3rem);
+      filter: blur(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  @keyframes a-reveal-scale {
+    from {
+      opacity: 0;
+      transform: scale(0.88) translateY(1.5rem);
+      filter: blur(10px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+
+  /* ---- Path 1: CSS scroll-driven (supported engines, no JS) ---- */
+  @supports (animation-timeline: view()) {
+    .reveal,
+    .reveal-left,
+    .reveal-right,
+    .reveal-scale {
+      animation: a-reveal-up both;
+      animation-timeline: view();
+      /* Item cascade: offset each sibling's entry window by its index (capped). */
+      animation-range: entry calc(min(var(--reveal-i, 0), 6) * 3%) cover
+        calc(30% + min(var(--reveal-i, 0), 6) * 2%);
+    }
+    .reveal-left {
+      animation-name: a-reveal-left;
+    }
+    .reveal-right {
+      animation-name: a-reveal-right;
+    }
+    .reveal-scale {
+      animation-name: a-reveal-scale;
+    }
+  }
+
+  /* ---- Path 2: IntersectionObserver fallback (engines w/o scroll-timeline) ---- */
+  @supports not (animation-timeline: view()) {
+    [data-reveal-js] .reveal,
+    [data-reveal-js] .reveal-left,
+    [data-reveal-js] .reveal-right,
+    [data-reveal-js] .reveal-scale {
+      opacity: 0;
+      will-change: opacity, transform;
+    }
+    [data-reveal-js] [data-revealed='true'].reveal,
+    [data-reveal-js] [data-revealed='true'].reveal-left,
+    [data-reveal-js] [data-revealed='true'].reveal-right,
+    [data-reveal-js] [data-revealed='true'].reveal-scale {
+      animation: a-reveal-up 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
+      animation-delay: calc(min(var(--reveal-i, 0), 8) * 70ms);
+    }
+    [data-reveal-js] [data-revealed='true'].reveal-left {
+      animation-name: a-reveal-left;
+    }
+    [data-reveal-js] [data-revealed='true'].reveal-right {
+      animation-name: a-reveal-right;
+    }
+    [data-reveal-js] [data-revealed='true'].reveal-scale {
+      animation-name: a-reveal-scale;
+    }
+  }
+
+  /* ---- Mount entrance (above-the-fold content that won't get a scroll cue) ----
+     Time-based so it plays once on first paint; cascade via inline `--enter-d`. */
+  .enter {
+    animation: a-reveal-up 0.8s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: var(--enter-d, 0ms);
+  }
+
+  /* FAQ: slide the answer panel open when its <details> is toggled. */
+  details[open] > .faq-panel {
+    animation: a-reveal-up 0.35s cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* ---- Looping ambient motion (decorative; place on aria-hidden nodes) ---- */
+  @keyframes a-float {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-12px);
+    }
+  }
+  @keyframes a-float-slow {
+    0%,
+    100% {
+      transform: translate(0, 0);
+    }
+    50% {
+      transform: translate(10px, -20px);
+    }
+  }
+  @keyframes a-pulse-glow {
+    0%,
+    100% {
+      opacity: 0.3;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(1.1);
+    }
+  }
+  @keyframes a-gradient-pan {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+  @keyframes a-shimmer {
+    0% {
+      background-position: -150% 0;
+    }
+    100% {
+      background-position: 250% 0;
+    }
+  }
+  @keyframes a-spin-slow {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  .animate-float {
+    animation: a-float 6s ease-in-out infinite;
+  }
+  .animate-float-slow {
+    animation: a-float-slow 9s ease-in-out infinite;
+  }
+  .animate-pulse-glow {
+    animation: a-pulse-glow 5s ease-in-out infinite;
+  }
+  .animate-gradient-pan {
+    background-size: 200% 200%;
+    animation: a-gradient-pan 8s ease infinite;
+  }
+  .animate-spin-slow {
+    animation: a-spin-slow 24s linear infinite;
+  }
+
+  /* Shimmer sweep — decorative overlay; pair with aria-hidden + overflow-hidden. */
+  .animate-shimmer {
+    background-image: linear-gradient(
+      110deg,
+      transparent 25%,
+      hsl(var(--foreground) / 0.08) 45%,
+      hsl(var(--foreground) / 0.16) 50%,
+      hsl(var(--foreground) / 0.08) 55%,
+      transparent 75%
+    );
+    background-size: 220% 100%;
+    animation: a-shimmer 4.5s ease-in-out infinite;
+  }
+}

@@ -15,6 +15,182 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
+}
+
+export type AuthorImage = {
+  asset?: SanityImageAssetReference
+  media?: unknown // Unable to locate the referenced type "authorImage.media" in schema
+  hotspot?: SanityImageHotspot
+  crop?: SanityImageCrop
+  alt?: string
+  _type: 'image'
+}
+
+export type Stats = {
+  _type: 'stats'
+  heading?: string
+  subheading?: string
+  items?: Array<{
+    value: string
+    label: string
+    description?: string
+    _type: 'stat'
+    _key: string
+  }>
+  columns?: 2 | 3 | 4
+}
+
+export type Faq = {
+  _type: 'faq'
+  heading?: string
+  subheading?: string
+  items?: Array<{
+    question: string
+    answer?: BlockContentTextOnly
+    _type: 'faqItem'
+    _key: string
+  }>
+}
+
+export type Testimonials = {
+  _type: 'testimonials'
+  heading?: string
+  subheading?: string
+  testimonials?: Array<{
+    quote: string
+    authorName: string
+    authorRole?: string
+    authorImage?: AuthorImage
+    _type: 'testimonial'
+    _key: string
+  }>
+  columns?: 1 | 2 | 3
+}
+
+export type FeaturesGrid = {
+  _type: 'featuresGrid'
+  heading?: string
+  subheading?: string
+  features?: Array<{
+    icon?:
+      | 'sparkles'
+      | 'bolt'
+      | 'shield'
+      | 'rocket'
+      | 'chip'
+      | 'cloud'
+      | 'code'
+      | 'chart'
+      | 'cursor'
+      | 'globe'
+      | 'lock'
+      | 'heart'
+      | 'star'
+      | 'check'
+      | 'beaker'
+    heading: string
+    text?: string
+    link?: Link
+    _type: 'feature'
+    _key: string
+  }>
+  columns?: 2 | 3 | 4
+}
+
+export type Gallery = {
+  _type: 'gallery'
+  heading?: string
+  images?: Array<{
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    caption?: string
+    _type: 'galleryImage'
+    _key: string
+  }>
+  columns?: 2 | 3 | 4
+  aspect?: 'square' | 'video' | 'auto'
+}
+
+export type PersonReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'person'
+}
+
+export type AuthorsArchive = {
+  _type: 'authorsArchive'
+  heading?: string
+  subheading?: string
+  source?: 'all' | 'picked'
+  limit?: number
+  authors?: Array<
+    {
+      _key: string
+    } & PersonReference
+  >
+  columns?: 2 | 3 | 4
+}
+
+export type CategoryReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'category'
+}
+
+export type PostReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'post'
+}
+
+export type PostsArchive = {
+  _type: 'postsArchive'
+  heading?: string
+  subheading?: string
+  source?: 'latest' | 'all' | 'picked'
+  limit?: number
+  category?: CategoryReference
+  posts?: Array<
+    {
+      _key: string
+    } & PostReference
+  >
+  columns?: 2 | 3
+}
+
+export type Hero = {
+  _type: 'hero'
+  eyebrow?: string
+  heading: string
+  lede?: string
+  buttons?: Array<
+    {
+      _key: string
+    } & Button
+  >
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  layout?: 'center' | 'split'
+  theme?: 'light' | 'dark'
+}
+
 export type Social = {
   _type: 'social'
   title: string
@@ -40,13 +216,6 @@ export type PageReference = {
   [internalGroqTypeReferenceTo]?: 'page'
 }
 
-export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
-
 export type Link = {
   _type: 'link'
   linkType?: 'href' | 'page' | 'post'
@@ -54,13 +223,6 @@ export type Link = {
   page?: PageReference
   post?: PostReference
   openInNewTab?: boolean
-}
-
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type CallToAction = {
@@ -143,6 +305,23 @@ export type Button = {
   _type: 'button'
   buttonText?: string
   link?: Link
+}
+
+export type Category = {
+  _id: string
+  _type: 'category'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  description?: string
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type SanityFileAssetReference = {
@@ -237,18 +416,35 @@ export type Page = {
   pageBuilder?: Array<
     | ({
         _key: string
+      } & Hero)
+    | ({
+        _key: string
       } & CallToAction)
     | ({
         _key: string
       } & InfoSection)
+    | ({
+        _key: string
+      } & FeaturesGrid)
+    | ({
+        _key: string
+      } & Stats)
+    | ({
+        _key: string
+      } & Testimonials)
+    | ({
+        _key: string
+      } & Gallery)
+    | ({
+        _key: string
+      } & Faq)
+    | ({
+        _key: string
+      } & PostsArchive)
+    | ({
+        _key: string
+      } & AuthorsArchive)
   >
-}
-
-export type PersonReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'person'
 }
 
 export type Post = {
@@ -271,6 +467,11 @@ export type Post = {
   }
   date?: string
   author?: PersonReference
+  categories?: Array<
+    {
+      _key: string
+    } & CategoryReference
+  >
 }
 
 export type Person = {
@@ -289,12 +490,6 @@ export type Person = {
     alt?: string
     _type: 'image'
   }
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -541,26 +736,37 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | SanityImageAssetReference
+  | AuthorImage
+  | Stats
+  | Faq
+  | Testimonials
+  | FeaturesGrid
+  | Gallery
+  | PersonReference
+  | AuthorsArchive
+  | CategoryReference
+  | PostReference
+  | PostsArchive
+  | Hero
   | Social
   | Contact
   | PageReference
-  | PostReference
   | Link
-  | SanityImageAssetReference
   | CallToAction
   | InfoSection
   | BlockContentTextOnly
   | BlockContent
   | Button
+  | Category
+  | Slug
   | SanityFileAssetReference
   | Settings
   | SanityImageCrop
   | SanityImageHotspot
   | Page
-  | PersonReference
   | Post
   | Person
-  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations

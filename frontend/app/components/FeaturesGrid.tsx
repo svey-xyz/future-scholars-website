@@ -17,6 +17,7 @@ import {
 } from '@heroicons/react/24/outline'
 
 import ResolvedLink from '@/app/components/ResolvedLink'
+import Reveal from '@/app/components/Reveal'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
@@ -59,25 +60,38 @@ export default function FeaturesGrid({block}: Props) {
   return (
     <section className="container my-12 lg:my-16">
       <header className="max-w-3xl">
-        {heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+        {heading && (
+          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            {heading}
+          </Reveal>
+        )}
         {subheading && (
-          <p className="mt-3 text-lg leading-8 text-muted-foreground">{subheading}</p>
+          <Reveal as="p" i={1} className="mt-3 text-lg leading-8 text-muted-foreground">
+            {subheading}
+          </Reveal>
         )}
       </header>
 
       <ul className={cn('mt-10 grid grid-cols-1 gap-8', colClass[cols])}>
-        {items.map((feature) => {
+        {items.map((feature, i) => {
           const Icon = feature.icon ? icons[feature.icon] : null
           const link = feature.link
           const hasLink = Boolean(link && (link.href || link.page || link.post))
 
+          const iconEl = Icon && (
+            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-[transform,background-color,color] duration-300 will-change-transform motion-safe:group-hover/feat:-rotate-6 motion-safe:group-hover/feat:scale-110 group-hover/feat:bg-primary group-hover/feat:text-primary-foreground">
+              <Icon className="h-6 w-6" aria-hidden="true" />
+              {/* Soft glow ring blooms on hover. */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 rounded-lg bg-primary/30 opacity-0 blur-md transition-opacity duration-300 group-hover/feat:opacity-100"
+              />
+            </span>
+          )
+
           const body = (
             <>
-              {Icon && (
-                <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground">
-                  <Icon className="h-6 w-6" aria-hidden="true" />
-                </span>
-              )}
+              {iconEl}
               <h3 className="mt-4 text-lg font-medium">{feature.heading}</h3>
               {feature.text && (
                 <p className="mt-2 leading-7 text-muted-foreground">{feature.text}</p>
@@ -86,7 +100,16 @@ export default function FeaturesGrid({block}: Props) {
           )
 
           return (
-            <li key={feature._key}>
+            <Reveal
+              as="li"
+              key={feature._key}
+              i={i}
+              className={cn(
+                'group/feat rounded-xl',
+                hasLink &&
+                  'transition-transform duration-300 will-change-transform motion-safe:hover:-translate-y-1',
+              )}
+            >
               {hasLink && link ? (
                 <ResolvedLink
                   link={link}
@@ -97,7 +120,7 @@ export default function FeaturesGrid({block}: Props) {
                     Learn more
                     <span
                       aria-hidden="true"
-                      className="transition-transform motion-safe:group-hover:translate-x-0.5"
+                      className="transition-transform motion-safe:group-hover:translate-x-1"
                     >
                       &rarr;
                     </span>
@@ -106,7 +129,7 @@ export default function FeaturesGrid({block}: Props) {
               ) : (
                 body
               )}
-            </li>
+            </Reveal>
           )
         })}
       </ul>

@@ -1,6 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/SanityImage'
+import Reveal from '@/app/components/Reveal'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
@@ -32,15 +33,24 @@ export default function Gallery({block}: Props) {
 
   return (
     <section className="container my-12 lg:my-16">
-      {heading && <h2 className="mb-8 text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+      {heading && (
+        <Reveal as="h2" className="mb-8 text-2xl md:text-3xl lg:text-4xl">
+          {heading}
+        </Reveal>
+      )}
 
       {imgs.length > 0 && (
         <ul className={cn('grid grid-cols-1 gap-4', colClass[cols])}>
-          {imgs.map((img) =>
+          {imgs.map((img, i) =>
             img.asset?._ref ? (
-              <li key={img._key}>
-                <figure>
-                  <div className={cn('overflow-hidden rounded-lg bg-muted', aspectClass[a])}>
+              <Reveal as="li" key={img._key} i={i} variant="scale">
+                <figure className="group/gal">
+                  <div
+                    className={cn(
+                      'relative overflow-hidden rounded-lg bg-muted',
+                      aspectClass[a],
+                    )}
+                  >
                     <Image
                       id={img.asset._ref}
                       alt={img.alt || ''}
@@ -49,16 +59,24 @@ export default function Gallery({block}: Props) {
                       crop={img.crop}
                       mode={fixed ? 'cover' : 'contain'}
                       loading="lazy"
-                      className={cn('w-full', fixed && 'h-full object-cover')}
+                      className={cn(
+                        'w-full transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/gal:scale-110',
+                        fixed && 'h-full object-cover',
+                      )}
+                    />
+                    {/* Hover scrim — adds depth, fades in on hover. */}
+                    <div
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover/gal:opacity-100"
                     />
                   </div>
                   {img.caption && (
-                    <figcaption className="mt-2 text-sm text-muted-foreground">
+                    <figcaption className="mt-2 text-sm text-muted-foreground transition-colors duration-300 group-hover/gal:text-foreground">
                       {img.caption}
                     </figcaption>
                   )}
                 </figure>
-              </li>
+              </Reveal>
             ) : null,
           )}
         </ul>

@@ -4,6 +4,7 @@ import {stegaClean} from '@sanity/client/stega'
 import ResolvedLink from '@/app/components/ResolvedLink'
 import PortableText from '@/app/components/PortableText'
 import Image from '@/app/components/SanityImage'
+import Reveal from '@/app/components/Reveal'
 import {Badge} from '@/components/ui/badge'
 import {Button} from '@/components/ui/button'
 import {cn} from '@/lib/utils'
@@ -24,7 +25,7 @@ export default function CTA({block}: CtaProps) {
   const isImageFirst = stegaClean(contentAlignment) === 'imageFirst'
 
   return (
-    <section className={cn('relative', isDark && 'dark bg-background text-foreground')}>
+    <section className={cn('relative isolate', isDark && 'dark bg-background text-foreground')}>
       <div className="container relative">
         <div className="grid lg:grid-cols-2 gap-12 py-12">
           <div
@@ -34,37 +35,61 @@ export default function CTA({block}: CtaProps) {
             )}
           >
             {eyebrow && (
-              <div>
+              <Reveal i={0}>
                 <Badge variant="secondary" className="font-mono uppercase tracking-tight">
                   {eyebrow}
                 </Badge>
-              </div>
+              </Reveal>
             )}
-            {heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+            {heading && (
+              <Reveal as="h2" i={1} className="text-2xl md:text-3xl lg:text-4xl">
+                {heading}
+              </Reveal>
+            )}
             {body && (
-              <div className="lg:text-left">
+              <Reveal i={2} className="lg:text-left">
                 <PortableText value={body as PortableTextBlock[]} />
-              </div>
+              </Reveal>
             )}
 
             {button?.buttonText && button?.link && (
-              <div className="flex mt-4">
-                <Button asChild size="lg" className="rounded-full">
-                  <ResolvedLink link={button.link}>{button.buttonText}</ResolvedLink>
+              <Reveal i={3} className="flex mt-4">
+                <Button
+                  asChild
+                  size="lg"
+                  className="group/cta relative overflow-hidden rounded-full transition-transform duration-200 will-change-transform motion-safe:hover:scale-[1.04] motion-safe:active:scale-95"
+                >
+                  <ResolvedLink link={button.link}>
+                    {/* Sheen sweep on hover (decorative). */}
+                    <span
+                      aria-hidden="true"
+                      className="pointer-events-none absolute inset-0 -translate-x-full bg-linear-to-r from-transparent via-primary-foreground/30 to-transparent transition-transform duration-700 ease-out motion-safe:group-hover/cta:translate-x-full"
+                    />
+                    {button.buttonText}
+                  </ResolvedLink>
                 </Button>
-              </div>
+              </Reveal>
             )}
           </div>
 
           {image?.asset?._ref && (
-            <Image
-              id={image.asset._ref}
-              alt="Demo image"
-              width={704}
-              crop={image.crop}
-              mode="cover"
-              className="rounded-sm"
-            />
+            <Reveal variant="scale" className="group/img relative isolate">
+              {/* Rotating conic glow behind the image (decorative). */}
+              <div
+                aria-hidden="true"
+                className="animate-spin-slow pointer-events-none absolute -inset-4 -z-10 rounded-[1.5rem] opacity-60 blur-2xl [background:conic-gradient(from_0deg,hsl(var(--primary)/0.25),transparent_35%,transparent_65%,hsl(var(--primary)/0.25))]"
+              />
+              <div className="overflow-hidden rounded-sm">
+                <Image
+                  id={image.asset._ref}
+                  alt="Demo image"
+                  width={704}
+                  crop={image.crop}
+                  mode="cover"
+                  className="w-full transition-transform duration-[800ms] ease-out will-change-transform motion-safe:group-hover/img:scale-[1.04]"
+                />
+              </div>
+            </Reveal>
           )}
         </div>
       </div>

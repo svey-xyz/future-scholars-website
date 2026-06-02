@@ -1,3 +1,4 @@
+import Reveal from '@/app/components/Reveal'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
@@ -22,24 +23,35 @@ export default function Stats({block}: Props) {
   return (
     <section className="container my-12 lg:my-16">
       <header className="max-w-3xl">
-        {heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+        {heading && (
+          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            {heading}
+          </Reveal>
+        )}
         {subheading && (
-          <p className="mt-3 text-lg leading-8 text-muted-foreground">{subheading}</p>
+          <Reveal as="p" i={1} className="mt-3 text-lg leading-8 text-muted-foreground">
+            {subheading}
+          </Reveal>
         )}
       </header>
 
       {list.length > 0 && (
         <ul className={cn('mt-10 grid gap-8', colClass[cols])}>
-          {list.map((stat) => (
-            <li key={stat._key} className="flex flex-col gap-1">
-              <p className="text-4xl font-semibold tracking-tight text-foreground lg:text-5xl">
+          {list.map((stat, i) => (
+            <Reveal as="li" key={stat._key} i={i} variant="scale" className="group/stat flex flex-col gap-1">
+              <p className="text-4xl font-semibold tracking-tight text-foreground tabular-nums transition-transform duration-300 will-change-transform motion-safe:group-hover/stat:scale-105 origin-left lg:text-5xl">
                 {stat.value}
               </p>
-              <p className="text-sm font-medium">{stat.label}</p>
+              {/* Animated gradient accent that pans and widens on hover. */}
+              <span
+                aria-hidden="true"
+                className="animate-gradient-pan mt-1 block h-0.5 w-8 rounded-full bg-linear-to-r from-primary/50 via-primary to-primary/50 transition-[width] duration-300 group-hover/stat:w-16"
+              />
+              <p className="mt-1 text-sm font-medium">{stat.label}</p>
               {stat.description && (
                 <p className="text-sm text-muted-foreground">{stat.description}</p>
               )}
-            </li>
+            </Reveal>
           ))}
         </ul>
       )}

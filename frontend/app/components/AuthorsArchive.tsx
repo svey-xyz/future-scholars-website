@@ -1,6 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/SanityImage'
+import Reveal from '@/app/components/Reveal'
 import {Avatar as AvatarRoot, AvatarFallback} from '@/components/ui/avatar'
 import {Card} from '@/components/ui/card'
 import {cn} from '@/lib/utils'
@@ -28,22 +29,28 @@ export default function AuthorsArchive({block}: Props) {
   return (
     <section className="container my-12 lg:my-16">
       <header className="max-w-3xl">
-        {heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+        {heading && (
+          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            {heading}
+          </Reveal>
+        )}
         {subheading && (
-          <p className="mt-3 text-lg leading-8 text-muted-foreground">{subheading}</p>
+          <Reveal as="p" i={1} className="mt-3 text-lg leading-8 text-muted-foreground">
+            {subheading}
+          </Reveal>
         )}
       </header>
 
       {shown.length > 0 ? (
         <ul className={cn('mt-8 grid grid-cols-1 gap-6', colClass[cols])}>
-          {shown.map((author) => {
+          {shown.map((author, i) => {
             const ref = author.picture?.asset?._ref
             const initials =
               `${author.firstName?.[0] ?? ''}${author.lastName?.[0] ?? ''}`.toUpperCase() || '?'
             return (
-              <li key={author._id}>
-                <Card className="flex h-full flex-col items-center gap-3 p-6 text-center">
-                  <AvatarRoot className="h-16 w-16">
+              <Reveal as="li" key={author._id} i={i} variant="scale">
+                <Card className="group/author flex h-full flex-col items-center gap-3 p-6 text-center transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg">
+                  <AvatarRoot className="h-16 w-16 ring-2 ring-transparent transition-[transform,box-shadow] duration-300 will-change-transform group-hover/author:ring-primary/30 motion-safe:group-hover/author:scale-110">
                     {ref ? (
                       <Image
                         id={ref}
@@ -66,7 +73,7 @@ export default function AuthorsArchive({block}: Props) {
                     {author.postCount} {author.postCount === 1 ? 'post' : 'posts'}
                   </p>
                 </Card>
-              </li>
+              </Reveal>
             )
           })}
         </ul>

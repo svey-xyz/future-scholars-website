@@ -1,6 +1,7 @@
 import {type PortableTextBlock} from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'
+import Reveal from '@/app/components/Reveal'
 import {InfoSection} from '@/sanity.types'
 
 type InfoProps = {
@@ -15,17 +16,25 @@ export default function CTA({block}: InfoProps) {
   return (
     <div className="container my-12">
       <div className="max-w-3xl">
-        {block?.heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{block.heading}</h2>}
-        {block?.subheading && (
-          <span className="block mt-4 mb-8 text-lg uppercase font-light text-muted-foreground">
-            {block.subheading}
-          </span>
+        {block?.heading && (
+          <Reveal as="h2" i={0} className="text-2xl md:text-3xl lg:text-4xl">
+            {block.heading}
+          </Reveal>
         )}
-        <div className="mt-4">
-          {block?.content?.length && (
+        {block?.subheading && (
+          <Reveal
+            as="span"
+            i={1}
+            className="block mt-4 mb-8 text-lg uppercase font-light text-muted-foreground"
+          >
+            {block.subheading}
+          </Reveal>
+        )}
+        {block?.content?.length ? (
+          <Reveal i={2} className="mt-4">
             <PortableText className="" value={block.content as PortableTextBlock[]} />
-          )}
-        </div>
+          </Reveal>
+        ) : null}
       </div>
     </div>
   )

@@ -14,6 +14,7 @@ import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
 import PageTransition from '@/app/components/PageTransition'
+import RevealObserver from '@/app/components/RevealObserver'
 import * as demo from '@/sanity/lib/demo'
 import {sanityFetch, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
@@ -79,6 +80,16 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       suppressHydrationWarning
     >
 			<body className="bg-background text-foreground antialiased relative min-h-screen h-fit w-full overflow-x-hidden flex flex-col">
+        {/* Pre-paint: opt into the JS scroll-reveal fallback ONLY on engines that
+            lack CSS scroll-driven animations and when motion is allowed. Runs
+            before first paint so the fallback's initial hidden state never
+            flashes; supported / reduced-motion / no-JS users are untouched. */}
+        <script
+          dangerouslySetInnerHTML={{
+            __html:
+              "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!CSS.supports('animation-timeline: view()'))document.documentElement.setAttribute('data-reveal-js','')}catch(e){}",
+          }}
+        />
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -98,6 +109,8 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             )}
             {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
             <SanityLive onError={handleError} />
+            {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
+            <RevealObserver />
             <Header />
 						<main className="relative flex flex-col grow max-w-full items-center justify-center">
               <PageTransition>{children}</PageTransition>

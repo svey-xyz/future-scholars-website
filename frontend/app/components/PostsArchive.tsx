@@ -1,6 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import PostCard from '@/app/components/PostCard'
+import Reveal from '@/app/components/Reveal'
 import {Badge} from '@/components/ui/badge'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
@@ -28,21 +29,31 @@ export default function PostsArchive({block}: Props) {
   return (
     <section className="container my-12 lg:my-16">
       <header className="max-w-3xl">
-        {heading && <h2 className="text-2xl md:text-3xl lg:text-4xl">{heading}</h2>}
+        {heading && (
+          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            {heading}
+          </Reveal>
+        )}
         {category?.title && (
-          <Badge variant="secondary" className="mt-3 font-mono uppercase tracking-tight">
-            {category.title}
-          </Badge>
+          <Reveal i={1}>
+            <Badge variant="secondary" className="mt-3 font-mono uppercase tracking-tight">
+              {category.title}
+            </Badge>
+          </Reveal>
         )}
         {subheading && (
-          <p className="mt-3 text-lg leading-8 text-muted-foreground">{subheading}</p>
+          <Reveal as="p" i={2} className="mt-3 text-lg leading-8 text-muted-foreground">
+            {subheading}
+          </Reveal>
         )}
       </header>
 
       {shown.length > 0 ? (
         <div className={cn('mt-8 grid grid-cols-1 gap-6', colClass[cols])}>
-          {shown.map((post) => (
-            <PostCard key={post._id} post={post} />
+          {shown.map((post, i) => (
+            <Reveal key={post._id} i={i} className="h-full">
+              <PostCard post={post} />
+            </Reveal>
           ))}
         </div>
       ) : (
