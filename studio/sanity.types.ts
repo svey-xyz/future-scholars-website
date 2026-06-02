@@ -15,6 +15,24 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type Social = {
+  _type: 'social'
+  title: string
+  platform: 'twitter' | 'instagram' | 'facebook' | 'vimeo' | 'linkedin' | 'github' | 'mastodon'
+  url: string
+}
+
+export type Contact = {
+  _type: 'contact'
+  email?: string
+  phone?: string
+  socials?: Array<
+    {
+      _key: string
+    } & Social
+  >
+}
+
 export type PageReference = {
   _ref: string
   _type: 'reference'
@@ -127,6 +145,13 @@ export type Button = {
   link?: Link
 }
 
+export type SanityFileAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+}
+
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -156,6 +181,19 @@ export type Settings = {
     _type: 'block'
     _key: string
   }>
+  logo?: {
+    asset?: SanityFileAssetReference
+    media?: unknown
+    _type: 'file'
+  }
+  favicon?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
   ogImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -165,6 +203,9 @@ export type Settings = {
     metadataBase?: string
     _type: 'image'
   }
+  blurb?: string
+  contact?: Contact
+  homepage?: PageReference
 }
 
 export type SanityImageCrop = {
@@ -393,6 +434,15 @@ export type SanityAssistSchemaTypeField = {
   >
 }
 
+export type MediaTag = {
+  _id: string
+  _type: 'media.tag'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name?: Slug
+}
+
 export type SanityImagePaletteSwatch = {
   _type: 'sanity.imagePaletteSwatch'
   background?: string
@@ -491,6 +541,8 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Social
+  | Contact
   | PageReference
   | PostReference
   | Link
@@ -500,6 +552,7 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
+  | SanityFileAssetReference
   | Settings
   | SanityImageCrop
   | SanityImageHotspot
@@ -521,6 +574,7 @@ export type AllSanitySchemaTypes =
   | SanityAssistInstructionFieldRef
   | SanityAssistInstruction
   | SanityAssistSchemaTypeField
+  | MediaTag
   | SanityImagePaletteSwatch
   | SanityImagePalette
   | SanityImageDimensions

@@ -78,7 +78,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       className={`${inter.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
-      <body className="bg-background text-foreground antialiased">
+			<body className="bg-background text-foreground antialiased relative min-h-screen h-fit w-full overflow-x-hidden flex flex-col">
         <ThemeProvider
           attribute="class"
           defaultTheme="system"
@@ -86,7 +86,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           disableTransitionOnChange
           initialTheme={initialTheme}
         >
-          <section className="min-h-screen pt-24">
+					<section className="min-h-screen flex flex-col grow max-w-full pt-24">
             {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
             <Toaster />
             {isDraftMode && (
@@ -99,7 +99,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
             <SanityLive onError={handleError} />
             <Header />
-            <main className="">
+						<main className="relative flex flex-col grow max-w-full items-center justify-center">
               <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
