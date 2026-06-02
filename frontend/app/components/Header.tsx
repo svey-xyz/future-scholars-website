@@ -21,10 +21,15 @@ export default async function Header() {
   const {data: settings} = await sanityFetch({query: settingsQuery})
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50 h-24 flex items-center bg-background/80 backdrop-blur-lg">
+    <header
+      className="fixed inset-x-0 top-0 z-50 h-24 flex items-center bg-background/80 backdrop-blur-lg"
+      // Anchors the fixed header so it stays put during directional content
+      // slides (CSS disables its snapshot animation in globals.css).
+      style={{viewTransitionName: 'site-header'}}
+    >
       <div className="container px-2 sm:px-6 py-6">
         <div className="flex items-center justify-between gap-5">
-          <Link className="flex items-center gap-2" href="/">
+          <Link className="flex items-center gap-2" href="/" transitionTypes={['nav-back']}>
             <span className="pl-2 text-lg sm:text-2xl font-semibold">
               {settings?.title || 'Sanity + Next.js'}
             </span>
@@ -39,6 +44,7 @@ export default async function Header() {
                     <NavigationMenuLink asChild>
                       <Link
                         href={link.href}
+                        transitionTypes={['nav-forward']}
                         className="px-3 py-2 text-sm font-medium hover:underline underline-offset-4"
                       >
                         {link.label}

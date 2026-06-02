@@ -104,3 +104,122 @@
   margin-inline: auto;
   padding-inline: 2rem;
 }
+
+/* =========================================================================
+   View transitions
+   Drives the <ViewTransition> boundaries (PageTransition, post-title morphs,
+   Suspense reveals). Enabled via experimental.viewTransition in next.config.ts.
+   Classes are the string values passed to ViewTransition enter/exit/share and
+   to <Link transitionTypes>. See docs/TRANSITIONS.md.
+   ========================================================================= */
+
+/* Default cross-route crossfade — untyped navigations (browser back/forward,
+   typeless links). Fast exit, slightly slower delayed enter. */
+::view-transition-old(.page-fade) {
+  animation: 150ms ease-in both vt-fade reverse;
+}
+::view-transition-new(.page-fade) {
+  animation: 210ms ease-out 90ms both vt-fade;
+}
+
+/* Directional slides — driven by <Link transitionTypes={['nav-forward'|'nav-back']}>. */
+::view-transition-old(.nav-forward) {
+  --slide-offset: -60px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-forward) {
+  --slide-offset: 60px;
+  animation:
+    210ms ease-out 150ms both vt-fade,
+    400ms ease-in-out both vt-slide;
+}
+::view-transition-old(.nav-back) {
+  --slide-offset: 60px;
+  animation:
+    150ms ease-in both vt-fade reverse,
+    400ms ease-in-out both vt-slide reverse;
+}
+::view-transition-new(.nav-back) {
+  --slide-offset: -60px;
+  animation:
+    210ms ease-out 150ms both vt-fade,
+    400ms ease-in-out both vt-slide;
+}
+
+/* Suspense reveal — skeleton leaves down, content arrives up (asymmetric). */
+::view-transition-old(.slide-down) {
+  animation:
+    150ms ease-out both vt-fade reverse,
+    150ms ease-out both vt-slide-y reverse;
+}
+::view-transition-new(.slide-up) {
+  animation:
+    210ms ease-in 150ms both vt-fade,
+    400ms ease-in both vt-slide-y;
+}
+
+/* Shared-element morph (post card title → post detail <h1>). The default morph
+   works with no CSS; this just softens mid-flight interpolation with a blur. */
+::view-transition-group(.morph) {
+  animation-duration: 400ms;
+}
+::view-transition-image-pair(.morph) {
+  animation-name: vt-blur;
+}
+
+/* Anchor the fixed header so it never slides/fades with the content. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+@keyframes vt-fade {
+  from {
+    opacity: 0;
+    filter: blur(3px);
+  }
+  to {
+    opacity: 1;
+    filter: blur(0);
+  }
+}
+@keyframes vt-slide {
+  from {
+    translate: var(--slide-offset);
+  }
+  to {
+    translate: 0;
+  }
+}
+@keyframes vt-slide-y {
+  from {
+    transform: translateY(10px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes vt-blur {
+  30% {
+    filter: blur(3px);
+  }
+}
+
+/* Motion sensitivity: swap instantly (the browser's no-animation default).
+   Mirrors the prefers-reduced-motion posture in docs/A11Y.md. */
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}

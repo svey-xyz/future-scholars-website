@@ -1,7 +1,7 @@
 import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound} from 'next/navigation'
 import {type PortableTextBlock} from 'next-sanity'
-import {Suspense} from 'react'
+import {Suspense, ViewTransition} from 'react'
 
 import Avatar from '@/app/components/Avatar'
 import {MorePosts} from '@/app/components/Posts'
@@ -84,7 +84,11 @@ export default async function PostPage(props: Props) {
         <div>
           <div className="mb-6 grid gap-6 border-b border-border pb-6">
             <div className="flex max-w-3xl flex-col gap-6">
-              <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{post.title}</h1>
+              {/* Shared-element morph target: morphs from the post card title
+                  in Posts.tsx (matching name `post-title-<slug>`). */}
+              <ViewTransition name={`post-title-${post.slug}`} share="morph">
+                <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{post.title}</h1>
+              </ViewTransition>
             </div>
             <div className="flex max-w-3xl items-center gap-4">
               {post.author && post.author.firstName && post.author.lastName && (
@@ -117,8 +121,16 @@ export default async function PostPage(props: Props) {
       <div className="border-t border-border bg-muted/40">
         <div className="container grid gap-12 py-12 lg:py-24">
           <aside>
-            <Suspense fallback={<MorePostsSkeleton />}>
-              <MorePosts skip={post._id} limit={2} />
+            <Suspense
+              fallback={
+                <ViewTransition exit="slide-down" default="none">
+                  <MorePostsSkeleton />
+                </ViewTransition>
+              }
+            >
+              <ViewTransition enter="slide-up" default="none">
+                <MorePosts skip={post._id} limit={2} />
+              </ViewTransition>
             </Suspense>
           </aside>
         </div>

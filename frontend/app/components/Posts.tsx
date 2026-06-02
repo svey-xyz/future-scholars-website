@@ -1,3 +1,4 @@
+import {ViewTransition} from 'react'
 import Link from 'next/link'
 
 import {sanityFetch} from '@/sanity/lib/live'
@@ -23,11 +24,19 @@ const Post = ({post}: {post: AllPostsQueryResult[number]}) => {
       data-sanity={dataAttr({id: _id, type: 'post', path: 'title'}).toString()}
       className="relative flex flex-col justify-between transition-colors hover:bg-accent/40"
     >
-      <Link href={`/posts/${slug}`} aria-label={title ?? undefined}>
+      <Link
+        href={`/posts/${slug}`}
+        aria-label={title ?? undefined}
+        transitionTypes={['nav-forward']}
+      >
         <span className="absolute inset-0 z-10 rounded-xl focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring" />
       </Link>
       <CardHeader>
-        <CardTitle className="text-2xl">{title}</CardTitle>
+        {/* Shared-element morph: this title morphs into the <h1> on the post
+            detail page (matching name in app/posts/[slug]/page.tsx). */}
+        <ViewTransition name={`post-title-${slug}`} share="morph">
+          <CardTitle className="text-2xl">{title}</CardTitle>
+        </ViewTransition>
         {excerpt && (
           <CardDescription className="line-clamp-3 max-w-[70ch] leading-6">
             {excerpt}

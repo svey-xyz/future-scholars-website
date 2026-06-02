@@ -66,6 +66,7 @@ Routing (mirror in Studio's Presentation `mainDocuments` + Next routes):
 - Portable Text: render via `@/app/components/PortableText` (posts) or `@portabletext/react` directly for short fields. Strip stega before plain-text use (`toPlainText`).
 - Styling: Tailwind v4 — colors/tokens are declared in `@theme inline` inside `app/globals.css` (the source of truth; no `tailwind.config.ts`). shadcn components live in `frontend/components/ui/`. Use the `container` utility defined in `globals.css`.
 - Path alias `@/*` → `frontend/*`.
+- View transitions: React `<ViewTransition>` is enabled (`experimental.viewTransition`). **Always consider transitions when building UI** — see [docs/TRANSITIONS.md](docs/TRANSITIONS.md). App-wide crossfade + directional slides live in `app/components/PageTransition.tsx` (wrapped around `{children}` in `layout.tsx`); tag navigations with `<Link transitionTypes={['nav-forward'|'nav-back']}>`, give cross-route persistent elements a matching `<ViewTransition name>`, and wrap streaming `<Suspense>` in enter/exit `<ViewTransition>`s. Keep these RSC; CSS classes live in the view-transition block of `app/globals.css`.
 - TS: strict; the workspace targets `esnext` with `module: preserve`. Don't add `any` to schema-derived types — extend the types in `sanity/lib/types.ts` instead.
 
 ## Visual Editing / Draft Mode

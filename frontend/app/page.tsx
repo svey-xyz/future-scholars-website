@@ -1,4 +1,4 @@
-import {Suspense} from 'react'
+import {Suspense, ViewTransition} from 'react'
 import Link from 'next/link'
 import {PortableText} from '@portabletext/react'
 import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
@@ -92,8 +92,16 @@ export default async function Page() {
       <section className="border-t border-border bg-muted/40">
         <div className="container">
           <aside className="py-12 sm:py-20">
-            <Suspense fallback={<PostsSkeleton />}>
-              <AllPosts />
+            <Suspense
+              fallback={
+                <ViewTransition exit="slide-down" default="none">
+                  <PostsSkeleton />
+                </ViewTransition>
+              }
+            >
+              <ViewTransition enter="slide-up" default="none">
+                <AllPosts />
+              </ViewTransition>
             </Suspense>
           </aside>
         </div>
