@@ -1,5 +1,6 @@
-import {CogIcon} from '@sanity/icons'
-import type {StructureBuilder, StructureResolver} from 'sanity/structure'
+import {CogIcon, TagIcon} from '@sanity/icons'
+import type { StructureBuilder, StructureResolver, StructureResolverContext } from 'sanity/structure'
+import { DocumentActionComponent, DocumentActionsContext, Template } from "sanity";
 import pluralize from 'pluralize-esm'
 
 /**
@@ -10,20 +11,41 @@ import pluralize from 'pluralize-esm'
 
 const DISABLED_TYPES = ['settings', 'assist.instruction.context']
 
-export const structure: StructureResolver = (S: StructureBuilder) =>
-  S.list()
-    .title('Website Content')
-    .items([
-      ...S.documentTypeListItems()
-        // Remove the "assist.instruction.context" and "settings" content  from the list of content types
-        .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
-        // Pluralize the title of each document type.  This is not required but just an option to consider.
-        .map((listItem) => {
-          return listItem.title(pluralize(listItem.getTitle() as string))
-        }),
-      // Settings Singleton in order to view/edit the one particular document for Settings.  Learn more about Singletons: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
-      S.listItem()
-        .title('Site Settings')
-        .child(S.document().schemaType('settings').documentId('siteSettings'))
-        .icon(CogIcon),
-    ])
+// Define the actions that should be available for singleton documents
+const singletonActions = new Set(["publish", "discardChanges", "restore"])
+
+// Define the singleton document types
+const singletonTypes = new Set(["settings"])
+
+export const structure = (S: StructureBuilder, context: StructureResolverContext) =>
+	S.list().title('Content').items([
+		/** ABOUT */
+		S.listItem().title('Site Settings').icon(CogIcon).child(
+			S.document().title('Site Settings').schemaType('settings').documentId('settings')
+		),
+		// S.documentTypeListItem('taxonomy').title('Taxonomies').icon(_TagIcon),
+		S.divider(),
+
+		...S.documentTypeListItems()
+			// Remove the "assist.instruction.context" and "settings" content  from the list of content types
+			.filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
+			// Pluralize the title of each document type.  This is not required but just an option to consider.
+			.map((listItem) => {
+				return listItem.title(pluralize(listItem.getTitle() as string))
+			}),
+	])
+
+
+export const schemaOptions = {
+	// types: types,
+	// Filter out singleton types from the global “New document” menu options
+	templates: (templates: Template<any, any>[]) => templates.filter(({ schemaType }: { schemaType: string }) => !singletonTypes.has(schemaType)),
+}
+export const documentOptions = {
+	// For singleton types, filter out actions that are not explicitly included
+	// in the `singletonActions` list defined above
+	actions: (input: DocumentActionComponent[], context: DocumentActionsContext) =>
+		singletonTypes.has(context.schemaType)
+			? input.filter(({ action }) => action && singletonActions.has(action))
+			: input,
+}

@@ -3,6 +3,7 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Link, Settings} from '../../../sanity.types'
 
 import * as demo from '../../lib/initialValues'
+import { mediaAssetSource } from 'sanity-plugin-media'
 
 /**
  * Settings schema Singleton.  Singletons are single documents that are displayed not in a collection, handy for things like site settings and other global configurations.
@@ -115,6 +116,57 @@ export const settings = defineType({
         }),
       ],
     }),
+		defineField({
+			title: 'Logo',
+			name: 'logo',
+			type: 'file',
+			description: 'Site logo. Upload an SVG — it will be served as-is for crisp scaling at any size.',
+			options: {
+				accept: 'image/svg+xml',
+			},
+			validation: Rule =>
+				Rule.custom((value: any) => {
+					if (!value?.asset) return true
+					const mt: string | undefined = value?.asset?.mimeType ?? value?.asset?._ref
+					// asset._ref looks like `file-<hash>-svg`; check both mimeType (deref) and ref suffix
+					if (typeof mt === 'string' && (mt === 'image/svg+xml' || mt.endsWith('-svg'))) return true
+					return 'Logo must be an SVG (image/svg+xml).'
+				}),
+		}),
+		defineField({
+			title: 'Favicon',
+			name: 'favicon',
+			description: 'Browser tab icon. Should be square (e.g. 512×512 PNG). Served via Next.js metadata; no rebuild required.',
+			type: 'image',
+			options: {
+				sources: [mediaAssetSource],
+				hotspot: true,
+				metadata: ['lqip', 'palette', 'exif', 'location'],
+			},
+			fields: [
+				defineField({
+					name: 'alt',
+					title: 'Alternative text',
+					type: 'string',
+					description: 'Context-specific alt text. Falls back to the asset-level description when empty.',
+				}),
+			],
+			preview: {
+				select: {
+					asset: 'asset',
+					title: 'asset.title',
+					description: 'asset.description'
+
+				},
+				prepare(value: any) {
+					return {
+						title: value.title ? value.title : 'Untitled Image',
+						subtitle: value.description,
+						media: value.asset
+					}
+				}
+			},
+		}),
     defineField({
       name: 'ogImage',
       title: 'Open Graph Image',
@@ -145,14 +197,6 @@ export const settings = defineType({
         defineField({
           name: 'metadataBase',
           type: 'url',
-          description: (
-            <a
-              href="https://nextjs.org/docs/app/api-reference/functions/generate-metadata#metadatabase"
-              rel="noreferrer noopener"
-            >
-              More information
-            </a>
-          ),
         }),
       ],
     }),
