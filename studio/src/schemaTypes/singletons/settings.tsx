@@ -211,6 +211,15 @@ export const settings = defineType({
 			name: 'contact',
 			type: 'contact',
 		}),
+		defineField({
+			name: 'homepage',
+			title: 'Homepage',
+			type: 'reference',
+			to: [{ type: 'page' }],
+			options: {
+				disableNew: true,
+			},
+		}),
   ],
   preview: {
     prepare() {
