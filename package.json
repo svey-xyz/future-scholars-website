@@ -28,6 +28,9 @@
     "type-check": "npm run type-check --workspaces"
   },
   "prettier": "@sanity/prettier-config",
+  "overrides": {
+    "@sanity/cli": "6.6.0"
+  },
   "devDependencies": {
     "@sanity/prettier-config": "^3.0.0",
     "npm-run-all2": "^5.0.2",
