@@ -15,6 +15,7 @@ import {hero} from './objects/hero'
 import {postsArchive} from './objects/postsArchive'
 import {authorsArchive} from './objects/authorsArchive'
 import {gallery} from './objects/gallery'
+import {galleryVideo} from './objects/galleryVideo'
 import {featuresGrid} from './objects/featuresGrid'
 import {testimonials} from './objects/testimonials'
 import {faq} from './objects/faq'
@@ -44,6 +45,7 @@ export const schemaTypes = [
   postsArchive,
   authorsArchive,
   gallery,
+  galleryVideo,
   featuresGrid,
   testimonials,
   faq,

@@ -4,7 +4,8 @@ import {ImagesIcon} from '@sanity/icons'
 import {altField, columnsField} from './shared'
 
 /**
- * Gallery — responsive image grid with optional per-image captions.
+ * Gallery — layout-switchable media gallery (grid / masonry / carousel) of
+ * image and video items, with an optional fullscreen lightbox.
  */
 export const gallery = defineType({
   name: 'gallery',
@@ -14,14 +15,15 @@ export const gallery = defineType({
   fields: [
     defineField({name: 'heading', title: 'Heading', type: 'string'}),
     defineField({
-      name: 'images',
-      title: 'Images',
+      name: 'items',
+      title: 'Items',
       type: 'array',
       validation: (Rule) => Rule.min(1),
       of: [
         defineArrayMember({
           type: 'image',
           name: 'galleryImage',
+          title: 'Image',
           options: {hotspot: true, aiAssist: {imageDescriptionField: 'alt'}},
           fields: [
             altField,
@@ -34,7 +36,22 @@ export const gallery = defineType({
             },
           },
         }),
+        defineArrayMember({type: 'galleryVideo'}),
       ],
+    }),
+    defineField({
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      initialValue: 'grid',
+      options: {
+        list: [
+          {title: 'Grid', value: 'grid'},
+          {title: 'Masonry', value: 'masonry'},
+          {title: 'Carousel', value: 'carousel'},
+        ],
+        layout: 'radio',
+      },
     }),
     columnsField,
     defineField({
@@ -51,12 +68,27 @@ export const gallery = defineType({
         layout: 'radio',
       },
     }),
+    defineField({
+      name: 'enableLightbox',
+      title: 'Enable fullscreen lightbox',
+      type: 'boolean',
+      initialValue: true,
+      description: 'Click any item to open it fullscreen. Works in every layout.',
+    }),
   ],
   preview: {
-    select: {heading: 'heading', media: 'images.0.asset', count: 'images'},
-    prepare({heading, media, count}) {
-      const n = Array.isArray(count) ? count.length : 0
-      return {title: heading || 'Gallery', subtitle: `Gallery · ${n} image${n === 1 ? '' : 's'}`, media}
+    select: {heading: 'heading', items: 'items'},
+    prepare({heading, items}) {
+      const arr = Array.isArray(items) ? items : []
+      const n = arr.length
+      const firstImage = arr.find(
+        (it) => it?._type === 'galleryImage' && (it as {asset?: unknown}).asset,
+      ) as {asset?: unknown} | undefined
+      return {
+        title: heading || 'Gallery',
+        subtitle: `Gallery · ${n} item${n === 1 ? '' : 's'}`,
+        media: firstImage?.asset as never,
+      }
     },
   },
 })
