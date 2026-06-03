@@ -47,11 +47,11 @@ export default function GalleryTile({
     return (
       <figure className="group/gal flex flex-col items-center gap-2">
         {isVideo ? (
-          <div className="relative aspect-video max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
+          <div className="relative aspect-video max-h-[80vh] w-full max-w-4xl rounded-lg bg-black">
             <GalleryVideo item={item} sizes={sizes} />
           </div>
         ) : (
-          <GalleryMedia item={item} fill={false} sizes={sizes} className="max-h-[85vh] rounded-lg" />
+          <GalleryMedia item={item} fill={false} sizes={sizes} className="max-h-[80vh] rounded-lg" />
         )}
         {caption && (
           <figcaption className="mt-1 text-center text-sm text-muted-foreground">{caption}</figcaption>

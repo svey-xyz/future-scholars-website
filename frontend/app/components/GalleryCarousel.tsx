@@ -56,11 +56,11 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
     <Carousel
       setApi={setApi}
       opts={{loop: multiple, align: 'center', duration: 22}}
-      className="mx-auto w-full max-w-4xl"
+			className="w-full  overflow-hidden mx-auto max-w-4xl"
     >
-      <CarouselContent>
+			<CarouselContent className="">
         {items.map((item, i) => (
-          <CarouselItem key={item._key} aria-label={`Slide ${i + 1} of ${items.length}`}>
+          <CarouselItem key={item._key} aria-label={`Slide ${i + 1} of ${items.length}`} className="flex flex-col items-center justify-center">
             <GalleryTile
               item={item}
               index={i}
@@ -75,8 +75,8 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
 
       {multiple && (
         <>
-          <CarouselPrevious className="left-2 size-11 sm:-left-12" />
-          <CarouselNext className="right-2 size-11 sm:-right-12" />
+          <CarouselPrevious className="left-0 size-11" />
+          <CarouselNext className="right-0 size-11" />
           <div className="mt-4 flex justify-center gap-1">
             {Array.from({length: count}).map((_, i) => (
               <button
