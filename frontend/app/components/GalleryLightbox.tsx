@@ -61,7 +61,7 @@ export default function GalleryLightbox({items, heading}: Props) {
     <Dialog open={open} onOpenChange={(next) => !next && close()}>
       <DialogContent
         showCloseButton={false}
-        className="flex h-[100dvh] w-screen max-w-none flex-col gap-0 border-0 bg-background/95 p-0 backdrop-blur sm:rounded-none"
+        className="flex h-dvh w-screen max-w-none flex-col gap-0 border-0 bg-background/30 p-0 backdrop-blur-lg sm:rounded-none"
       >
         <DialogTitle className="sr-only">{heading || 'Gallery'}</DialogTitle>
         <DialogDescription className="sr-only">
@@ -72,12 +72,12 @@ export default function GalleryLightbox({items, heading}: Props) {
         <div className="flex items-center justify-between p-3">
           <span
             aria-live="polite"
-            className="rounded-md bg-foreground/10 px-2 py-1 text-sm tabular-nums text-foreground"
+            className="rounded-md bg-background/80 px-2 py-1 text-sm tabular-nums text-foreground"
           >
             {current + 1} / {total}
           </span>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" aria-label="Close gallery" className="size-11">
+            <Button variant="ghost" size="icon" aria-label="Close gallery" className="size-11 bg-background/20">
               <XMarkIcon />
             </Button>
           </DialogClose>
