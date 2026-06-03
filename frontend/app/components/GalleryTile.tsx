@@ -13,6 +13,7 @@ type Props = {
   /** Carousel mode: show the item contained (object-contain) and capped to the
    *  viewport height — like a lightbox slide — instead of a cropped aspect box. */
   contained?: boolean
+	animate?: boolean
   sizes?: string
 }
 
@@ -35,6 +36,7 @@ export default function GalleryTile({
   galleryAspect,
   enableLightbox,
   contained = false,
+	animate = true,
   sizes,
 }: Props) {
   const caption = itemCaption(item)
@@ -51,7 +53,7 @@ export default function GalleryTile({
             <GalleryVideo item={item} sizes={sizes} />
           </div>
         ) : (
-          <GalleryMedia item={item} fill={false} sizes={sizes} className="max-h-[80vh] rounded-lg" />
+          <GalleryMedia item={item} fill={false} animate={animate} sizes={sizes} className="max-h-[80vh] rounded-lg" />
         )}
         {caption && (
           <figcaption className="mt-1 text-center text-sm text-muted-foreground">{caption}</figcaption>
