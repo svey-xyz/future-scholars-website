@@ -10,6 +10,9 @@ type Props = {
   index: number
   galleryAspect: GalleryAspect
   enableLightbox: boolean
+  /** Carousel mode: show the item contained (object-contain) and capped to the
+   *  viewport height — like a lightbox slide — instead of a cropped aspect box. */
+  contained?: boolean
   sizes?: string
 }
 
@@ -26,10 +29,38 @@ type Props = {
  *  - lightbox off → images are static; videos use the inline `GalleryVideo`
  *    facade so they stay playable in place.
  */
-export default function GalleryTile({item, index, galleryAspect, enableLightbox, sizes}: Props) {
-  const {aspect, fixed, ratio} = resolveAspect(item, galleryAspect)
+export default function GalleryTile({
+  item,
+  index,
+  galleryAspect,
+  enableLightbox,
+  contained = false,
+  sizes,
+}: Props) {
   const caption = itemCaption(item)
   const isVideo = item._type === 'galleryVideo'
+
+  // Carousel: one big, fully-visible item capped at ~viewport height (mirrors
+  // the lightbox). No cover-crop, no lightbox trigger — the carousel *is* the
+  // expanded view, so videos play inline here.
+  if (contained) {
+    return (
+      <figure className="group/gal flex flex-col items-center gap-2">
+        {isVideo ? (
+          <div className="relative aspect-video max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
+            <GalleryVideo item={item} sizes={sizes} />
+          </div>
+        ) : (
+          <GalleryMedia item={item} fill={false} sizes={sizes} className="max-h-[85vh] rounded-lg" />
+        )}
+        {caption && (
+          <figcaption className="mt-1 text-center text-sm text-muted-foreground">{caption}</figcaption>
+        )}
+      </figure>
+    )
+  }
+
+  const {aspect, fixed, ratio} = resolveAspect(item, galleryAspect)
 
   const boxClass = fixed
     ? aspect === 'video'

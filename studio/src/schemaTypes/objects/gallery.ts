@@ -73,7 +73,10 @@ export const gallery = defineType({
       title: 'Enable fullscreen lightbox',
       type: 'boolean',
       initialValue: true,
-      description: 'Click any item to open it fullscreen. Works in every layout.',
+      description: 'Click any item to open it fullscreen. Available for grid and masonry.',
+      // The carousel is already an expanded one-at-a-time view, so a lightbox is
+      // redundant — hide the toggle there (the frontend also forces it off).
+      hidden: ({parent}) => (parent as {layout?: string})?.layout === 'carousel',
     }),
   ],
   preview: {

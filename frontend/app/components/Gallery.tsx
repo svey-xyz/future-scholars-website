@@ -37,7 +37,9 @@ export default function Gallery({block}: Props) {
   const layout = stegaClean(block.layout) || 'grid'
   const aspect = (stegaClean(block.aspect) || 'square') as GalleryAspect
   const columns = block.columns ?? 3
-  const enableLightbox = block.enableLightbox ?? true
+  // The carousel already is the expanded one-at-a-time view, so the lightbox is
+  // redundant there — force it off regardless of the (hidden) schema toggle.
+  const enableLightbox = layout !== 'carousel' && (block.enableLightbox ?? true)
   const items = (block.items ?? []).filter(isRenderable)
 
   const headingEl = heading ? (

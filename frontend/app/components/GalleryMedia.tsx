@@ -40,7 +40,9 @@ export default function GalleryMedia({item, fill = true, sizes, loading = 'lazy'
         sizes={sizes}
         loading={loading}
         className={cn(
-          fill ? 'absolute inset-0 h-full w-full object-cover' : 'h-auto max-h-[85vh] w-auto object-contain',
+          fill
+            ? 'absolute inset-0 h-full w-full object-cover'
+            : 'h-auto max-h-[85vh] w-auto max-w-full object-contain',
           scale,
           className,
         )}
