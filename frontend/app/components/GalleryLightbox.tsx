@@ -77,7 +77,7 @@ export default function GalleryLightbox({items, heading}: Props) {
             {current + 1} / {total}
           </span>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" aria-label="Close gallery">
+            <Button variant="ghost" size="icon" aria-label="Close gallery" className="size-11">
               <XMarkIcon />
             </Button>
           </DialogClose>
@@ -91,7 +91,11 @@ export default function GalleryLightbox({items, heading}: Props) {
           >
             <CarouselContent>
               {items.map((item, i) => (
-                <CarouselItem key={item._key} className="flex items-center justify-center">
+                <CarouselItem
+                  key={item._key}
+                  aria-label={`${i + 1} of ${total}`}
+                  className="flex items-center justify-center"
+                >
                   <figure className="gallery-lightbox-media flex w-full flex-col items-center justify-center gap-3">
                     {item._type === 'galleryVideo' ? (
                       <div className="relative aspect-video max-h-[78vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
@@ -118,8 +122,8 @@ export default function GalleryLightbox({items, heading}: Props) {
 
             {total > 1 && (
               <>
-                <CarouselPrevious className="left-1 size-10 sm:-left-12" />
-                <CarouselNext className="right-1 size-10 sm:-right-12" />
+                <CarouselPrevious className="left-1 size-11 sm:-left-12" />
+                <CarouselNext className="right-1 size-11 sm:-right-12" />
               </>
             )}
           </Carousel>
