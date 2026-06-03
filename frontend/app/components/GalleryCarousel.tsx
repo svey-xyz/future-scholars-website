@@ -76,7 +76,7 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
     <Carousel
       setApi={setApi}
       plugins={plugins}
-      opts={{loop: multiple, align: 'center'}}
+      opts={{loop: multiple, align: 'center', duration: 22}}
       className="mx-auto w-full max-w-4xl"
     >
       <CarouselContent>

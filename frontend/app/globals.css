@@ -169,6 +169,22 @@
   animation-name: vt-blur;
 }
 
+/* Gallery: shared-element morph scaffold for an optional tile → lightbox-image
+   zoom. Wiring it requires a matching React `<ViewTransition name="gallery-media-…">`
+   on the clicked tile *and* the active lightbox slide — which means the tiles
+   would have to become Client Components to drop their name while open (a name
+   can only exist once at a time). That conflicts with the RSC-first grid/masonry
+   goal, so the morph is left opt-in: these rules make it look right the moment a
+   `gallery-media` view-transition name is introduced. Reduced motion is already
+   neutralised by the `*` reset below. */
+::view-transition-group(.gallery-media) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-image-pair(.gallery-media) {
+  animation-name: vt-blur;
+}
+
 /* Anchor the fixed header so it never slides/fades with the content. */
 ::view-transition-group(site-header) {
   animation: none;
@@ -442,5 +458,22 @@
     );
     background-size: 220% 100%;
     animation: a-shimmer 4.5s ease-in-out infinite;
+  }
+
+  /* ---- Gallery lightbox: gentle media entrance, layered under the Dialog's own
+     fade+zoom. Plays once per open (Embla keeps slides mounted, so it doesn't
+     re-fire on slide change). Motion-safe by virtue of this @media gate. ---- */
+  @keyframes a-gallery-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .gallery-lightbox-media {
+    animation: a-gallery-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 }

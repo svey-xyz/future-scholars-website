@@ -86,13 +86,13 @@ export default function GalleryLightbox({items, heading}: Props) {
         <div className="flex min-h-0 flex-1 items-center justify-center px-3 pb-4 sm:px-16">
           <Carousel
             setApi={setApi}
-            opts={{startIndex: index, loop: total > 1}}
+            opts={{startIndex: index, loop: total > 1, duration: 24}}
             className="w-full"
           >
             <CarouselContent>
               {items.map((item, i) => (
                 <CarouselItem key={item._key} className="flex items-center justify-center">
-                  <figure className="flex w-full flex-col items-center justify-center gap-3">
+                  <figure className="gallery-lightbox-media flex w-full flex-col items-center justify-center gap-3">
                     {item._type === 'galleryVideo' ? (
                       <div className="relative aspect-video max-h-[78vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
                         <GalleryVideo item={item} sizes="90vw" />
