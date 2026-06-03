@@ -1,9 +1,13 @@
 import {stegaClean} from '@sanity/client/stega'
 
-import Image from '@/app/components/SanityImage'
+import GalleryCarousel from '@/app/components/GalleryCarousel'
+import GalleryGrid from '@/app/components/GalleryGrid'
+import GalleryLightbox from '@/app/components/GalleryLightbox'
+import GalleryMasonry from '@/app/components/GalleryMasonry'
+import LightboxProvider from '@/app/components/LightboxProvider'
 import Reveal from '@/app/components/Reveal'
-import {cn} from '@/lib/utils'
-import {ExtractPageBuilderType} from '@/sanity/lib/types'
+import {getVideoEmbed} from '@/app/components/gallery-utils'
+import type {ExtractPageBuilderType, GalleryAspect, GalleryItem} from '@/sanity/lib/types'
 
 type Props = {
   block: ExtractPageBuilderType<'gallery'>
@@ -12,74 +16,62 @@ type Props = {
   pageType: string
 }
 
-const colClass: Record<number, string> = {
-  2: 'sm:grid-cols-2',
-  3: 'sm:grid-cols-2 lg:grid-cols-3',
-  4: 'grid-cols-2 lg:grid-cols-4',
+/** Drop items that can't render: images without an asset, videos without a parseable URL. */
+function isRenderable(item: GalleryItem): boolean {
+  if (item._type === 'galleryImage') return Boolean(item.asset?._ref)
+  if (item._type === 'galleryVideo') return Boolean(getVideoEmbed(item.url))
+  return false
 }
 
-const aspectClass: Record<string, string> = {
-  square: 'aspect-square',
-  video: 'aspect-video',
-  auto: '',
-}
-
+/**
+ * Gallery dispatcher (RSC). Normalises items, branches on `layout`
+ * (grid / masonry / carousel), and wraps the layout + lightbox in
+ * `LightboxProvider` when `enableLightbox`. Grid and masonry stay fully RSC;
+ * only the carousel, video facade and lightbox are client islands.
+ *
+ * `layout`/`aspect` are stega-cleaned because they drive control flow; `heading`
+ * keeps its stega markers so it stays click-to-edit in Presentation.
+ */
 export default function Gallery({block}: Props) {
-  const {heading, images, columns, aspect} = block
-  const cols = columns ?? 3
-  const a = stegaClean(aspect) || 'square'
-  const fixed = a !== 'auto'
-  const imgs = images ?? []
+  const {heading} = block
+  const layout = stegaClean(block.layout) || 'grid'
+  const aspect = (stegaClean(block.aspect) || 'square') as GalleryAspect
+  const columns = block.columns ?? 3
+  const enableLightbox = block.enableLightbox ?? true
+  const items = (block.items ?? []).filter(isRenderable)
+
+  const headingEl = heading ? (
+    <Reveal as="h2" className="mb-8 text-2xl md:text-3xl lg:text-4xl">
+      {heading}
+    </Reveal>
+  ) : null
+
+  if (items.length === 0) {
+    return headingEl ? <section className="container my-12 lg:my-16">{headingEl}</section> : null
+  }
+
+  const layoutEl =
+    layout === 'carousel' ? (
+      <GalleryCarousel items={items} aspect={aspect} enableLightbox={enableLightbox} />
+    ) : layout === 'masonry' ? (
+      <GalleryMasonry items={items} columns={columns} aspect={aspect} enableLightbox={enableLightbox} />
+    ) : (
+      <GalleryGrid items={items} columns={columns} aspect={aspect} enableLightbox={enableLightbox} />
+    )
 
   return (
     <section className="container my-12 lg:my-16">
-      {heading && (
-        <Reveal as="h2" className="mb-8 text-2xl md:text-3xl lg:text-4xl">
-          {heading}
-        </Reveal>
-      )}
-
-      {imgs.length > 0 && (
-        <ul className={cn('grid grid-cols-1 gap-4', colClass[cols])}>
-          {imgs.map((img, i) =>
-            img.asset?._ref ? (
-              <Reveal as="li" key={img._key} i={i} variant="scale">
-                <figure className="group/gal">
-                  <div
-                    className={cn(
-                      'relative overflow-hidden rounded-lg bg-muted',
-                      aspectClass[a],
-                    )}
-                  >
-                    <Image
-                      id={img.asset._ref}
-                      alt={img.alt || ''}
-                      width={800}
-                      hotspot={img.hotspot}
-                      crop={img.crop}
-                      mode={fixed ? 'cover' : 'contain'}
-                      loading="lazy"
-                      className={cn(
-                        'w-full transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/gal:scale-110',
-                        fixed && 'h-full object-cover',
-                      )}
-                    />
-                    {/* Hover scrim — adds depth, fades in on hover. */}
-                    <div
-                      aria-hidden="true"
-                      className="pointer-events-none absolute inset-0 bg-linear-to-t from-black/40 via-transparent to-transparent opacity-0 transition-opacity duration-300 group-hover/gal:opacity-100"
-                    />
-                  </div>
-                  {img.caption && (
-                    <figcaption className="mt-2 text-sm text-muted-foreground transition-colors duration-300 group-hover/gal:text-foreground">
-                      {img.caption}
-                    </figcaption>
-                  )}
-                </figure>
-              </Reveal>
-            ) : null,
-          )}
-        </ul>
+      {enableLightbox ? (
+        <LightboxProvider>
+          {headingEl}
+          {layoutEl}
+          <GalleryLightbox items={items} heading={heading} />
+        </LightboxProvider>
+      ) : (
+        <>
+          {headingEl}
+          {layoutEl}
+        </>
       )}
     </section>
   )
