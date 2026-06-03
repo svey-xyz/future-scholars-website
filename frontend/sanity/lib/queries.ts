@@ -70,6 +70,21 @@ export const getPageQuery = defineQuery(`
           ${linkFields}
         }
       },
+      _type == "gallery" => {
+        ...,
+        items[]{
+          ...,
+          _type == "galleryImage" => {
+            "aspectRatio": asset->metadata.dimensions.aspectRatio
+          },
+          _type == "galleryVideo" => {
+            "poster": poster{
+              ...,
+              "aspectRatio": asset->metadata.dimensions.aspectRatio
+            }
+          }
+        }
+      },
       _type == "faq" => {
         ...,
         items[]{
