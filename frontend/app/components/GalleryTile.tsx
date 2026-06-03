@@ -13,6 +13,9 @@ type Props = {
   /** Carousel mode: show the item contained (object-contain) and capped to the
    *  viewport height — like a lightbox slide — instead of a cropped aspect box. */
   contained?: boolean
+  /** False when this item's carousel/lightbox slide is not the active one —
+   *  video slides then unmount their iframe so playback stops. */
+  isActive?: boolean
 	animate?: boolean
   sizes?: string
 }
@@ -36,6 +39,7 @@ export default function GalleryTile({
   galleryAspect,
   enableLightbox,
   contained = false,
+  isActive = true,
 	animate = true,
   sizes,
 }: Props) {
@@ -47,10 +51,10 @@ export default function GalleryTile({
   // expanded view, so videos play inline here.
   if (contained) {
     return (
-      <figure className="group/gal flex flex-col items-center gap-2">
+      <figure className="group/gal flex w-full flex-col items-center gap-2">
         {isVideo ? (
-          <div className="relative aspect-video max-h-[80vh] w-full max-w-4xl rounded-lg bg-black">
-            <GalleryVideo item={item} sizes={sizes} />
+          <div className="relative aspect-video max-h-[80vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
+            <GalleryVideo item={item} isActive={isActive} sizes={sizes} />
           </div>
         ) : (
           <GalleryMedia item={item} fill={false} animate={animate} sizes={sizes} className="max-h-[80vh] rounded-lg" />
@@ -89,7 +93,7 @@ export default function GalleryTile({
             <LightboxTrigger index={index} label={itemLabel(item, index)} />
           </>
         ) : isVideo ? (
-          <GalleryVideo item={item} sizes={sizes} />
+          <GalleryVideo item={item} isActive={isActive} sizes={sizes} />
         ) : (
           <>
             <GalleryMedia item={item} sizes={sizes} />

@@ -99,7 +99,7 @@ export default function GalleryLightbox({items, heading}: Props) {
                   <figure className="gallery-lightbox-media flex w-full flex-col items-center justify-center gap-3">
                     {item._type === 'galleryVideo' ? (
                       <div className="relative aspect-video max-h-[78vh] w-full max-w-4xl overflow-hidden rounded-lg bg-black">
-                        <GalleryVideo item={item} sizes="90vw" />
+                        <GalleryVideo item={item} isActive={i === current} sizes="90vw" />
                       </div>
                     ) : (
                       <GalleryMedia

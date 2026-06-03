@@ -1,6 +1,6 @@
 'use client'
 
-import {useState} from 'react'
+import {useEffect, useState} from 'react'
 import {PlayCircleIcon} from '@heroicons/react/24/solid'
 
 import Image from '@/app/components/SanityImage'
@@ -9,6 +9,8 @@ import {getVideoEmbed} from '@/app/components/gallery-utils'
 
 type Props = {
   item: GalleryVideoItem
+  /** When false (carousel/lightbox slide scrolled away), the iframe unmounts so playback stops. */
+  isActive?: boolean
   sizes?: string
 }
 
@@ -21,9 +23,17 @@ type Props = {
  * Fills its (sized, `relative`) parent box. a11y: authors must enable captions
  * on the source video — see docs/A11Y.md (WCAG 1.2.2).
  */
-export default function GalleryVideo({item, sizes}: Props) {
+export default function GalleryVideo({item, isActive = true, sizes}: Props) {
   const [active, setActive] = useState(false)
   const embed = getVideoEmbed(item.url)
+
+  // Stop playback when this slide is no longer the active one. Embla keeps every
+  // slide mounted, so without this an off-screen iframe would keep playing audio.
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    if (!isActive) setActive(false)
+  }, [isActive])
+
   if (!embed) return null
 
   if (active) {

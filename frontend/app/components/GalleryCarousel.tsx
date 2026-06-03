@@ -67,6 +67,7 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
               galleryAspect={aspect}
               enableLightbox={enableLightbox}
               contained
+              isActive={i === selected}
               sizes={SIZES}
               animate={false}
             />
