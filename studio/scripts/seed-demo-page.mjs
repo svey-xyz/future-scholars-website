@@ -191,9 +191,11 @@ async function run() {
       _type: 'gallery',
       _key: key('gal'),
       heading: 'Gallery',
+      layout: 'grid',
       columns: 3,
       aspect: 'square',
-      images: gallery.map((g, i) =>
+      enableLightbox: true,
+      items: gallery.map((g, i) =>
         imageValue(g.assetId, {
           _type: 'galleryImage',
           _key: key('img'),
