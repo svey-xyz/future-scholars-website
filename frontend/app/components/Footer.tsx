@@ -1,7 +1,14 @@
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
+import FooterContent from '@/app/components/FooterContent'
+import {sanityFetch} from '@/sanity/lib/live'
+import {settingsQuery} from '@/sanity/lib/queries'
 
-export default function Footer() {
+export default async function Footer() {
+  const {data: settings} = await sanityFetch({query: settingsQuery})
+  const contact = settings?.contact ?? null
+  const legal = settings?.legal ?? null
+
   return (
     <footer className="bg-muted">
       <div className="container">
@@ -27,6 +34,14 @@ export default function Footer() {
             </Button>
           </div>
         </div>
+
+        {/* Shared footer content (socials + legal) — same component the mobile
+            Sheet renders, so the two never drift. Renders null when empty. */}
+        <FooterContent
+          contact={contact}
+          legal={legal}
+          className="border-t border-border pb-12 pt-8"
+        />
       </div>
     </footer>
   )

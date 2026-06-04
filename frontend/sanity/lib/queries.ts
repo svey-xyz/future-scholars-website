@@ -1,8 +1,38 @@
 import {defineQuery} from 'next-sanity'
 
+const navLinkProjection = /* groq */ `
+  _key,
+  _type,
+  title,
+  link {
+    ...,
+    _type == "link" => {
+      "page": page->slug.current,
+      "post": post->slug.current
+    }
+  },
+  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)
+`
+
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
 	...,
-	homepage->
+	homepage->,
+	contact,
+	legal,
+	mobileNav,
+	navigation[]{
+		_type == "navLink" => {
+			${navLinkProjection}
+		},
+		_type == "navDropdown" => {
+			_key,
+			_type,
+			title,
+			links[]{
+				${navLinkProjection}
+			}
+		}
+	}
 }`)
 
 const postFields = /* groq */ `
@@ -68,6 +98,21 @@ export const getPageQuery = defineQuery(`
         features[]{
           ...,
           ${linkFields}
+        }
+      },
+      _type == "gallery" => {
+        ...,
+        items[]{
+          ...,
+          _type == "galleryImage" => {
+            "aspectRatio": asset->metadata.dimensions.aspectRatio
+          },
+          _type == "galleryVideo" => {
+            "poster": poster{
+              ...,
+              "aspectRatio": asset->metadata.dimensions.aspectRatio
+            }
+          }
         }
       },
       _type == "faq" => {

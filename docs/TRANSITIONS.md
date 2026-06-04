@@ -42,3 +42,14 @@ Built on React's [`<ViewTransition>`](https://react.dev/reference/react/ViewTran
 - `transitionTypes` on `<Link>` requires Next ≥ 16.2 (we're on 16.2.x). It maps to `React.addTransitionType` inside the navigation transition.
 - Browser-initiated back/forward (button, swipe) carry **no** transition type, so directional slides don't play for them — the crossfade (`page-fade`) and any matching shared-element morph still do. This is intended.
 - Safari may animate some patterns differently; verify there, and confirm the no-support fallback (instant swap) still looks correct.
+
+## Gallery block
+
+The `gallery` page-builder block (`Gallery.tsx`) layers four motion sources, all reduced-motion-gated:
+
+- **Reveal stagger** on grid/masonry tiles (`reveal-scale`, scroll-driven) — unchanged from the original grid.
+- **Hover** scale + scrim on tiles (`group/gal`, `motion-safe:`).
+- **Embla easing** on the carousel layout and the lightbox track (`opts.duration`).
+- **Lightbox open:** Radix `Dialog` fade + zoom (`tw-animate-css`) plus a gentle `.gallery-lightbox-media` rise (declared in the `prefers-reduced-motion: no-preference` block of `globals.css`, so it self-disables under reduced motion).
+
+The optional **tile → lightbox-image shared-element morph** is intentionally *not wired*. The CSS hook is in place (`::view-transition-group(.gallery-media)` + `vt-blur` image-pair in the view-transition block), but activating it needs a matching `<ViewTransition name="gallery-media-…">` on **both** the clicked tile and the active lightbox slide. Since a view-transition name may exist only once per page at a time, the tile would have to drop its name while the lightbox is open — i.e. read client open-state and therefore become a Client Component — which breaks the RSC-first grid/masonry goal. Left as a documented opt-in rather than compromising the server-rendering posture.

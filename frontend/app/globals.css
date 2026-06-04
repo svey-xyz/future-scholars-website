@@ -169,6 +169,22 @@
   animation-name: vt-blur;
 }
 
+/* Gallery: shared-element morph scaffold for an optional tile → lightbox-image
+   zoom. Wiring it requires a matching React `<ViewTransition name="gallery-media-…">`
+   on the clicked tile *and* the active lightbox slide — which means the tiles
+   would have to become Client Components to drop their name while open (a name
+   can only exist once at a time). That conflicts with the RSC-first grid/masonry
+   goal, so the morph is left opt-in: these rules make it look right the moment a
+   `gallery-media` view-transition name is introduced. Reduced motion is already
+   neutralised by the `*` reset below. */
+::view-transition-group(.gallery-media) {
+  animation-duration: 300ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+::view-transition-image-pair(.gallery-media) {
+  animation-name: vt-blur;
+}
+
 /* Anchor the fixed header so it never slides/fades with the content. */
 ::view-transition-group(site-header) {
   animation: none;
@@ -442,5 +458,45 @@
     );
     background-size: 220% 100%;
     animation: a-shimmer 4.5s ease-in-out infinite;
+  }
+
+  /* ---- Header mobile nav: staggered item reveal inside the Sheet ----
+     The Radix Dialog (Sheet) handles its own slide-in via tw-animate-css; this
+     layers a per-item cascade on top so the links/sections fan in. Plays once
+     per open (items mount with the Sheet). `--reveal-i` (set inline per item)
+     drives the delay; capped so deep menus don't lag. Motion-safe via this gate
+     — reduced-motion users get the items instantly with no transform. */
+  @keyframes a-nav-item-in {
+    from {
+      opacity: 0;
+      transform: translateX(1.25rem);
+      filter: blur(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+      filter: blur(0);
+    }
+  }
+  .mobile-nav-item {
+    animation: a-nav-item-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(min(var(--reveal-i, 0), 10) * 45ms);
+  }
+
+  /* ---- Gallery lightbox: gentle media entrance, layered under the Dialog's own
+     fade+zoom. Plays once per open (Embla keeps slides mounted, so it doesn't
+     re-fire on slide change). Motion-safe by virtue of this @media gate. ---- */
+  @keyframes a-gallery-in {
+    from {
+      opacity: 0;
+      transform: translateY(8px) scale(0.985);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+  }
+  .gallery-lightbox-media {
+    animation: a-gallery-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 }

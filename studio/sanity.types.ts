@@ -102,21 +102,44 @@ export type FeaturesGrid = {
   columns?: 2 | 3 | 4
 }
 
-export type Gallery = {
-  _type: 'gallery'
-  heading?: string
-  images?: Array<{
+export type GalleryVideo = {
+  _type: 'galleryVideo'
+  url: string
+  title: string
+  poster?: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
     alt?: string
-    caption?: string
-    _type: 'galleryImage'
-    _key: string
-  }>
+    _type: 'image'
+  }
+  caption?: string
+  aspect?: 'square' | 'video' | 'auto'
+}
+
+export type Gallery = {
+  _type: 'gallery'
+  heading?: string
+  items?: Array<
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        alt?: string
+        caption?: string
+        _type: 'galleryImage'
+        _key: string
+      }
+    | ({
+        _key: string
+      } & GalleryVideo)
+  >
+  layout?: 'grid' | 'masonry' | 'carousel'
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
+  enableLightbox?: boolean
 }
 
 export type PersonReference = {
@@ -189,6 +212,22 @@ export type Hero = {
   }
   layout?: 'center' | 'split'
   theme?: 'light' | 'dark'
+}
+
+export type NavDropdown = {
+  _type: 'navDropdown'
+  title: string
+  links?: Array<
+    {
+      _key: string
+    } & NavLink
+  >
+}
+
+export type NavLink = {
+  _type: 'navLink'
+  title?: string
+  link: Link
 }
 
 export type Social = {
@@ -384,6 +423,18 @@ export type Settings = {
   }
   blurb?: string
   contact?: Contact
+  navigation?: Array<
+    | ({
+        _key: string
+      } & NavLink)
+    | ({
+        _key: string
+      } & NavDropdown)
+  >
+  mobileNav?: {
+    showFooterContent?: boolean
+  }
+  legal?: string
   homepage?: PageReference
 }
 
@@ -742,6 +793,7 @@ export type AllSanitySchemaTypes =
   | Faq
   | Testimonials
   | FeaturesGrid
+  | GalleryVideo
   | Gallery
   | PersonReference
   | AuthorsArchive
@@ -749,6 +801,8 @@ export type AllSanitySchemaTypes =
   | PostReference
   | PostsArchive
   | Hero
+  | NavDropdown
+  | NavLink
   | Social
   | Contact
   | PageReference

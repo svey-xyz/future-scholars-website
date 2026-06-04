@@ -3,22 +3,22 @@ import Link from 'next/link'
 import {sanityFetch} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {Button} from '@/components/ui/button'
-import {
-  NavigationMenu,
-  NavigationMenuItem,
-  NavigationMenuLink,
-  NavigationMenuList,
-} from '@/components/ui/navigation-menu'
 import {Separator} from '@/components/ui/separator'
 import GithubIcon from '@/app/components/icons/GithubIcon'
-import MobileMenu from '@/app/components/MobileMenu'
+import HeaderNav from '@/app/components/HeaderNav'
 import ModeToggle from '@/app/components/ModeToggle'
 
-const navLinks = [{href: '/about', label: 'About'}] as const
 const githubHref = 'https://github.com/sanity-io/sanity-template-nextjs-clean'
 
 export default async function Header() {
   const {data: settings} = await sanityFetch({query: settingsQuery})
+
+  // CMS-driven nav (Phase 4–6). Falls back to an empty list so the header still
+  // renders its chrome when `navigation` is unset.
+  const navigation = settings?.navigation ?? []
+  const mobileNav = settings?.mobileNav ?? null
+  const contact = settings?.contact ?? null
+  const legal = settings?.legal ?? null
 
   return (
     <header
@@ -29,31 +29,25 @@ export default async function Header() {
     >
       <div className="container px-2 sm:px-6 py-6">
         <div className="flex items-center justify-between gap-5">
-          <Link className="flex items-center gap-2" href="/" transitionTypes={['nav-back']}>
+          <Link
+            className="flex shrink-0 items-center gap-2"
+            href="/"
+            transitionTypes={['nav-back']}
+          >
             <span className="pl-2 text-lg sm:text-2xl font-semibold">
               {settings?.title || 'Sanity + Next.js'}
             </span>
           </Link>
 
-          <div className="flex items-center gap-2 sm:gap-4">
-            {/* Desktop nav */}
-            <NavigationMenu className="hidden sm:flex">
-              <NavigationMenuList>
-                {navLinks.map((link) => (
-                  <NavigationMenuItem key={link.href}>
-                    <NavigationMenuLink asChild>
-                      <Link
-                        href={link.href}
-                        transitionTypes={['nav-forward']}
-                        className="px-3 py-2 text-sm font-medium hover:underline underline-offset-4"
-                      >
-                        {link.label}
-                      </Link>
-                    </NavigationMenuLink>
-                  </NavigationMenuItem>
-                ))}
-              </NavigationMenuList>
-            </NavigationMenu>
+          <div className="flex min-w-0 flex-1 items-center justify-end gap-2 sm:gap-4">
+            {/* CMS-driven nav — desktop-inline collapses to a hamburger by
+                available space (HeaderNav owns the decision). */}
+            <HeaderNav
+              navigation={navigation}
+              mobileNav={mobileNav}
+              contact={contact}
+              legal={legal}
+            />
 
             <Separator orientation="vertical" className="hidden sm:block h-6" />
 
@@ -65,8 +59,6 @@ export default async function Header() {
                 <GithubIcon className="h-5 w-5" />
               </a>
             </Button>
-
-            <MobileMenu navLinks={navLinks} githubHref={githubHref} />
           </div>
         </div>
       </div>
