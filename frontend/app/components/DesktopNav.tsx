@@ -40,7 +40,8 @@ export default function DesktopNav({navigation, className}: DesktopNavProps) {
       <NavigationMenuList className="flex-nowrap">
         {navigation.map((item) =>
           item._type === 'navDropdown' ? (
-            <NavigationMenuItem key={item._key}>
+            // `relative` so the dropdown panel anchors under THIS item.
+            <NavigationMenuItem key={item._key} className="relative">
               {/* Trigger is a Radix <button> — it toggles the panel and never
                   navigates (requirement 3). The chevron rotates on open. */}
               <NavigationMenuTrigger>{item.title}</NavigationMenuTrigger>

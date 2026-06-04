@@ -94,7 +94,13 @@ export default function MobileNav({
             <SheetTitle>Menu</SheetTitle>
           </SheetHeader>
 
-          <nav aria-label="Mobile" className="flex flex-1 flex-col gap-1 overflow-y-auto">
+          {/* `overflow-x-hidden` clips the staggered reveal's translateX so it
+              can't spawn a flickering horizontal scrollbar (which reflowed the
+              header/footer). The -mx/px pair keeps focus rings off the clip edge. */}
+          <nav
+            aria-label="Mobile"
+            className="-mx-1 flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto px-1"
+          >
             {navigation.map((item, i) =>
               item._type === 'navDropdown' ? (
                 <MobileDropdown
