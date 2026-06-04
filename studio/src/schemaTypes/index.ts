@@ -11,6 +11,8 @@ import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {contact} from './objects/contact'
 import {social} from './objects/social'
+import {navLink} from './objects/navLink'
+import {navDropdown} from './objects/navDropdown'
 import {hero} from './objects/hero'
 import {postsArchive} from './objects/postsArchive'
 import {authorsArchive} from './objects/authorsArchive'
@@ -40,6 +42,8 @@ export const schemaTypes = [
   link,
   contact,
   social,
+  navLink,
+  navDropdown,
   // Page builder blocks
   hero,
   postsArchive,

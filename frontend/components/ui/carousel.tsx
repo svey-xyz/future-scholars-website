@@ -26,6 +26,7 @@ type CarouselContextProps = {
   scrollNext: () => void
   canScrollPrev: boolean
   canScrollNext: boolean
+  mounted: boolean
 } & CarouselProps
 
 const CarouselContext = React.createContext<CarouselContextProps | null>(null)
@@ -52,6 +53,11 @@ const Carousel = React.forwardRef<
     )
     const [canScrollPrev, setCanScrollPrev] = React.useState(false)
     const [canScrollNext, setCanScrollNext] = React.useState(false)
+    // Embla's scroll capability is only knowable on the client. Gate the
+    // derived `disabled` on the prev/next buttons behind this flag so SSR and
+    // the first client render are identical (no hydration mismatch); the real
+    // state applies after mount.
+    const [mounted, setMounted] = React.useState(false)
 
     const onSelect = React.useCallback((api: CarouselApi) => {
       if (!api) return
@@ -81,6 +87,11 @@ const Carousel = React.forwardRef<
     )
 
     React.useEffect(() => {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setMounted(true)
+    }, [])
+
+    React.useEffect(() => {
       if (!api || !setApi) return
       setApi(api)
     }, [api, setApi])
@@ -108,6 +119,7 @@ const Carousel = React.forwardRef<
           scrollNext,
           canScrollPrev,
           canScrollNext,
+          mounted,
         }}
       >
         <div
@@ -170,7 +182,7 @@ const CarouselPrevious = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof Button>
 >(({className, variant = 'outline', size = 'icon', ...props}, ref) => {
-  const {orientation, scrollPrev, canScrollPrev} = useCarousel()
+  const {orientation, scrollPrev, canScrollPrev, mounted} = useCarousel()
 
   return (
     <Button
@@ -184,7 +196,7 @@ const CarouselPrevious = React.forwardRef<
           : '-top-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
-      disabled={!canScrollPrev}
+      disabled={mounted ? !canScrollPrev : undefined}
       onClick={scrollPrev}
       {...props}
     >
@@ -199,7 +211,7 @@ const CarouselNext = React.forwardRef<
   HTMLButtonElement,
   React.ComponentPropsWithoutRef<typeof Button>
 >(({className, variant = 'outline', size = 'icon', ...props}, ref) => {
-  const {orientation, scrollNext, canScrollNext} = useCarousel()
+  const {orientation, scrollNext, canScrollNext, mounted} = useCarousel()
 
   return (
     <Button
@@ -213,7 +225,7 @@ const CarouselNext = React.forwardRef<
           : '-bottom-12 left-1/2 -translate-x-1/2 rotate-90',
         className,
       )}
-      disabled={!canScrollNext}
+      disabled={mounted ? !canScrollNext : undefined}
       onClick={scrollNext}
       {...props}
     >

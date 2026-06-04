@@ -1,4 +1,4 @@
-import {GetPageQueryResult} from '@/sanity.types'
+import {GetPageQueryResult, SettingsQueryResult} from '@/sanity.types'
 
 export type PageBuilderSection = NonNullable<NonNullable<GetPageQueryResult>['pageBuilder']>[number]
 export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extract<
@@ -22,3 +22,16 @@ export type DereferencedLink = {
   post?: string | null
   openInNewTab?: boolean
 }
+
+// CMS-driven header navigation — derived from the typed `settingsQuery` result
+// so the nav islands never hand-widen the shape. `navigation` is a discriminated
+// union on `_type` (navLink leaf | navDropdown group).
+type SettingsNavigation = NonNullable<NonNullable<SettingsQueryResult>['navigation']>
+export type NavItem = SettingsNavigation[number]
+export type NavLinkItem = Extract<NavItem, {_type: 'navLink'}>
+export type NavDropdownItem = Extract<NavItem, {_type: 'navDropdown'}>
+
+// Footer / mobile-footer content shared between <Footer> and the mobile <Sheet>.
+export type SettingsContact = NonNullable<SettingsQueryResult>['contact']
+export type SettingsLegal = NonNullable<SettingsQueryResult>['legal']
+export type SettingsMobileNav = NonNullable<SettingsQueryResult>['mobileNav']

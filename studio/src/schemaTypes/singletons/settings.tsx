@@ -212,6 +212,37 @@ export const settings = defineType({
 			type: 'contact',
 		}),
 		defineField({
+			title: 'Navigation',
+			name: 'navigation',
+			type: 'array',
+			description:
+				'Header navigation. Add top-level links, or dropdowns that group several links under a disclosure label.',
+			of: [
+				defineArrayMember({type: 'navLink'}),
+				defineArrayMember({type: 'navDropdown'}),
+			],
+		}),
+		defineField({
+			title: 'Mobile Navigation',
+			name: 'mobileNav',
+			type: 'object',
+			fields: [
+				defineField({
+					title: 'Show footer content',
+					name: 'showFooterContent',
+					type: 'boolean',
+					description: 'Show footer content (socials, legal) inside the mobile menu',
+					initialValue: true,
+				}),
+			],
+		}),
+		defineField({
+			title: 'Legal',
+			name: 'legal',
+			type: 'string',
+			description: 'Short legal disclaimer shown in the footer / mobile menu',
+		}),
+		defineField({
 			name: 'homepage',
 			title: 'Homepage',
 			type: 'reference',
