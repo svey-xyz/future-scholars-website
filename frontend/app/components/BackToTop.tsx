@@ -11,7 +11,8 @@ import {cn} from '@/lib/utils'
  * after the user scrolls past ~1 viewport (the old chevron from `ThemeHandler`).
  *
  * - Smooth-scrolls to top; instant under `prefers-reduced-motion`.
- * - Hidden from the a11y tree and tab order until shown.
+ * - Hidden from the a11y tree and tab order until shown (`inert` + `aria-hidden`,
+ *   mirroring the collapsed-nav pattern in docs/A11Y.md).
  * - Fixed-position, so it never shifts layout (no CLS).
  *
  * Mounted once in `app/layout.tsx` (inside the theme provider, outside `<main>`).
@@ -19,7 +20,6 @@ import {cn} from '@/lib/utils'
  * fade/translate language; the transition is dropped under reduced motion via
  * `motion-reduce:transition-none` (the scroll-driven `.reveal` classes are
  * one-shot entrance animations, so a state-driven transition is used instead).
- * See docs/A11Y.md.
  */
 export default function BackToTop() {
   const [visible, setVisible] = useState(false)
@@ -51,19 +51,19 @@ export default function BackToTop() {
   }
 
   return (
-    <div className="pointer-events-none fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit justify-center print:hidden">
+    <div
+      inert={!visible}
+      aria-hidden={!visible}
+      className="fixed inset-x-0 bottom-6 z-50 mx-auto flex w-fit justify-center print:hidden"
+    >
       <Button
         type="button"
         size="icon"
         aria-label="Back to top"
-        aria-hidden={!visible}
-        tabIndex={visible ? 0 : -1}
         onClick={handleClick}
         className={cn(
           'size-11 rounded-full shadow-lg transition-[opacity,transform] duration-300 ease-out motion-reduce:transition-none [&_svg]:size-5',
-          visible
-            ? 'pointer-events-auto translate-y-0 opacity-100'
-            : 'translate-y-3 opacity-0',
+          visible ? 'translate-y-0 opacity-100' : 'translate-y-3 opacity-0',
         )}
       >
         <ChevronUpIcon aria-hidden="true" />
