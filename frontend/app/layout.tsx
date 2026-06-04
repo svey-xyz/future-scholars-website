@@ -79,7 +79,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       className={`${inter.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
-			<body className="bg-background text-foreground antialiased relative min-h-screen h-fit w-full overflow-x-hidden flex flex-col">
+      <body className="bg-background text-foreground antialiased relative min-h-screen h-fit w-full overflow-x-hidden flex flex-col">
         {/* Pre-paint: opt into the JS scroll-reveal fallback ONLY on engines that
             lack CSS scroll-driven animations and when motion is allowed. Runs
             before first paint so the fallback's initial hidden state never
@@ -97,7 +97,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
           disableTransitionOnChange
           initialTheme={initialTheme}
         >
-					<section className="min-h-screen flex flex-col grow max-w-full pt-24">
+          <section className="min-h-screen flex flex-col grow max-w-full pt-24">
             {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
             <Toaster />
             {isDraftMode && (
@@ -112,7 +112,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
             <RevealObserver />
             <Header />
-						<main className="relative flex flex-col grow max-w-full items-center justify-center">
+            <main className="relative flex flex-col grow max-w-full items-center justify-center overflow-x-clip">
               <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
