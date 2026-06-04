@@ -25,7 +25,12 @@ export default function CTA({block}: CtaProps) {
   const isImageFirst = stegaClean(contentAlignment) === 'imageFirst'
 
   return (
-    <section className={cn('relative isolate', isDark && 'dark bg-background text-foreground')}>
+    <section
+      className={cn(
+        'relative isolate overflow-x-clip',
+        isDark && 'dark bg-background text-foreground',
+      )}
+    >
       <div className="container relative">
         <div className="grid lg:grid-cols-2 gap-12 py-12">
           <div
