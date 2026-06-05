@@ -22,6 +22,7 @@ import {featuresGrid} from './objects/featuresGrid'
 import {testimonials} from './objects/testimonials'
 import {faq} from './objects/faq'
 import {stats} from './objects/stats'
+import {note} from './objects/note'
 import {background} from './objects/background'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/studio/schema-types
@@ -56,4 +57,5 @@ export const schemaTypes = [
   testimonials,
   faq,
   stats,
+  note,
 ]
