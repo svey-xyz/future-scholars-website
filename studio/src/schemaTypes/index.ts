@@ -1,6 +1,7 @@
 import {person} from './documents/person'
 import {page} from './documents/page'
 import {post} from './documents/post'
+import {project} from './documents/project'
 import {category} from './documents/category'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
@@ -15,6 +16,7 @@ import {navLink} from './objects/navLink'
 import {navDropdown} from './objects/navDropdown'
 import {hero} from './objects/hero'
 import {postsArchive} from './objects/postsArchive'
+import {projectsArchive} from './objects/projectsArchive'
 import {authorsArchive} from './objects/authorsArchive'
 import {gallery} from './objects/gallery'
 import {galleryVideo} from './objects/galleryVideo'
@@ -34,6 +36,7 @@ export const schemaTypes = [
   // Documents
   page,
   post,
+  project,
   person,
   category,
   // Objects
@@ -51,6 +54,7 @@ export const schemaTypes = [
   // Page builder blocks
   hero,
   postsArchive,
+  projectsArchive,
   authorsArchive,
   gallery,
   galleryVideo,

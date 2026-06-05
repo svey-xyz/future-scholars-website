@@ -31,6 +31,38 @@ export type AuthorImage = {
   _type: 'image'
 }
 
+export type Note = {
+  _type: 'note'
+  tone: 'info' | 'warning' | 'danger'
+  icon?:
+    | 'information'
+    | 'warning'
+    | 'error'
+    | 'question'
+    | 'lightbulb'
+    | 'sparkles'
+    | 'check'
+    | 'bell'
+    | 'fire'
+    | 'shield'
+  content: BlockContentTextOnly
+  background?: Background
+}
+
+export type Scores = {
+  _type: 'scores'
+  heading?: string
+  caption?: BlockContentTextOnly
+  items?: Array<{
+    label: string
+    value: number
+    max?: number
+    _type: 'score'
+    _key: string
+  }>
+  background?: Background
+}
+
 export type Stats = {
   _type: 'stats'
   heading?: string
@@ -170,6 +202,28 @@ export type CategoryReference = {
   [internalGroqTypeReferenceTo]?: 'category'
 }
 
+export type ProjectReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'project'
+}
+
+export type ProjectsArchive = {
+  _type: 'projectsArchive'
+  heading?: string
+  subheading?: string
+  source?: 'latest' | 'all' | 'picked'
+  limit?: number
+  tech?: CategoryReference
+  projects?: Array<
+    {
+      _key: string
+    } & ProjectReference
+  >
+  columns?: 2 | 3
+}
+
 export type PostReference = {
   _ref: string
   _type: 'reference'
@@ -212,6 +266,17 @@ export type Hero = {
   }
   layout?: 'center' | 'split'
   theme?: 'light' | 'dark'
+}
+
+export type Background = {
+  _type: 'background'
+  type: 'none' | 'shader'
+  preset?: 'blob'
+  speed?: number
+  intensity?: number
+  colorSource?: 'theme' | 'custom'
+  customColor?: string
+  opacity?: number
 }
 
 export type NavDropdown = {
@@ -279,6 +344,7 @@ export type CallToAction = {
   }
   theme?: 'light' | 'dark'
   contentAlignment?: 'textFirst' | 'imageFirst'
+  background?: Background
 }
 
 export type InfoSection = {
@@ -286,6 +352,7 @@ export type InfoSection = {
   heading?: string
   subheading?: string
   content?: BlockContent
+  background?: Background
 }
 
 export type BlockContentTextOnly = Array<{
@@ -363,6 +430,60 @@ export type Slug = {
   source?: string
 }
 
+export type Project = {
+  _id: string
+  _type: 'project'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  excerpt?: string
+  coverImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  publishedAt?: string
+  updatedAt?: string
+  website?: string
+  repo?: string
+  tech?: Array<
+    {
+      _key: string
+    } & CategoryReference
+  >
+  featured?: boolean
+  body?: BlockContent
+  ogImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+}
+
+export type SanityImageCrop = {
+  _type: 'sanity.imageCrop'
+  top: number
+  bottom: number
+  left: number
+  right: number
+}
+
+export type SanityImageHotspot = {
+  _type: 'sanity.imageHotspot'
+  x: number
+  y: number
+  height: number
+  width: number
+}
+
 export type SanityFileAssetReference = {
   _ref: string
   _type: 'reference'
@@ -435,23 +556,14 @@ export type Settings = {
     showFooterContent?: boolean
   }
   legal?: string
+  builtWith?: Array<{
+    name: string
+    url?: string
+    icon?: string
+    _type: 'builtWithItem'
+    _key: string
+  }>
   homepage?: PageReference
-}
-
-export type SanityImageCrop = {
-  _type: 'sanity.imageCrop'
-  top: number
-  bottom: number
-  left: number
-  right: number
-}
-
-export type SanityImageHotspot = {
-  _type: 'sanity.imageHotspot'
-  x: number
-  y: number
-  height: number
-  width: number
 }
 
 export type Page = {
@@ -464,6 +576,7 @@ export type Page = {
   slug: Slug
   heading: string
   subheading?: string
+  background?: Background
   pageBuilder?: Array<
     | ({
         _key: string
@@ -482,6 +595,9 @@ export type Page = {
       } & Stats)
     | ({
         _key: string
+      } & Scores)
+    | ({
+        _key: string
       } & Testimonials)
     | ({
         _key: string
@@ -491,7 +607,13 @@ export type Page = {
       } & Faq)
     | ({
         _key: string
+      } & Note)
+    | ({
+        _key: string
       } & PostsArchive)
+    | ({
+        _key: string
+      } & ProjectsArchive)
     | ({
         _key: string
       } & AuthorsArchive)
@@ -789,6 +911,8 @@ export type Geopoint = {
 export type AllSanitySchemaTypes =
   | SanityImageAssetReference
   | AuthorImage
+  | Note
+  | Scores
   | Stats
   | Faq
   | Testimonials
@@ -798,9 +922,12 @@ export type AllSanitySchemaTypes =
   | PersonReference
   | AuthorsArchive
   | CategoryReference
+  | ProjectReference
+  | ProjectsArchive
   | PostReference
   | PostsArchive
   | Hero
+  | Background
   | NavDropdown
   | NavLink
   | Social
@@ -814,10 +941,11 @@ export type AllSanitySchemaTypes =
   | Button
   | Category
   | Slug
-  | SanityFileAssetReference
-  | Settings
+  | Project
   | SanityImageCrop
   | SanityImageHotspot
+  | SanityFileAssetReference
+  | Settings
   | Page
   | Post
   | Person
