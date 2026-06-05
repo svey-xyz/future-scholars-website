@@ -22,6 +22,7 @@ import {featuresGrid} from './objects/featuresGrid'
 import {testimonials} from './objects/testimonials'
 import {faq} from './objects/faq'
 import {stats} from './objects/stats'
+import {scores} from './objects/scores'
 import {note} from './objects/note'
 import {background} from './objects/background'
 
@@ -57,5 +58,6 @@ export const schemaTypes = [
   testimonials,
   faq,
   stats,
+  scores,
   note,
 ]

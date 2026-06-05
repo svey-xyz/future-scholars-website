@@ -5,6 +5,7 @@ import Info from '@/app/components/InfoSection'
 import Hero from '@/app/components/Hero'
 import FeaturesGrid from '@/app/components/FeaturesGrid'
 import Stats from '@/app/components/Stats'
+import Scores from '@/app/components/Scores'
 import Testimonials from '@/app/components/Testimonials'
 import Gallery from '@/app/components/Gallery'
 import Faq from '@/app/components/Faq'
@@ -33,6 +34,7 @@ const Blocks = {
   infoSection: Info,
   featuresGrid: FeaturesGrid,
   stats: Stats,
+  scores: Scores,
   testimonials: Testimonials,
   gallery: Gallery,
   faq: Faq,
