@@ -1,0 +1,90 @@
+import {defineArrayMember, defineField, defineType} from 'sanity'
+import {ThLargeIcon} from '@sanity/icons'
+
+/**
+ * Projects Archive — renders a grid of projects. Source modes:
+ *  - `latest`  newest N (limit), optionally filtered by tech (category)
+ *  - `all`     every project, optionally filtered by tech (category)
+ *  - `picked`  an explicit, ordered list of projects
+ * Content is resolved in `getPageQuery` (the page builder renders client-side
+ * for Visual Editing, so blocks can't fetch on their own).
+ * Mirrors `postsArchive`. The rich listing UI lands in SVE-40.
+ */
+export const projectsArchive = defineType({
+  name: 'projectsArchive',
+  title: 'Projects Archive',
+  type: 'object',
+  icon: ThLargeIcon,
+  fields: [
+    defineField({name: 'heading', title: 'Heading', type: 'string'}),
+    defineField({name: 'subheading', title: 'Subheading', type: 'string'}),
+    defineField({
+      name: 'source',
+      title: 'Source',
+      type: 'string',
+      initialValue: 'latest',
+      options: {
+        list: [
+          {title: 'Latest projects', value: 'latest'},
+          {title: 'All projects', value: 'all'},
+          {title: 'Hand-picked', value: 'picked'},
+        ],
+        layout: 'radio',
+      },
+    }),
+    defineField({
+      name: 'limit',
+      title: 'Number of projects',
+      type: 'number',
+      initialValue: 6,
+      validation: (Rule) => Rule.min(1).max(24).integer(),
+      hidden: ({parent}) => parent?.source !== 'latest',
+    }),
+    defineField({
+      name: 'tech',
+      title: 'Filter by tech',
+      type: 'reference',
+      to: [{type: 'category'}],
+      description: 'Optional. Only applies to Latest / All.',
+      hidden: ({parent}) => parent?.source === 'picked',
+    }),
+    defineField({
+      name: 'projects',
+      title: 'Projects',
+      type: 'array',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'project'}]})],
+      hidden: ({parent}) => parent?.source !== 'picked',
+      validation: (Rule) =>
+        Rule.custom((value, context) => {
+          const parent = context.parent as {source?: string}
+          if (parent?.source === 'picked' && (!value || value.length === 0)) {
+            return 'Pick at least one project'
+          }
+          return true
+        }),
+    }),
+    defineField({
+      name: 'columns',
+      title: 'Columns',
+      type: 'number',
+      initialValue: 3,
+      options: {
+        list: [
+          {title: 'Two', value: 2},
+          {title: 'Three', value: 3},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    }),
+  ],
+  preview: {
+    select: {heading: 'heading', source: 'source'},
+    prepare({heading, source}) {
+      return {
+        title: heading || 'Projects Archive',
+        subtitle: `Projects Archive · ${source || 'latest'}`,
+      }
+    },
+  },
+})

@@ -1,6 +1,8 @@
 import {defineField, defineType} from 'sanity'
 import {DocumentIcon} from '@sanity/icons'
 
+import {backgroundField} from '../objects/shared'
+
 /**
  * Page schema.  Define and edit the fields for the 'page' content type.
  * Learn more: https://www.sanity.io/docs/studio/schema-types
@@ -40,6 +42,7 @@ export const page = defineType({
       title: 'Subheading',
       type: 'string',
     }),
+    backgroundField,
     defineField({
       name: 'pageBuilder',
       title: 'Page builder',
@@ -50,10 +53,13 @@ export const page = defineType({
         {type: 'infoSection'},
         {type: 'featuresGrid'},
         {type: 'stats'},
+        {type: 'scores'},
         {type: 'testimonials'},
         {type: 'gallery'},
         {type: 'faq'},
+        {type: 'note'},
         {type: 'postsArchive'},
+        {type: 'projectsArchive'},
         {type: 'authorsArchive'},
       ],
       options: {

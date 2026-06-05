@@ -19,6 +19,11 @@ export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
 	homepage->,
 	contact,
 	legal,
+	builtWith[]{
+		name,
+		url,
+		icon
+	},
 	mobileNav,
 	navigation[]{
 		_type == "navLink" => {
@@ -46,6 +51,21 @@ const postFields = /* groq */ `
   "author": author->{firstName, lastName, picture},
 `
 
+const projectFields = /* groq */ `
+  _id,
+  "status": select(_originalId in path("drafts.**") => "draft", "published"),
+  "title": coalesce(title, "Untitled"),
+  "slug": slug.current,
+  excerpt,
+  coverImage,
+  website,
+  repo,
+  featured,
+  "publishedAt": coalesce(publishedAt, _createdAt),
+  "updatedAt": coalesce(updatedAt, _updatedAt),
+  "tech": tech[]->{_id, title, "slug": slug.current},
+`
+
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->slug.current,
@@ -60,6 +80,19 @@ const linkFields = /* groq */ `
       }
 `
 
+// Shared projection for the reusable `background` object (page-level + per-block).
+const backgroundFields = /* groq */ `
+  background {
+    type,
+    preset,
+    speed,
+    intensity,
+    colorSource,
+    customColor,
+    opacity
+  }
+`
+
 export const getPageQuery = defineQuery(`
   *[_type == 'page' && slug.current == $slug][0]{
     _id,
@@ -68,8 +101,10 @@ export const getPageQuery = defineQuery(`
     slug,
     heading,
     subheading,
+    ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,
+      ${backgroundFields},
       _type == "callToAction" => {
         ...,
         button {
@@ -128,6 +163,35 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+      _type == "note" => {
+        ...,
+        tone,
+        icon,
+        content[]{
+          ...,
+          markDefs[]{
+            ...,
+            ${linkReference}
+          }
+        }
+      },
+      _type == "scores" => {
+        ...,
+        heading,
+        caption[]{
+          ...,
+          markDefs[]{
+            ...,
+            ${linkReference}
+          }
+        },
+        items[]{
+          _key,
+          label,
+          value,
+          max
+        }
+      },
       _type == "postsArchive" => {
         ...,
         category->{_id, title, "slug": slug.current},
@@ -138,6 +202,19 @@ export const getPageQuery = defineQuery(`
           },
           *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc)[0...24]{
             ${postFields}
+          }
+        )
+      },
+      _type == "projectsArchive" => {
+        ...,
+        tech->{_id, title, "slug": slug.current},
+        "projects": select(
+          source == "picked" => projects[]->{ ${projectFields} },
+          source == "all" => *[_type == "project" && defined(slug.current) && (!defined(^.tech) || ^.tech._ref in tech[]._ref)] | order(coalesce(publishedAt, _createdAt) desc){
+            ${projectFields}
+          },
+          *[_type == "project" && defined(slug.current) && (!defined(^.tech) || ^.tech._ref in tech[]._ref)] | order(coalesce(publishedAt, _createdAt) desc)[0...24]{
+            ${projectFields}
           }
         )
       },
@@ -159,7 +236,7 @@ export const getPageQuery = defineQuery(`
 `)
 
 export const sitemapData = defineQuery(`
-  *[_type == "page" || _type == "post" && defined(slug.current)] | order(_type asc) {
+  *[(_type == "page" || _type == "post" || _type == "project") && defined(slug.current)] | order(_type asc) {
     "slug": slug.current,
     _type,
     _updatedAt,
@@ -198,5 +275,30 @@ export const postPagesSlugs = defineQuery(`
 
 export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
+  {"slug": slug.current}
+`)
+
+export const allProjectsQuery = defineQuery(`
+  *[_type == "project" && defined(slug.current)] | order(featured desc, coalesce(publishedAt, _createdAt) desc) {
+    ${projectFields}
+  }
+`)
+
+export const projectBySlugQuery = defineQuery(`
+  *[_type == "project" && slug.current == $slug] [0] {
+    ${projectFields}
+    body[]{
+      ...,
+      markDefs[]{
+        ...,
+        ${linkReference}
+      }
+    },
+    ogImage,
+  }
+`)
+
+export const projectSlugsQuery = defineQuery(`
+  *[_type == "project" && defined(slug.current)]
   {"slug": slug.current}
 `)

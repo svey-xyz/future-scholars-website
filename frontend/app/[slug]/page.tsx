@@ -1,6 +1,7 @@
 import type {Metadata} from 'next'
 
 import PageBuilderPage from '@/app/components/PageBuilder'
+import ShaderBackground from '@/app/components/shader/ShaderBackground'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getPageQuery, pagesSlugs} from '@/sanity/lib/queries'
 import {GetPageQueryResult} from '@/sanity.types'
@@ -68,8 +69,21 @@ export default async function Page(props: Props) {
     )
   }
 
+  // Page-level animated background sits behind the whole page shell when set.
+  const pageHasShader = page.background?.type === 'shader'
+
   return (
-    <div className="my-12 lg:my-24">
+    <div className={pageHasShader ? 'relative isolate my-12 lg:my-24' : 'my-12 lg:my-24'}>
+      {pageHasShader ? (
+        <ShaderBackground
+          preset={page.background?.preset}
+          speed={page.background?.speed}
+          intensity={page.background?.intensity}
+          colorSource={page.background?.colorSource}
+          customColor={page.background?.customColor}
+          opacity={page.background?.opacity}
+        />
+      ) : null}
       <div className="container">
         <div className="border-b border-border pb-6">
           <div className="max-w-3xl">
