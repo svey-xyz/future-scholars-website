@@ -1,3 +1,4 @@
+import {ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound} from 'next/navigation'
 import {type PortableTextBlock} from 'next-sanity'
@@ -79,16 +80,21 @@ export default async function ProjectPage(props: Props) {
         </div>
         <article className="prose max-w-none dark:prose-invert">
           {project.coverImage?.asset?._ref && (
-            <Image
-              id={project.coverImage.asset._ref}
-              alt={project.coverImage.alt || ''}
-              className="not-prose mb-8 w-full rounded-sm"
-              width={1024}
-              height={538}
-              mode="cover"
-              hotspot={project.coverImage.hotspot}
-              crop={project.coverImage.crop}
-            />
+            // Shared-element morph target — MUST match the card's
+            // `project-card-${slug}` name (set in `ProjectCard`/`FeaturedProjectCard`)
+            // so the listing thumbnail morphs into this hero. See docs/TRANSITIONS.md.
+            <ViewTransition name={`project-card-${project.slug}`} share="morph">
+              <Image
+                id={project.coverImage.asset._ref}
+                alt={project.coverImage.alt || ''}
+                className="not-prose mb-8 w-full rounded-sm"
+                width={1024}
+                height={538}
+                mode="cover"
+                hotspot={project.coverImage.hotspot}
+                crop={project.coverImage.crop}
+              />
+            </ViewTransition>
           )}
           {project.body?.length && (
             <PortableText
