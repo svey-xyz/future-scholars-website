@@ -53,6 +53,7 @@ export const page = defineType({
         {type: 'infoSection'},
         {type: 'featuresGrid'},
         {type: 'stats'},
+        {type: 'scores'},
         {type: 'testimonials'},
         {type: 'gallery'},
         {type: 'faq'},

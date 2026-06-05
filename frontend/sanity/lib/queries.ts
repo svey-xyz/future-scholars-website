@@ -155,6 +155,23 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+      _type == "scores" => {
+        ...,
+        heading,
+        caption[]{
+          ...,
+          markDefs[]{
+            ...,
+            ${linkReference}
+          }
+        },
+        items[]{
+          _key,
+          label,
+          value,
+          max
+        }
+      },
       _type == "postsArchive" => {
         ...,
         category->{_id, title, "slug": slug.current},
