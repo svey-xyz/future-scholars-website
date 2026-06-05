@@ -2,7 +2,7 @@
 
 import {useEffect, useState} from 'react'
 import {useTheme} from '@teispace/next-themes'
-import {MoonIcon, SunIcon} from '@heroicons/react/24/outline'
+import {MoonIcon, SunIcon} from '@heroicons/react/24/solid'
 
 import {Button} from '@/components/ui/button'
 import {cn} from '@/lib/utils'
@@ -31,7 +31,7 @@ export default function ThemeToggle({className}: {className?: string}) {
   // Reserve the 9×9 slot with an inert placeholder so the footer doesn't shift
   // on hydration and we never flash the wrong icon.
   if (!mounted) {
-    return <div className={cn('h-9 w-9', className)} aria-hidden="true" />
+    return <div className={cn('size-5', className)} aria-hidden="true" />
   }
 
   const isDark = resolvedTheme === 'dark'
@@ -43,16 +43,22 @@ export default function ThemeToggle({className}: {className?: string}) {
       type="button"
       variant="ghost"
       size="icon"
-      className={cn('relative', className)}
+      className={cn('relative cursor-pointer group', className)}
       onClick={() => setTheme(next)}
       aria-label={label}
     >
       <SunIcon
-        className="h-5 w-5 rotate-0 scale-100 transition-all motion-reduce:transition-none dark:-rotate-90 dark:scale-0"
+				className={cn('block dark:hidden transform rotate-0 dark:-rotate-180 duration-150 delay-100',
+					'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+					'group-hover:scale-[1.1] group-hover:-rotate-10 group-active:scale-[0.9]'
+				)}
         aria-hidden="true"
       />
       <MoonIcon
-        className="absolute h-5 w-5 rotate-90 scale-0 transition-all motion-reduce:transition-none dark:rotate-0 dark:scale-100"
+				className={cn('absolute hidden dark:block transform rotate-90 dark:rotate-0 duration-150 delay-100',
+					'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+					'group-hover:scale-[1.1] group-hover:rotate-10 group-active:scale-[0.9]'
+				)}
         aria-hidden="true"
       />
       <span className="sr-only">{label}</span>
