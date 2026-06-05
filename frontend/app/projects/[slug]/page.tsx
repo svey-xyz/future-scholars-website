@@ -1,7 +1,8 @@
 import {ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
+import Link from 'next/link'
 import {notFound} from 'next/navigation'
-import {InformationCircleIcon} from '@heroicons/react/24/outline'
+import {ArrowLongLeftIcon, InformationCircleIcon} from '@heroicons/react/24/outline'
 import {type PortableTextBlock} from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'
@@ -101,6 +102,21 @@ export default async function ProjectPage(props: Props) {
     <div className="container my-12 grid gap-12 lg:my-24">
       <article>
         <header className="mb-8 grid gap-6 border-b border-border pb-8">
+          {/* Back-link to the listing. `nav-back` plays the upward/back directional
+              slide (mirror of the card's `nav-forward`), matching the repo
+              convention (see docs/TRANSITIONS.md). The arrow's hover nudge is
+              `motion-safe:` only, so reduced-motion users get a static link. */}
+          <Link
+            href="/projects"
+            transitionTypes={['nav-back']}
+            className="group inline-flex w-fit items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          >
+            <ArrowLongLeftIcon
+              aria-hidden="true"
+              className="size-4 transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:-translate-x-1"
+            />
+            All projects
+          </Link>
           <div className="flex max-w-3xl flex-col gap-6">
             <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{project.title}</h1>
             {project.excerpt && (

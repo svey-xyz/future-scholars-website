@@ -1,6 +1,7 @@
 import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
 
 import FooterContent from '@/app/components/FooterContent'
+import Reveal from '@/app/components/Reveal'
 import ThemeToggle from '@/app/components/ThemeToggle'
 import {sanityFetch} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
@@ -17,14 +18,28 @@ export default async function Footer() {
       <div className="container">
         {builtWith.length > 0 && (
           <div className="flex flex-col gap-4 py-16 sm:flex-row sm:items-baseline sm:gap-6">
-            <h3 className="font-mono text-sm font-medium tracking-tight text-muted-foreground">
+            <Reveal
+              as="h3"
+              variant="left"
+              className="font-mono text-sm font-medium tracking-tight text-muted-foreground"
+            >
               Built with
-            </h3>
+            </Reveal>
             <ul className="flex flex-wrap gap-2">
               {builtWith.map((item, index) => (
-                <li key={item.url ?? `${item.name}-${index}`}>
+                // Per-chip staggered entrance — `variant="scale"` + `--reveal-i`
+                // cascade so the chips pop in sequence as the footer scrolls into
+                // view. Transform/opacity only (the chip box is reserved), so no
+                // CLS; the whole reveal is gated behind prefers-reduced-motion in
+                // globals.css, so reduced-motion users get static chips.
+                <Reveal
+                  as="li"
+                  variant="scale"
+                  i={index % 8}
+                  key={item.url ?? `${item.name}-${index}`}
+                >
                   <BuiltWithChip item={item} />
-                </li>
+                </Reveal>
               ))}
             </ul>
           </div>
@@ -57,11 +72,17 @@ function BuiltWithChip({item}: {item: BuiltWithItem}) {
         href={item.url}
         target="_blank"
         rel="noopener noreferrer"
-        className={`group ${chipBase} text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring`}
+        // Micro-interaction: color + border lift with a gentle ease-out settle
+        // (slow-out), echoing the card-hover feel. Transform is `motion-safe:`
+        // only, so reduced-motion users keep the pure color/border change.
+        className={`group ${chipBase} text-muted-foreground transition-[color,border-color,transform] duration-300 ease-out will-change-transform hover:border-foreground/30 hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring motion-safe:hover:-translate-y-0.5`}
       >
         {item.icon ? <span aria-hidden="true">{item.icon}</span> : null}
         <span>{item.name}</span>
-        <ArrowTopRightOnSquareIcon className="h-3.5 w-3.5 shrink-0 opacity-70" aria-hidden="true" />
+        <ArrowTopRightOnSquareIcon
+          className="h-3.5 w-3.5 shrink-0 opacity-70 transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:translate-x-0.5 motion-safe:group-hover:-translate-y-0.5"
+          aria-hidden="true"
+        />
         <span className="sr-only">(opens in new tab)</span>
       </a>
     )
