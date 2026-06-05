@@ -6,6 +6,7 @@ import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
 import GithubIcon from '@/app/components/icons/GithubIcon'
 import HeaderNav from '@/app/components/HeaderNav'
+import Logo from '@/app/components/Logo'
 
 const githubHref = 'https://github.com/sanity-io/sanity-template-nextjs-clean'
 
@@ -21,19 +22,28 @@ export default async function Header() {
 
   return (
     <header
-      className="fixed inset-x-0 top-0 z-50 h-24 flex items-center bg-background/80 backdrop-blur-lg"
-      // Anchors the fixed header so it stays put during directional content
-      // slides (CSS disables its snapshot animation in globals.css).
+      // `site-header` anchors the fixed header so it stays put during directional
+      // content slides (CSS disables its snapshot animation in globals.css).
+      // `app-header` drives the pure-CSS scroll-driven contraction (height /
+      // padding / shadow shrink as the page scrolls) — zero JS, gated behind
+      // prefers-reduced-motion: no-preference. The fixed header is out of flow,
+      // so contracting it causes no layout shift (layout reserves `pt-24`).
+      className="app-header fixed inset-x-0 top-0 z-50 h-24 flex items-center bg-background/80 backdrop-blur-lg"
       style={{viewTransitionName: 'site-header'}}
     >
-      <div className="container px-2 sm:px-6 py-6">
+      <div className="app-header__inner container px-2 sm:px-6 py-6">
         <div className="flex items-center justify-between gap-5">
           <Link
-            className="flex shrink-0 items-center gap-2"
+            className="group/logo flex shrink-0 items-center gap-2.5 rounded-md outline-none focus-visible:ring-1 focus-visible:ring-ring"
             href="/"
+            aria-label={`${settings?.title || 'Sanity + Next.js'} — home`}
             transitionTypes={['nav-back']}
           >
-            <span className="pl-2 text-lg sm:text-2xl font-semibold">
+            {/* Link carries the accessible name (aria-label above); the mark is
+                decorative here to avoid a duplicate SR announcement. */}
+            <Logo decorative />
+
+            <span className="text-lg sm:text-2xl font-semibold">
               {settings?.title || 'Sanity + Next.js'}
             </span>
           </Link>
