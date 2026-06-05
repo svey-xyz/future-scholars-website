@@ -1,9 +1,11 @@
 import {ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
 import {notFound} from 'next/navigation'
+import {InformationCircleIcon} from '@heroicons/react/24/outline'
 import {type PortableTextBlock} from 'next-sanity'
 
 import PortableText from '@/app/components/PortableText'
+import ProjectMeta from '@/app/components/ProjectMeta'
 import Image from '@/app/components/SanityImage'
 import {sanityFetch} from '@/sanity/lib/live'
 import {projectBySlugQuery, projectSlugsQuery} from '@/sanity/lib/queries'
@@ -36,7 +38,8 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
   const {data: project} = await sanityFetch({
     query: projectBySlugQuery,
     params,
-    // Metadata should never contain stega
+    // Static SEO/OG: never contain stega, read the published perspective.
+    perspective: 'published',
     stega: false,
   })
   const previousImages = (await parent).openGraph?.images || []
@@ -47,63 +50,115 @@ export async function generateMetadata(props: Props, parent: ResolvingMetadata):
     title: project?.title,
     description: project?.excerpt ?? undefined,
     openGraph: {
+      type: 'article',
       images: ogImage ? [ogImage, ...previousImages] : previousImages,
     },
   } satisfies Metadata
 }
 
 /**
- * Project detail (foundation for SVE-41).
- * Minimal accessible RSC render — title, cover image, body. The rich layout,
- * tech badges, website/repo links and motion land in SVE-41.
+ * Empty-body fallback. The `Note` page-builder component expects an
+ * `ExtractPageBuilderType<'note'>` block (and wraps itself in a `container` +
+ * `Reveal`), which doesn't fit inline in the article column — so this renders a
+ * lightweight, a11y-equivalent toned note directly. Tone `info`: explicit text
+ * label + distinct icon, color never carries meaning alone (see docs/A11Y.md).
+ */
+function EmptyBodyNote() {
+  return (
+    <div role="note" className="not-prose rounded-md border border-border bg-card/70 p-5">
+      <p className="flex items-center gap-2 text-base font-medium text-foreground">
+        <InformationCircleIcon className="size-5 text-foreground" aria-hidden="true" />
+        Note
+      </p>
+      <p className="mt-2 text-foreground">This project doesn&rsquo;t have a write-up yet.</p>
+    </div>
+  )
+}
+
+/**
+ * Project detail (SVE-41). Rich, accessible RSC render:
+ *   - single `<h1>` title + optional excerpt;
+ *   - hero cover image wrapped in the shared-element morph
+ *     (`project-card-${slug}`, `share="morph"`) so the listing thumbnail morphs
+ *     into this hero (see docs/TRANSITIONS.md — name preserved from SVE-40);
+ *   - two-column on `md`+: the Portable-Text body (`2/3`, primary) sits beside a
+ *     metadata aside (`1/3`). The DOM puts the body first (reading/SR order,
+ *     primary content) and the grid is *reversed* visually so the metadata reads
+ *     as a sidebar — matching the original `ProjectInfoSection` layout. Single
+ *     column on mobile, body on top.
  */
 export default async function ProjectPage(props: Props) {
   const params = await props.params
-  const [{data: project}] = await Promise.all([
-    sanityFetch({query: projectBySlugQuery, params}),
-  ])
+  const [{data: project}] = await Promise.all([sanityFetch({query: projectBySlugQuery, params})])
 
   if (!project?._id) {
     return notFound()
   }
 
+  const hasBody = Boolean(project.body?.length)
+
   return (
     <div className="container my-12 grid gap-12 lg:my-24">
-      <div>
-        <div className="mb-6 grid gap-6 border-b border-border pb-6">
+      <article>
+        <header className="mb-8 grid gap-6 border-b border-border pb-8">
           <div className="flex max-w-3xl flex-col gap-6">
             <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{project.title}</h1>
             {project.excerpt && (
               <p className="text-lg leading-8 text-muted-foreground">{project.excerpt}</p>
             )}
           </div>
-        </div>
-        <article className="prose max-w-none dark:prose-invert">
-          {project.coverImage?.asset?._ref && (
-            // Shared-element morph target — MUST match the card's
-            // `project-card-${slug}` name (set in `ProjectCard`/`FeaturedProjectCard`)
-            // so the listing thumbnail morphs into this hero. See docs/TRANSITIONS.md.
-            <ViewTransition name={`project-card-${project.slug}`} share="morph">
-              <Image
-                id={project.coverImage.asset._ref}
-                alt={project.coverImage.alt || ''}
-                className="not-prose mb-8 w-full rounded-sm"
-                width={1024}
-                height={538}
-                mode="cover"
-                hotspot={project.coverImage.hotspot}
-                crop={project.coverImage.crop}
-              />
-            </ViewTransition>
-          )}
-          {project.body?.length && (
-            <PortableText
-              className="max-w-2xl prose-headings:font-medium prose-headings:tracking-tight"
-              value={project.body as PortableTextBlock[]}
+        </header>
+
+        {project.coverImage?.asset?._ref && (
+          // Shared-element morph target — MUST match the card's
+          // `project-card-${slug}` name (set in `ProjectCard`/`FeaturedProjectCard`)
+          // so the listing thumbnail morphs into this hero. See docs/TRANSITIONS.md.
+          // Reduced motion is neutralised globally in `globals.css`.
+          <ViewTransition name={`project-card-${project.slug}`} share="morph">
+            <Image
+              id={project.coverImage.asset._ref}
+              alt={project.coverImage.alt || ''}
+              className="mb-12 w-full rounded-sm"
+              width={1024}
+              height={538}
+              mode="cover"
+              hotspot={project.coverImage.hotspot}
+              crop={project.coverImage.crop}
             />
-          )}
-        </article>
-      </div>
+          </ViewTransition>
+        )}
+
+        {/*
+          Two-column on `md`+: body 2/3 + metadata 1/3, reversed (generalised
+          from the original `ProjectInfoSection`'s flex-row-reverse). The body is
+          declared FIRST in the DOM — primary content, so SR/reading + tab order
+          hit it first — but the grid places the metadata aside in the *trailing*
+          column so it reads as a visual sidebar beside the write-up. On mobile
+          both stack single-column with the body on top.
+        */}
+        <div className="grid gap-10 md:grid-cols-3 md:gap-12">
+          <div className="md:col-span-2 md:row-start-1 md:pr-8">
+            {hasBody ? (
+              <div className="prose max-w-none dark:prose-invert">
+                <PortableText
+                  className="max-w-2xl prose-headings:font-medium prose-headings:tracking-tight"
+                  value={project.body as PortableTextBlock[]}
+                />
+              </div>
+            ) : (
+              <EmptyBodyNote />
+            )}
+          </div>
+
+          <aside
+            aria-label="Project details"
+            className="md:col-start-3 md:row-start-1 md:border-l md:border-border md:pl-8"
+          >
+            <h2 className="sr-only">Project details</h2>
+            <ProjectMeta project={project} />
+          </aside>
+        </div>
+      </article>
     </div>
   )
 }
