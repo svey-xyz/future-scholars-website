@@ -59,6 +59,7 @@ export const page = defineType({
         {type: 'faq'},
         {type: 'note'},
         {type: 'postsArchive'},
+        {type: 'projectsArchive'},
         {type: 'authorsArchive'},
       ],
       options: {

@@ -11,6 +11,7 @@ import Gallery from '@/app/components/Gallery'
 import Faq from '@/app/components/Faq'
 import Note from '@/app/components/Note'
 import PostsArchive from '@/app/components/PostsArchive'
+import ProjectsArchive from '@/app/components/ProjectsArchive'
 import AuthorsArchive from '@/app/components/AuthorsArchive'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
@@ -40,6 +41,7 @@ const Blocks = {
   faq: Faq,
   note: Note,
   postsArchive: PostsArchive,
+  projectsArchive: ProjectsArchive,
   authorsArchive: AuthorsArchive,
   // Each block component narrows `block` to its own `_type` member of the
   // page-builder union, which is intentionally narrower than `BlockProps`'s
