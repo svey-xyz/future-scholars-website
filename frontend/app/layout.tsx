@@ -10,6 +10,7 @@ import {ThemeProvider} from '@teispace/next-themes'
 import {getTheme} from '@teispace/next-themes/server'
 
 import {Toaster} from '@/components/ui/sonner'
+import BackToTop from '@/app/components/BackToTop'
 import DraftModeToast from '@/app/components/DraftModeToast'
 import Footer from '@/app/components/Footer'
 import Header from '@/app/components/Header'
@@ -116,6 +117,8 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               <PageTransition>{children}</PageTransition>
             </main>
             <Footer />
+            {/* Back-to-top affordance — fixed island, outside <main>, inside the theme provider. */}
+            <BackToTop />
           </section>
         </ThemeProvider>
         <SpeedInsights />
