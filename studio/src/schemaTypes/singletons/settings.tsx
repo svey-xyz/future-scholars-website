@@ -243,6 +243,44 @@ export const settings = defineType({
 			description: 'Short legal disclaimer shown in the footer / mobile menu',
 		}),
 		defineField({
+			title: 'Built with',
+			name: 'builtWith',
+			type: 'array',
+			description:
+				'Tech / tools the site is built with, shown as chips in the footer. Items with a URL render as external links; name-only items render as plain labels.',
+			of: [
+				defineArrayMember({
+					name: 'builtWithItem',
+					title: 'Item',
+					type: 'object',
+					fields: [
+						defineField({
+							title: 'Name',
+							name: 'name',
+							type: 'string',
+							description: 'Display label, e.g. "Next.js" or "Sanity".',
+							validation: (Rule) => Rule.required(),
+						}),
+						defineField({
+							title: 'URL',
+							name: 'url',
+							type: 'url',
+							description: 'Optional. If set, the chip links here (opens in a new tab).',
+						}),
+						defineField({
+							title: 'Icon',
+							name: 'icon',
+							type: 'string',
+							description: 'Optional short icon hint or emoji shown before the name.',
+						}),
+					],
+					preview: {
+						select: {title: 'name', subtitle: 'url'},
+					},
+				}),
+			],
+		}),
+		defineField({
 			name: 'homepage',
 			title: 'Homepage',
 			type: 'reference',

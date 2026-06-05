@@ -35,3 +35,8 @@ export type NavDropdownItem = Extract<NavItem, {_type: 'navDropdown'}>
 export type SettingsContact = NonNullable<SettingsQueryResult>['contact']
 export type SettingsLegal = NonNullable<SettingsQueryResult>['legal']
 export type SettingsMobileNav = NonNullable<SettingsQueryResult>['mobileNav']
+
+// CMS-driven "built with" footer list — derived from the typed `settingsQuery`
+// result so the footer never hand-widens the shape.
+export type SettingsBuiltWith = NonNullable<SettingsQueryResult>['builtWith']
+export type BuiltWithItem = NonNullable<SettingsBuiltWith>[number]

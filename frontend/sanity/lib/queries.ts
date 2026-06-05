@@ -19,6 +19,11 @@ export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
 	homepage->,
 	contact,
 	legal,
+	builtWith[]{
+		name,
+		url,
+		icon
+	},
 	mobileNav,
 	navigation[]{
 		_type == "navLink" => {
