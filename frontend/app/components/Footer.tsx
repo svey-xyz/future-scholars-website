@@ -1,6 +1,7 @@
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
 import FooterContent from '@/app/components/FooterContent'
+import ThemeToggle from '@/app/components/ThemeToggle'
 import {sanityFetch} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 
@@ -35,13 +36,13 @@ export default async function Footer() {
           </div>
         </div>
 
-        {/* Shared footer content (socials + legal) — same component the mobile
-            Sheet renders, so the two never drift. Renders null when empty. */}
-        <FooterContent
-          contact={contact}
-          legal={legal}
-          className="border-t border-border pb-12 pt-8"
-        />
+        {/* Meta bar: shared socials/legal (the same component the mobile Sheet
+            renders, so the two never drift; renders null when empty) plus the
+            single light↔dark theme toggle, pinned to the end. */}
+        <div className="flex flex-col gap-4 border-t border-border pb-12 pt-8 sm:flex-row sm:items-center">
+          <FooterContent contact={contact} legal={legal} className="sm:flex-1" />
+          <ThemeToggle className="self-end sm:ml-auto sm:self-auto" />
+        </div>
       </div>
     </footer>
   )

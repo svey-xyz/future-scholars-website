@@ -6,7 +6,6 @@ import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
 import GithubIcon from '@/app/components/icons/GithubIcon'
 import HeaderNav from '@/app/components/HeaderNav'
-import ModeToggle from '@/app/components/ModeToggle'
 
 const githubHref = 'https://github.com/sanity-io/sanity-template-nextjs-clean'
 
@@ -50,8 +49,6 @@ export default async function Header() {
             />
 
             <Separator orientation="vertical" className="hidden sm:block h-6" />
-
-            <ModeToggle />
 
             <Button asChild size="lg" className="hidden sm:inline-flex rounded-full">
               <a href={githubHref} target="_blank" rel="noopener noreferrer">
