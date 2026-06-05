@@ -7,6 +7,8 @@ import {
   ControlsIcon,
 } from '@sanity/icons'
 
+import {backgroundField} from './shared'
+
 /**
  * Call to action schema object.  Objects are reusable schema structures document.
  * Learn more: https://www.sanity.io/docs/studio/object-type
@@ -99,6 +101,7 @@ export const callToAction = defineType({
       hidden: ({parent}) => !Boolean(parent?.image?.asset),
       group: 'designSystem',
     }),
+    {...backgroundField, group: 'designSystem'},
   ],
   preview: {
     select: {

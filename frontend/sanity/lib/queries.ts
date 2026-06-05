@@ -60,6 +60,19 @@ const linkFields = /* groq */ `
       }
 `
 
+// Shared projection for the reusable `background` object (page-level + per-block).
+const backgroundFields = /* groq */ `
+  background {
+    type,
+    preset,
+    speed,
+    intensity,
+    colorSource,
+    customColor,
+    opacity
+  }
+`
+
 export const getPageQuery = defineQuery(`
   *[_type == 'page' && slug.current == $slug][0]{
     _id,
@@ -68,8 +81,10 @@ export const getPageQuery = defineQuery(`
     slug,
     heading,
     subheading,
+    ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,
+      ${backgroundFields},
       _type == "callToAction" => {
         ...,
         button {

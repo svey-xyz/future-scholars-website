@@ -36,3 +36,17 @@ export const columnsField = defineField({
   },
   initialValue: 3,
 })
+
+/**
+ * Optional animated `background` object, spread into page-builder blocks (and
+ * the `page` document) so any block/page can opt into a shader background
+ * without duplicating the field. Rendered by `BlockRenderer.tsx` (per block) and
+ * the page route (page-level). Keep in sync with `./background.ts` and the
+ * frontend shader registry (`frontend/app/components/shader/registry.ts`).
+ */
+export const backgroundField = defineField({
+  name: 'background',
+  title: 'Background',
+  type: 'background',
+  description: 'Optional animated background rendered behind this content.',
+})
