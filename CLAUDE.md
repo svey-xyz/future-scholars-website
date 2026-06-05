@@ -43,12 +43,16 @@ Run from repo root unless noted:
 
 ## Sanity content model
 
-Documents: `page`, `post`, `person`. Singleton: `settings` (id `siteSettings`). Objects: `callToAction`, `infoSection`, `button`, `link`, `blockContent`, `blockContentTextOnly`. The `page` document has a `pageBuilder` array (`callToAction` | `infoSection`) rendered by `app/components/PageBuilder.tsx` → `BlockRenderer.tsx`.
+Documents: `page`, `post`, `person`, `project`, `category`. Singleton: `settings` (id `siteSettings`; includes the `builtWith` tech list rendered in the footer). Objects: `callToAction`, `infoSection`, `note`, `scores`, `projectsArchive`, `background`, `button`, `link`, `blockContent`, `blockContentTextOnly` (plus pre-existing `faq`, `stats`, `postsArchive`, etc.). The `page` document has a `pageBuilder` array rendered by `app/components/PageBuilder.tsx` → `BlockRenderer.tsx`; every block (and the `page` itself) can carry an optional `background` (none | animated WebGL shader) via the shared `backgroundField` mixin in `studio/src/schemaTypes/objects/shared.ts`.
+
+The `project` document (`title`, `slug`, `excerpt`, `coverImage`, `publishedAt`/`updatedAt`, `website`, `repo`, `tech[]→category`, `featured`, `body`, `ogImage`) mirrors `post` as a routable doc.
 
 Routing (mirror in Studio's Presentation `mainDocuments` + Next routes):
 - `/` → `settings`
 - `/:slug` → `page`
 - `/posts/:slug` → `post`
+- `/projects` → `project` listing (filter by tech + sort by created/updated)
+- `/projects/:slug` → `project` detail (metadata section; card→detail View-Transition morph `project-card-${slug}`)
 
 ## Queries / data fetching
 
