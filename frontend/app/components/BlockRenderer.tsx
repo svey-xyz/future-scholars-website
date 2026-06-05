@@ -8,6 +8,7 @@ import Stats from '@/app/components/Stats'
 import Testimonials from '@/app/components/Testimonials'
 import Gallery from '@/app/components/Gallery'
 import Faq from '@/app/components/Faq'
+import Note from '@/app/components/Note'
 import PostsArchive from '@/app/components/PostsArchive'
 import AuthorsArchive from '@/app/components/AuthorsArchive'
 import {dataAttr} from '@/sanity/lib/utils'
@@ -35,6 +36,7 @@ const Blocks = {
   testimonials: Testimonials,
   gallery: Gallery,
   faq: Faq,
+  note: Note,
   postsArchive: PostsArchive,
   authorsArchive: AuthorsArchive,
   // Each block component narrows `block` to its own `_type` member of the

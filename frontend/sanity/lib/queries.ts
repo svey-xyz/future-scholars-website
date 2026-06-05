@@ -143,6 +143,18 @@ export const getPageQuery = defineQuery(`
           }
         }
       },
+      _type == "note" => {
+        ...,
+        tone,
+        icon,
+        content[]{
+          ...,
+          markDefs[]{
+            ...,
+            ${linkReference}
+          }
+        }
+      },
       _type == "postsArchive" => {
         ...,
         category->{_id, title, "slug": slug.current},

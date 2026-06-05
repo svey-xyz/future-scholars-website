@@ -56,6 +56,7 @@ export const page = defineType({
         {type: 'testimonials'},
         {type: 'gallery'},
         {type: 'faq'},
+        {type: 'note'},
         {type: 'postsArchive'},
         {type: 'authorsArchive'},
       ],
