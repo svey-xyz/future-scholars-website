@@ -1,6 +1,8 @@
 import {defineField, defineType} from 'sanity'
 import {TextIcon} from '@sanity/icons'
 
+import {backgroundField} from './shared'
+
 export const infoSection = defineType({
   name: 'infoSection',
   title: 'Info Section',
@@ -22,6 +24,7 @@ export const infoSection = defineType({
       title: 'Content',
       type: 'blockContent',
     }),
+    backgroundField,
   ],
   preview: {
     select: {
