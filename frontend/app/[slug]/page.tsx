@@ -73,16 +73,25 @@ export default async function Page(props: Props) {
   const pageHasShader = page.background?.type === 'shader'
 
   return (
-    <div className={pageHasShader ? 'relative isolate my-12 lg:my-24' : 'my-12 lg:my-24'}>
+    <div className="my-12 lg:my-24">
       {pageHasShader ? (
-        <ShaderBackground
-          preset={page.background?.preset}
-          speed={page.background?.speed}
-          intensity={page.background?.intensity}
-          colorSource={page.background?.colorSource}
-          customColor={page.background?.customColor}
-          opacity={page.background?.opacity}
-        />
+        // Page-level background: anchor the canvas to the viewport via a
+        // `fixed inset-0` layer so it spans the whole viewport (not just the
+        // content box) and keeps a stable size as streamed/transitioned content
+        // reflows. The old content-box-scoped `absolute` layer under-filled the
+        // viewport and flickered the WebGL canvas on every reflow (SVE-45).
+        // `-z-10` keeps it behind page content but above the body background;
+        // the inner ShaderBackground's own `absolute inset-0` fills this layer.
+        <div className="pointer-events-none fixed inset-0 -z-10" aria-hidden="true">
+          <ShaderBackground
+            preset={page.background?.preset}
+            speed={page.background?.speed}
+            intensity={page.background?.intensity}
+            colorSource={page.background?.colorSource}
+            customColor={page.background?.customColor}
+            opacity={page.background?.opacity}
+          />
+        </div>
       ) : null}
       <div className="container">
         <div className="border-b border-border pb-6">
