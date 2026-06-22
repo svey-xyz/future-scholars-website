@@ -57,6 +57,7 @@ export type Scores = {
     label: string
     value: number
     max?: number
+    asPercent?: boolean
     _type: 'score'
     _key: string
   }>
@@ -215,7 +216,7 @@ export type ProjectsArchive = {
   subheading?: string
   source?: 'latest' | 'all' | 'picked'
   limit?: number
-  tech?: CategoryReference
+  category?: CategoryReference
   projects?: Array<
     {
       _key: string
@@ -413,6 +414,24 @@ export type Button = {
   link?: Link
 }
 
+export type Technology = {
+  _id: string
+  _type: 'technology'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  title: string
+  slug: Slug
+  url?: string
+  description?: string
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
+}
+
 export type Category = {
   _id: string
   _type: 'category'
@@ -424,10 +443,11 @@ export type Category = {
   description?: string
 }
 
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
+export type TechnologyReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'technology'
 }
 
 export type Project = {
@@ -451,12 +471,18 @@ export type Project = {
   updatedAt?: string
   website?: string
   repo?: string
-  tech?: Array<
+  categories?: Array<
     {
       _key: string
     } & CategoryReference
   >
+  tech?: Array<
+    {
+      _key: string
+    } & TechnologyReference
+  >
   featured?: boolean
+  hidden?: boolean
   body?: BlockContent
   ogImage?: {
     asset?: SanityImageAssetReference
@@ -939,8 +965,10 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Category
+  | Technology
   | Slug
+  | Category
+  | TechnologyReference
   | Project
   | SanityImageCrop
   | SanityImageHotspot

@@ -55,12 +55,28 @@ export const scores = defineType({
               description: 'Optional denominator for the arc. Defaults to 100.',
               validation: (Rule) => Rule.min(1),
             }),
+            defineField({
+              name: 'asPercent',
+              title: 'Show as percentage',
+              type: 'boolean',
+              description:
+                'On: display the score as a percent of Max (or of 100). Off: display the raw value.',
+              initialValue: true,
+            }),
           ],
           preview: {
-            select: {label: 'label', value: 'value', max: 'max'},
-            prepare({label, value, max}) {
-              const denom = typeof max === 'number' ? ` / ${max}` : ''
-              const score = typeof value === 'number' ? `${value}${denom}` : 'No value'
+            select: {label: 'label', value: 'value', max: 'max', asPercent: 'asPercent'},
+            prepare({label, value, max, asPercent}) {
+              const denom = typeof max === 'number' ? max : 100
+              // Mirror the frontend display: legacy items without the toggle
+              // show % only when no explicit Max is set.
+              const percent = asPercent ?? typeof max !== 'number'
+              const score =
+                typeof value === 'number'
+                  ? percent
+                    ? `${Math.round((value / denom) * 100)}%`
+                    : `${value}${typeof max === 'number' ? ` / ${max}` : ''}`
+                  : 'No value'
               return {title: label || 'Score', subtitle: score}
             },
           },

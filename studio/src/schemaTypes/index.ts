@@ -3,6 +3,7 @@ import {page} from './documents/page'
 import {post} from './documents/post'
 import {project} from './documents/project'
 import {category} from './documents/category'
+import {technology} from './documents/technology'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -39,6 +40,7 @@ export const schemaTypes = [
   project,
   person,
   category,
+  technology,
   // Objects
   button,
   blockContent,

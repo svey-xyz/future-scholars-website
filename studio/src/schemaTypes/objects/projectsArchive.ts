@@ -3,8 +3,8 @@ import {ThLargeIcon} from '@sanity/icons'
 
 /**
  * Projects Archive — renders a grid of projects. Source modes:
- *  - `latest`  newest N (limit), optionally filtered by tech (category)
- *  - `all`     every project, optionally filtered by tech (category)
+ *  - `latest`  newest N (limit), optionally filtered by category
+ *  - `all`     every project, optionally filtered by category
  *  - `picked`  an explicit, ordered list of projects
  * Content is resolved in `getPageQuery` (the page builder renders client-side
  * for Visual Editing, so blocks can't fetch on their own).
@@ -41,8 +41,8 @@ export const projectsArchive = defineType({
       hidden: ({parent}) => parent?.source !== 'latest',
     }),
     defineField({
-      name: 'tech',
-      title: 'Filter by tech',
+      name: 'category',
+      title: 'Filter by category',
       type: 'reference',
       to: [{type: 'category'}],
       description: 'Optional. Only applies to Latest / All.',

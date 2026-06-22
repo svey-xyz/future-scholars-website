@@ -53,12 +53,12 @@ export default function ProjectsList({projects}: {projects: Project[]}) {
   const [activeTag, setActiveTag] = useState<string>(ALL)
   const [sort, setSort] = useState<SortKey>('created')
 
-  // Unique tech tags across all projects, by `_id`. "All" pseudo-tag prepended.
+  // Unique category tags across all projects, by `_id`. "All" pseudo-tag prepended.
   const tags = useMemo(() => {
     const seen = new Map<string, string>()
     for (const p of projects) {
-      for (const t of p.tech ?? []) {
-        if (t?._id && !seen.has(t._id)) seen.set(t._id, t.title)
+      for (const c of p.categories ?? []) {
+        if (c?._id && !seen.has(c._id)) seen.set(c._id, c.title)
       }
     }
     return [{id: ALL, title: 'All'}, ...[...seen].map(([id, title]) => ({id, title}))]
@@ -76,9 +76,9 @@ export default function ProjectsList({projects}: {projects: Project[]}) {
     return [...projects].sort((a, b) => toTime(b[key]) - toTime(a[key]))
   }, [projects, effectiveSort])
 
-  // A card is visible when "All" is selected or it carries the active tag.
+  // A card is visible when "All" is selected or it carries the active category.
   const isVisible = (p: Project) =>
-    effectiveTag === ALL || (p.tech ?? []).some((t) => t?._id === effectiveTag)
+    effectiveTag === ALL || (p.categories ?? []).some((c) => c?._id === effectiveTag)
 
   const visibleCount = mounted ? ordered.filter(isVisible).length : ordered.length
 
@@ -88,7 +88,7 @@ export default function ProjectsList({projects}: {projects: Project[]}) {
         {/* Filter — labelled radio group (segmented control). */}
         <fieldset className="min-w-0">
           <legend className="mb-2 text-sm font-medium text-muted-foreground">
-            Filter by tech
+            Filter by category
           </legend>
           {/* Native radios sharing `name` form the radio group; the <fieldset>/<legend>
               names it. No explicit role needed — the inputs carry the semantics. */}

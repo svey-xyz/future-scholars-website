@@ -6,9 +6,13 @@ import type {Project} from '../../../sanity.types'
 /**
  * Project schema. Routable document (`/projects/:slug`) for portfolio-style
  * work. Mirrors `post` for the editorial bits (slug, cover image, body) and
- * adds project-specific metadata (website / repo links, tech taxonomy,
- * featured flag). The `tech` field references the shared `category` document
- * so the listing (SVE-40) can filter / sort on structured taxonomy.
+ * adds project-specific metadata (website / repo links, taxonomies, featured
+ * flag, visibility toggle). Two separate taxonomies:
+ *   - `categories` → `category` docs: general topical tags for grouping /
+ *     filtering the listing (e.g. Client Work, Open Source, Portfolio Site).
+ *   - `tech` → `technology` docs: the stack a project was built with.
+ * `hidden` lets a project be kept in the dataset but withheld from the public
+ * frontend (listing, sitemap, static params, and the detail route).
  * Learn more: https://www.sanity.io/docs/schema-types
  */
 
@@ -99,17 +103,32 @@ export const project = defineType({
       validation: (rule) => rule.uri({scheme: ['http', 'https']}),
     }),
     defineField({
+      name: 'categories',
+      title: 'Categories',
+      type: 'array',
+      description: 'General tags for grouping / filtering (e.g. Client Work, Open Source).',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
+    }),
+    defineField({
       name: 'tech',
       title: 'Tech',
       type: 'array',
-      description: 'Technologies / tags used. References the shared Category taxonomy.',
-      of: [defineArrayMember({type: 'reference', to: [{type: 'category'}]})],
+      description: 'The stack this project was built with. References the Technology taxonomy.',
+      of: [defineArrayMember({type: 'reference', to: [{type: 'technology'}]})],
     }),
     defineField({
       name: 'featured',
       title: 'Featured',
       type: 'boolean',
       description: 'Highlight this project in featured listings.',
+      initialValue: false,
+    }),
+    defineField({
+      name: 'hidden',
+      title: 'Hidden',
+      type: 'boolean',
+      description:
+        'Hide from the public site — excluded from the projects listing, sitemap, and detail route. Still editable here and visible in Presentation/draft preview.',
       initialValue: false,
     }),
     defineField({
@@ -138,11 +157,13 @@ export const project = defineType({
     select: {
       title: 'title',
       featured: 'featured',
+      hidden: 'hidden',
       publishedAt: 'publishedAt',
       media: 'coverImage',
     },
-    prepare({title, media, featured, publishedAt}) {
+    prepare({title, media, featured, hidden, publishedAt}) {
       const subtitles = [
+        hidden && 'Hidden',
         featured && 'Featured',
         publishedAt && format(parseISO(publishedAt), 'LLL d, yyyy'),
       ].filter(Boolean)

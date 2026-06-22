@@ -27,7 +27,7 @@ export type ShaderPresetUniform = {
   name: string
   type: 'float' | 'vec2' | 'vec3' | 'vec4' | 'int'
   /** Default value used until the component overrides it (e.g. u_color, u_time). */
-  value: number | number[]
+  value: number | number[] | Float32Array
 }
 
 export type ShaderPreset = {
@@ -43,13 +43,11 @@ export type ShaderPreset = {
  * fragment stage a 0–1 UV (`v_uv`) derived from it.
  */
 const fullScreenVert = /* glsl */ `
-  attribute vec2 a_position;
-  varying vec2 v_uv;
+  attribute vec3 a_position;
 
-  void main() {
-    v_uv = a_position * 0.5 + 0.5;
-    gl_Position = vec4(a_position, 0.0, 1.0);
-  }
+	void main() {
+		gl_Position = vec4(a_position, 1.0);
+	}
 `
 
 /**
@@ -59,87 +57,78 @@ const fullScreenVert = /* glsl */ `
  * color over a transparent-to-dark base. Cheap: ~3 noise evals per fragment.
  */
 const blobFrag = /* glsl */ `
-  precision highp float;
+	precision mediump float;
+	uniform float u_time;
+	uniform vec2 u_posSeed;
+	uniform vec3 u_bgColour;
 
-  varying vec2 v_uv;
+	vec4 mod289(vec4 x) { return x - floor(x * (1.0 / 289.0)) * 289.0; }
 
-  uniform float u_time;
-  uniform vec2 u_resolution;
-  uniform vec3 u_color;
-  uniform float u_intensity;
+	vec4 permute(vec4 x) { return mod289(((x * 34.0) + 1.0) * x); }
 
-  // --- Simplex 2D noise (Ian McEwan, Ashima Arts — MIT/public domain) ---
-  vec3 permute(vec3 x) {
-    return mod(((x * 34.0) + 1.0) * x, 289.0);
-  }
+	vec4 taylorInvSqrt(vec4 r) { return 1.79284291400159 - 0.85373472095314 * r; }
 
-  float snoise(vec2 v) {
-    const vec4 C = vec4(
-      0.211324865405187,
-      0.366025403784439,
-      -0.577350269189626,
-      0.024390243902439
-    );
-    vec2 i = floor(v + dot(v, C.yy));
-    vec2 x0 = v - i + dot(i, C.xx);
-    vec2 i1 = (x0.x > x0.y) ? vec2(1.0, 0.0) : vec2(0.0, 1.0);
-    vec4 x12 = x0.xyxy + C.xxzz;
-    x12.xy -= i1;
-    i = mod(i, 289.0);
-    vec3 p = permute(permute(i.y + vec3(0.0, i1.y, 1.0)) + i.x + vec3(0.0, i1.x, 1.0));
-    vec3 m = max(
-      0.5 - vec3(dot(x0, x0), dot(x12.xy, x12.xy), dot(x12.zw, x12.zw)),
-      0.0
-    );
-    m = m * m;
-    m = m * m;
-    vec3 x = 2.0 * fract(p * C.www) - 1.0;
-    vec3 h = abs(x) - 0.5;
-    vec3 ox = floor(x + 0.5);
-    vec3 a0 = x - ox;
-    m *= 1.79284291400159 - 0.85373472095314 * (a0 * a0 + h * h);
-    vec3 g;
-    g.x = a0.x * x0.x + h.x * x0.y;
-    g.yz = a0.yz * x12.xz + h.yz * x12.yw;
-    return 130.0 * dot(m, g);
-  }
+	vec2 fade(vec2 t) { return t * t * t * (t * (t * 6.0 - 15.0) + 10.0); }
 
-  // Two-octave fractional Brownian motion for a softer, blobbier field.
-  float fbm(vec2 p) {
-    float v = 0.0;
-    v += 0.6 * snoise(p);
-    v += 0.4 * snoise(p * 2.0 + 7.3);
-    return v;
-  }
+	float cnoise(vec2 P) {
+			vec4 Pi = floor(P.xyxy) + vec4(0.0, 0.0, 1.0, 1.0);
+			vec4 Pf = fract(P.xyxy) - vec4(0.0, 0.0, 1.0, 1.0);
+			Pi = mod289(Pi);
+			vec4 ix = Pi.xzxz;
+			vec4 iy = Pi.yyww;
+			vec4 fx = Pf.xzxz;
+			vec4 fy = Pf.yyww;
 
-  void main() {
-    // Aspect-correct UV centered at the origin so blobs don't stretch.
-    vec2 uv = v_uv;
-    float aspect = max(u_resolution.x, 1.0) / max(u_resolution.y, 1.0);
-    vec2 p = (uv - 0.5) * vec2(aspect, 1.0);
+			vec4 i = permute(permute(ix) + iy);
 
-    // Slow domain warp: offset the sample point with another noise field.
-    float t = u_time * 0.15;
-    vec2 warp = vec2(
-      fbm(p * 1.5 + vec2(0.0, t)),
-      fbm(p * 1.5 + vec2(t, 0.0))
-    );
+			vec4 gx = fract(i * (1.0 / 41.0)) * 2.0 - 1.0;
+			vec4 gy = abs(gx) - 0.5;
+			vec4 tx = floor(gx + 0.5);
+			gx = gx - tx;
 
-    float n = fbm(p * 2.2 + warp * 0.8 + t * 0.5);
-    // Remap noise (-1..1) → 0..1 and shape into soft blobs.
-    float blob = smoothstep(-0.2, 0.9, n);
+			vec2 g00 = vec2(gx.x, gy.x);
+			vec2 g10 = vec2(gx.y, gy.y);
+			vec2 g01 = vec2(gx.z, gy.z);
+			vec2 g11 = vec2(gx.w, gy.w);
 
-    // Strength multiplier; clamp so authors can't blow out the gradient.
-    float strength = clamp(u_intensity, 0.0, 4.0);
-    blob = clamp(blob * strength, 0.0, 1.0);
+			vec4 norm = taylorInvSqrt(vec4(dot(g00, g00), dot(g01, g01), dot(g10, g10), dot(g11, g11)));
+			g00 *= norm.x;
+			g01 *= norm.y;
+			g10 *= norm.z;
+			g11 *= norm.w;
 
-    // Theme color blobs fading into a near-transparent base. Alpha follows the
-    // blob so edges feather out and the foreground stays readable.
-    vec3 col = u_color * blob;
-    float alpha = blob;
+			float n00 = dot(g00, vec2(fx.x, fy.x));
+			float n10 = dot(g10, vec2(fx.y, fy.y));
+			float n01 = dot(g01, vec2(fx.z, fy.z));
+			float n11 = dot(g11, vec2(fx.w, fy.w));
 
-    gl_FragColor = vec4(col, alpha);
-  }
+			vec2 fade_xy = fade(Pf.xy);
+			vec2 n_x = mix(vec2(n00, n01), vec2(n10, n11), fade_xy.x);
+			float n_xy = mix(n_x.x, n_x.y, fade_xy.y);
+			return 2.2 * n_xy; // bigger number = layers closer together
+	}
+
+	float mixNoiseVals(float m, vec2 p, vec2 t) { return m * cnoise(15.0 * t) + cnoise(15.0 * p); }
+
+	void main() {
+		float t = u_time * 0.0012;
+		float scale = 0.000125;
+		float m = 1.1; // amount of movement between phases
+
+		float noise = mixNoiseVals(m, vec2((gl_FragCoord.xy + u_posSeed.xy) * scale), vec2(t));
+
+		float steps = 5.0; // how many layers
+		float brightness = 4.4; // controls how much of the canvas is bg colour
+
+		float contrast = 1.0; // Increase this value to further increase the contrast
+		float layer = clamp(floor(noise * steps + brightness) / steps, 0.0, 1.0);
+
+		// The canvas context is premultiplied-alpha (WebGL default), so RGB must
+		// be multiplied by A here. Straight alpha gets composited as
+		// rgb + (1-a)*page — washing toward white on light themes and collapsing
+		// every layer to full-strength colour on dark ones.
+		gl_FragColor = vec4(u_bgColour * layer, layer);
+	}
 `
 
 export const shaderPresets = {
@@ -150,10 +139,9 @@ export const shaderPresets = {
     // appended by ShaderBackground; these are inert defaults so the program
     // links and renders something sane before the first hook fires.
     uniforms: [
-      {name: 'u_time', type: 'float', value: 0},
-      {name: 'u_resolution', type: 'vec2', value: [1, 1]},
-      {name: 'u_color', type: 'vec3', value: [1, 0.33, 0]},
-      {name: 'u_intensity', type: 'float', value: 1},
+			{ name: 'u_time', type: 'float', value: 0.0 },
+			{ name: 'u_posSeed', type: 'vec2', value: new Float32Array([Math.random() * 1000, Math.random() * 1000]) },
+			{ name: 'u_bgColour', type: 'vec3', value: new Float32Array([0.329, 0.208, 0.4]) },
     ],
   },
 } satisfies Record<string, ShaderPreset>

@@ -1,7 +1,6 @@
 'use client'
 
 import {useEffect, useMemo, useRef, useState, useSyncExternalStore} from 'react'
-import dynamic from 'next/dynamic'
 
 import {
   defaultShaderPreset,
@@ -10,42 +9,14 @@ import {
   type ShaderPresetName,
 } from './registry'
 
-// Type-only import: erased at compile time, so it adds nothing to the runtime
-// module graph (the actual canvas is loaded via `dynamic` below). It lets our
-// hooks/uniforms match the package's strict `UniformType` without `any`.
-import type {UniformType} from '@svey-xyz/simple-shader-component'
-
-// Loaded only in the browser: the package touches `window`/WebGL at module
-// scope-adjacent init and has no SSR story, so prerendering is disabled.
-// `dynamic(..., {ssr:false})` is only legal inside a Client Component — hence
-// the `'use client'` directive above.
-const SimpleShaderCanvas = dynamic(
-  () => import('@svey-xyz/simple-shader-component/react').then((m) => m.SimpleShaderCanvas),
-  {ssr: false},
-)
-
-// MethodName is a real runtime enum in the package; mirror the values locally so
-// we don't pull the (browser-only) core module into this module's static graph.
-// TOUCH=0, INIT=1, LOOP=2, RENDER=3, RESIZE=4, INPUT=5.
-const Method = {INIT: 1, LOOP: 2, RESIZE: 4} as const
-
-// The shader/hook signatures from the package, kept minimal so we don't import
-// the browser-only types at module scope (keeps the RSC graph clean) and never
-// fall back to `any`.
-type Uniform = {name: string; type: UniformType; value: number | number[]}
-type ShaderInstance = {
-  getElapsedTime: () => number
-  setUniform: (u: Uniform) => void
-  container: HTMLCanvasElement
-}
-type ShaderHook = (shader: ShaderInstance, ...args: unknown[]) => void
-type ShaderArgs = {
-  vertShader?: string
-  fragShader?: string
-  uniforms?: Array<Uniform>
-  hooks?: Array<{methodName: number; hook: ShaderHook}>
-  loadedClass?: string
-}
+// SVE-42 hardened build (>=1.2.0): the wrapper's effect now destroys the
+// Shader on unmount/args-change (Strict-Mode-safe — no more duplicate
+// instances on one canvas), `setUniform` binds its program before writing
+// (no more silently dropped u_time writes), and the `paused` prop pauses the
+// loop in place without tearing down the WebGL context. Module scope is
+// SSR-safe, so static imports are fine in this client component.
+import {Shader, MethodName, type ShaderArgs} from '@svey-xyz/simple-shader-component'
+import {SimpleShaderCanvas} from '@svey-xyz/simple-shader-component/react'
 
 export type ShaderBackgroundProps = {
   preset?: string | null
@@ -88,7 +59,7 @@ function getReducedMotionServerSnapshot(): boolean {
  */
 function readThemeRgb(): Rgb {
   if (typeof window === 'undefined') return FALLBACK_RGB
-  const raw = getComputedStyle(document.documentElement).getPropertyValue('--primary').trim()
+  const raw = getComputedStyle(document.documentElement).getPropertyValue('--primary-accent').trim()
   const parsed = hslChannelsToRgb(raw)
   return parsed ?? FALLBACK_RGB
 }
@@ -161,16 +132,14 @@ function parseCustomColor(value: string | null | undefined): Rgb | null {
  *   - Under `prefers-reduced-motion: reduce` the WebGL canvas is **not mounted**
  *     at all — a static CSS gradient using the same color renders instead.
  *
- * Performance / correctness:
- *   - `args` is memoized on stable primitives so the package's cleanup-less
- *     `useEffect(..., [args])` does NOT re-create the `Shader` (and its rAF
- *     loop + listeners) on every parent re-render — the single most important
- *     correctness requirement under Visual-Editing re-renders.
- *   - Offscreen / hidden-tab → the canvas is **unmounted** (IntersectionObserver
- *     + `visibilitychange`). NOTE: package 1.1.1 has no `stopLoop`/cleanup, so a
- *     just-unmounted instance's loop can linger until GC; true pause lands with
- *     the SVE-42 hardened build. Unmounting still releases the DOM canvas and
- *     stops new instances from stacking.
+ * Performance / correctness (package >=1.2.0):
+ *   - `args` is memoized on stable primitives so the wrapper doesn't tear down
+ *     and recreate the Shader (rAF loop + listeners + GL context) on every
+ *     parent re-render under Visual Editing. Recreation is now *safe* (the
+ *     wrapper destroys the old instance), just wasteful.
+ *   - Offscreen / hidden-tab → the loop is paused in place via the `paused`
+ *     prop (IntersectionObserver + `visibilitychange`) without unmounting, so
+ *     resuming doesn't recreate the WebGL context.
  */
 export default function ShaderBackground({
   preset,
@@ -190,7 +159,7 @@ export default function ShaderBackground({
 
   // Live shader handle so theme-recolor can re-push u_color without re-creating
   // the Shader (which would require touching the memoized `args`).
-  const shaderRef = useRef<ShaderInstance | null>(null)
+  const shaderRef = useRef<Shader | null>(null)
 
   // Resolved 0–1 rgb the canvas paints with; also used by the static fallback.
   const [color, setColor] = useState<Rgb>(FALLBACK_RGB)
@@ -203,10 +172,12 @@ export default function ShaderBackground({
     getReducedMotionServerSnapshot,
   )
 
-  // Visibility gate (offscreen / hidden tab) — unmounts the canvas when false.
+  // Visibility gate (offscreen / hidden tab) — pauses the loop when false.
   const [visible, setVisible] = useState(true)
 
-  const mountCanvas = !reducedMotion && visible
+  // Reduced motion swaps the canvas for the static gradient entirely (no GL
+  // context at all); plain offscreen/hidden just pauses in place.
+  const mountCanvas = !reducedMotion
 
   // --- Resolve + track the paint color (theme var or custom string) ---
   useEffect(() => {
@@ -231,16 +202,22 @@ export default function ShaderBackground({
     return () => observer.disconnect()
   }, [colorSource, customColor])
 
+  // Mirror of `color` for the stable INIT hook below: when the wrapper
+  // (re)creates the Shader (mount, `args` change), the hook reads the freshest
+  // resolved color from this ref without `args` having to depend on `color`.
+  const colorRef = useRef<Rgb>(color)
+
   // Push the latest color into the live shader without rebuilding `args` (so the
   // Shader is never re-instantiated on recolor). Also re-fires when the canvas
   // (re)mounts — `SimpleShaderCanvas` is a child, so its effect creates the
   // Shader (and INIT captures `shaderRef`) before this parent effect runs.
   useEffect(() => {
+    colorRef.current = color
     if (!mountCanvas) return
-    shaderRef.current?.setUniform({name: 'u_color', type: 'vec3', value: [...color]})
+    shaderRef.current?.setUniform({name: 'u_bgColour', type: 'vec3', value: [...color]})
   }, [color, mountCanvas])
 
-  // --- Offscreen / hidden-tab visibility gate (unmounts the canvas) ---
+  // --- Offscreen / hidden-tab visibility gate (drives the `paused` prop) ---
   useEffect(() => {
     const el = wrapperRef.current
     if (!el) return
@@ -266,64 +243,64 @@ export default function ShaderBackground({
     }
   }, [])
 
-  // --- Memoized ShaderArgs (the critical correctness requirement) ---
+  // --- Memoized ShaderArgs ---
   // Keyed ONLY on stable primitives (preset / speed / intensity). The color is
   // NOT baked in here — it's pushed via the `setUniform` effect above — so a
-  // recolor never changes `args`' identity and therefore never re-instantiates
-  // the Shader (the package's `useEffect(..., [args])` has no cleanup; a new
-  // identity would spawn a duplicate rAF loop + listeners).
+  // recolor never changes `args`' identity. Since 1.2.0 an identity change is
+  // handled safely (the wrapper destroys the old instance before creating a
+  // new one), but it still tears down the WebGL context — avoid per-render churn.
+  // Per-instance noise seed so multiple backgrounds on one page don't render
+  // identical patterns. useState's lazy initializer runs exactly once per
+  // mount — a deliberate one-time random, never re-derived on re-render.
+  const [posSeed] = useState(
+    () => new Float32Array([Math.random() * 1000, Math.random() * 1000]),
+  )
+
   const args = useMemo<ShaderArgs>(() => {
     const def = shaderPresets[presetName]
-    const pushResolution = (shader: ShaderInstance) => {
-      const c = shader.container
-      shader.setUniform({
-        name: 'u_resolution',
-        type: 'vec2',
-        value: [c.width || c.clientWidth || 1, c.height || c.clientHeight || 1],
-      })
-    }
     return {
       vertShader: def.vert,
       fragShader: def.frag,
-      // Inert defaults (incl. the preset's default color) so the program links
-      // and renders before the first hook/effect fires; the real color is set
-      // by the recolor effect once the Shader is captured.
+      // Inert defaults so the program links and renders before the first
+      // hook/effect fires. `u_bgColour` is deliberately ABSENT: init() applies
+      // these defaults *after* INIT hooks run, so a default here would clobber
+      // the color the INIT hook pushes. The color flows only through the INIT
+      // hook (creation) + the recolor effect (theme/custom changes).
       uniforms: [
-        {name: 'u_time', type: 'float', value: 0},
-        {name: 'u_resolution', type: 'vec2', value: [1, 1]},
-        ...def.uniforms.filter((u) => u.name === 'u_color'),
-        {name: 'u_intensity', type: 'float', value: intensityValue},
+				{ name: 'u_time', type: 'float', value: 0.0 },
+				{ name: 'u_posSeed', type: 'vec2', value: posSeed },
       ],
       hooks: [
         {
-          // Capture the instance (so the recolor effect can reach it) + seed
-          // intensity/resolution on INIT.
-          methodName: Method.INIT,
-          hook: (shader) => {
+          // Capture the live instance for the recolor effect and seed the
+          // DOM-resolved color. Reads `colorRef` (not `color`) so this closure
+          // stays identity-stable while always pushing the freshest value.
+          methodName: MethodName.INIT,
+          hook: (shader: Shader) => {
             shaderRef.current = shader
-            shader.setUniform({name: 'u_intensity', type: 'float', value: intensityValue})
-            pushResolution(shader)
+            shader.setUniform({
+              name: 'u_bgColour',
+              type: 'vec3',
+              value: [...colorRef.current],
+            })
           },
         },
         {
           // Drive time every frame; `speedValue` scales the rate.
-          methodName: Method.LOOP,
-          hook: (shader) => {
+          methodName: MethodName.LOOP,
+          hook: (shader: Shader) => {
             shader.setUniform({
               name: 'u_time',
               type: 'float',
               value: shader.getElapsedTime() * speedValue,
             })
           },
-        },
-        {
-          // Keep resolution in sync on resize.
-          methodName: Method.RESIZE,
-          hook: pushResolution,
-        },
+        }
       ],
     }
-  }, [presetName, speedValue, intensityValue])
+    // `intensityValue` is intentionally NOT consumed yet (the blob preset has
+    // no u_intensity uniform); add it back to args + deps when a preset uses it.
+  }, [presetName, speedValue, posSeed])
 
   // Static gradient (reduced motion, or pre-canvas paint). Uses the resolved
   // color so the fallback matches the animated version's hue.
@@ -339,11 +316,15 @@ export default function ShaderBackground({
       style={{opacity: resolvedOpacity}}
     >
       {mountCanvas ? (
-        <SimpleShaderCanvas args={args} className="absolute inset-0 block h-full w-full" />
+        <SimpleShaderCanvas
+          args={args}
+          paused={!visible}
+          className="absolute inset-0 block h-full w-full min-h-full min-w-full"
+        />
       ) : (
         // Static CSS gradient fallback — reduced motion or offscreen.
         <div
-          className="absolute inset-0 h-full w-full"
+					className="absolute inset-0 block h-full w-full min-h-full min-w-full"
           style={{backgroundImage: gradient, opacity: 0.6}}
         />
       )}

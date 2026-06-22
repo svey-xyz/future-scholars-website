@@ -2,6 +2,7 @@ import {ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
+import {draftMode} from 'next/headers'
 import {ArrowLongLeftIcon, InformationCircleIcon} from '@heroicons/react/24/outline'
 import {type PortableTextBlock} from 'next-sanity'
 
@@ -93,6 +94,13 @@ export default async function ProjectPage(props: Props) {
   const [{data: project}] = await Promise.all([sanityFetch({query: projectBySlugQuery, params})])
 
   if (!project?._id) {
+    return notFound()
+  }
+
+  // Respect the visibility toggle: a hidden project 404s for the public, but
+  // stays reachable in Presentation/draft preview so editors can review it.
+  const {isEnabled: isDraft} = await draftMode()
+  if (project.hidden && !isDraft) {
     return notFound()
   }
 

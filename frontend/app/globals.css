@@ -26,6 +26,8 @@
   --input: 0 0% 89.8%;
   --ring: 0 0% 3.9%;
   --radius: 0.5rem;
+  /* Shader accent (HSL channels) — read by ShaderBackground's readThemeRgb(). */
+  --primary-accent: 20 100% 50%;
 }
 
 .dark {
@@ -48,6 +50,9 @@
   --border: 0 0% 14.9%;
   --input: 0 0% 14.9%;
   --ring: 0 0% 83.1%;
+  /* Brighter accent on dark — blobs now blend toward the page black, so they
+     need more lightness to keep the layer steps legible. */
+  --primary-accent: 20 100% 62%;
 }
 
 @theme inline {

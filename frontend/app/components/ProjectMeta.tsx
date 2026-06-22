@@ -87,10 +87,11 @@ export default function ProjectMeta({
   project,
   className,
 }: {
-  project: Pick<Project, 'publishedAt' | 'updatedAt' | 'tech' | 'website' | 'repo'>
+  project: Pick<Project, 'publishedAt' | 'updatedAt' | 'categories' | 'tech' | 'website' | 'repo'>
   className?: string
 }) {
-  const {publishedAt, updatedAt, tech, website, repo} = project
+  const {publishedAt, updatedAt, categories, tech, website, repo} = project
+  const hasCategories = Array.isArray(categories) && categories.length > 0
   const hasTech = Array.isArray(tech) && tech.length > 0
   // The dates coalesce to system timestamps in GROQ, but treat them defensively.
   const showUpdated = updatedAt && updatedAt !== publishedAt
@@ -103,6 +104,20 @@ export default function ProjectMeta({
 
       <ProjectMetaRow label="Updated">
         {showUpdated ? <DateComponent dateString={updatedAt} /> : null}
+      </ProjectMetaRow>
+
+      <ProjectMetaRow label="Tags">
+        {hasCategories ? (
+          <ul className="flex flex-wrap gap-1.5">
+            {categories.map((c) => (
+              <li key={c._id}>
+                <Badge variant="outline" className="text-[0.7rem]">
+                  {c.title}
+                </Badge>
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </ProjectMetaRow>
 
       <ProjectMetaRow label="Tech">

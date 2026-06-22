@@ -64,8 +64,17 @@ function ScoreGauge({item, i, active, reduced}: {item: ScoreItem; i: number; act
   const max = item.max && item.max > 0 ? item.max : 100
   const target = Math.min(Math.max(item.value, 0), max)
   const progress = max > 0 ? target / max : 0
-  const isPercent = !item.max // no explicit max → percentage-style score
-  const ariaValue = isPercent ? `${target} percent` : `${target} of ${max}`
+  // Per-item display toggle (SVE-33 feedback): percent vs raw value. Legacy
+  // items authored before the field existed fall back to the old inference
+  // (no explicit max → percentage-style score).
+  const isPercent = item.asPercent ?? !item.max
+  // The number shown in the gauge center: a percent of max, or the raw value.
+  const displayTarget = isPercent ? Math.round((target / max) * 100) : target
+  const ariaValue = isPercent
+    ? `${displayTarget} percent`
+    : item.max
+      ? `${target} of ${max}`
+      : `${target}`
 
   // The single animated value: eased progress 0→1, written **only** inside the
   // rAF callback (never synchronously in the effect body — that would trip
@@ -101,7 +110,7 @@ function ScoreGauge({item, i, active, reduced}: {item: ScoreItem; i: number; act
   //   - in view + motion OK → animated `eased` fraction.
   //   - out of view → 0, so re-entry replays the count-up.
   const fraction = reduced ? 1 : active ? eased : 0
-  const display = Math.round(target * fraction)
+  const display = Math.round(displayTarget * fraction)
   const fill = progress * fraction
 
   // Dash offset: full circumference = empty, 0 = full. Animate via `fill`.
