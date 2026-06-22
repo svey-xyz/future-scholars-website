@@ -1,7 +1,8 @@
+import Link from 'next/link'
 import {ArrowTopRightOnSquareIcon, CodeBracketIcon} from '@heroicons/react/24/outline'
 
 import DateComponent from '@/app/components/Date'
-import {Badge} from '@/components/ui/badge'
+import {Badge, badgeVariants} from '@/components/ui/badge'
 import {cn} from '@/lib/utils'
 import type {ProjectBySlugQueryResult} from '@/sanity.types'
 
@@ -73,6 +74,49 @@ function ExternalMetaLink({
 }
 
 /**
+ * A taxonomy chip (tag / tech) that deep-links to the filtered archive:
+ * `/projects?{param}={slug}` opens `ProjectsList` pre-filtered to that term.
+ * Falls back to a non-interactive `<Badge>` when the term has no slug (nothing
+ * to link to). `nav-back` plays the listing-ward directional View Transition,
+ * mirroring the header "All projects" link (see docs/TRANSITIONS.md).
+ */
+function TaxonChip({
+  param,
+  slug,
+  title,
+  variant,
+  className,
+}: {
+  param: 'tag' | 'tech'
+  slug: string | null
+  title: string | null
+  variant: 'outline' | 'secondary'
+  className?: string
+}) {
+  if (!slug) {
+    return (
+      <Badge variant={variant} className={className}>
+        {title}
+      </Badge>
+    )
+  }
+  return (
+    <Link
+      href={`/projects?${param}=${encodeURIComponent(slug)}`}
+      transitionTypes={['nav-back']}
+      aria-label={`Filter projects by ${title ?? slug}`}
+      className={cn(
+        badgeVariants({variant}),
+        'transition-colors hover:bg-accent hover:text-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring',
+        className,
+      )}
+    >
+      {title}
+    </Link>
+  )
+}
+
+/**
  * Project metadata aside — a description list (`<dl>` of `<dt>`/`<dd>` pairs)
  * surfacing created/updated dates, the tech stack as chips, and the live-site /
  * repository links. Each row auto-hides when its source value is empty
@@ -111,9 +155,7 @@ export default function ProjectMeta({
           <ul className="flex flex-wrap gap-1.5">
             {categories.map((c) => (
               <li key={c._id}>
-                <Badge variant="outline" className="text-[0.7rem]">
-                  {c.title}
-                </Badge>
+                <TaxonChip param="tag" slug={c.slug} title={c.title} variant="outline" className="text-[0.7rem]" />
               </li>
             ))}
           </ul>
@@ -125,12 +167,13 @@ export default function ProjectMeta({
           <ul className="flex flex-wrap gap-1.5">
             {tech.map((t) => (
               <li key={t._id}>
-                <Badge
+                <TaxonChip
+                  param="tech"
+                  slug={t.slug}
+                  title={t.title}
                   variant="secondary"
                   className="font-mono text-[0.65rem] uppercase tracking-tight"
-                >
-                  {t.title}
-                </Badge>
+                />
               </li>
             ))}
           </ul>

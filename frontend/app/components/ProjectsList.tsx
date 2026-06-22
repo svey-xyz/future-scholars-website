@@ -8,6 +8,8 @@ import Reveal from '@/app/components/Reveal'
 import {cn} from '@/lib/utils'
 
 type Project = ProjectCardItem
+/** Shared shape of the `categories` / `tech` reference projections (`{_id, title, slug}`). */
+type Taxon = {_id: string; title: string | null; slug: string | null}
 
 const ALL = '__all__'
 
@@ -15,11 +17,15 @@ type SortKey = 'created' | 'updated'
 
 type Props = {
   projects: Project[]
-  /** Show the "filter by category" radio group. Default `true` (standalone `/projects`). */
+  /** Show the "filter by category / tech" radio groups. Default `true` (standalone `/projects`). */
   showFilter?: boolean
   /** Show the "sort by" select. Default `true`. When `false`, the incoming order is preserved
    *  (so a hand-picked / pre-ordered selection isn't re-sorted). */
   showSort?: boolean
+  /** Pre-selected category **slug** (from `/projects?tag=`). Defaults to "All". */
+  initialCategory?: string | null
+  /** Pre-selected technology **slug** (from `/projects?tech=`). Defaults to "All". */
+  initialTech?: string | null
   /** Grid columns at the widest breakpoint. Default `3`. */
   columns?: 2 | 3
   /** Heading tag for the cards. Omit to use each card's own default (regular `h3`, featured `h2`). */
@@ -54,12 +60,83 @@ function toTime(value: string | null | undefined): number {
   return Number.isNaN(t) ? 0 : t
 }
 
+type Option = {value: string; title: string}
+
 /**
- * Shared projects root — owns the optional filter (by category) + sort
- * (created / updated) controls and the responsive card grid. Used both by the
- * standalone `/projects` route (filter + sort on) and the embedded
+ * De-duplicate a taxonomy across all projects into `[{value: slug, title}]`,
+ * keyed by `slug` (the URL-facing identity), with an "All" pseudo-option first.
+ * Entries without a slug are skipped — they can't be deep-linked or matched.
+ */
+function buildOptions(projects: Project[], pick: (p: Project) => readonly Taxon[] | null | undefined): Option[] {
+  const seen = new Map<string, string>()
+  for (const p of projects) {
+    for (const t of pick(p) ?? []) {
+      if (t?.slug && !seen.has(t.slug)) seen.set(t.slug, t.title ?? t.slug)
+    }
+  }
+  return [{value: ALL, title: 'All'}, ...[...seen].map(([value, title]) => ({value, title}))]
+}
+
+/** Labelled radio group rendered as a segmented chip control (a11y: `fieldset`/`legend`). */
+function RadioFilter({
+  legend,
+  name,
+  options,
+  value,
+  onChange,
+}: {
+  legend: string
+  name: string
+  options: Option[]
+  value: string
+  onChange: (value: string) => void
+}) {
+  return (
+    <fieldset className="min-w-0">
+      <legend className="mb-2 text-sm font-medium text-muted-foreground">{legend}</legend>
+      {/* Native radios sharing `name` form the radio group; the <fieldset>/<legend>
+          names it. No explicit role needed — the inputs carry the semantics. */}
+      <div className="flex flex-wrap gap-2">
+        {options.map((opt) => {
+          const checked = value === opt.value
+          return (
+            <label
+              key={opt.value}
+              className={cn(
+                'cursor-pointer rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
+                'focus-within:outline-none focus-within:ring-1 focus-within:ring-ring',
+                checked
+                  ? 'border-transparent bg-primary text-primary-foreground'
+                  : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
+              )}
+            >
+              <input
+                type="radio"
+                name={name}
+                value={opt.value}
+                checked={checked}
+                onChange={() => onChange(opt.value)}
+                className="sr-only"
+              />
+              {opt.title}
+            </label>
+          )
+        })}
+      </div>
+    </fieldset>
+  )
+}
+
+/**
+ * Shared projects root — owns the optional filters (by category + by tech) and
+ * sort (created / updated) controls and the responsive card grid. Used both by
+ * the standalone `/projects` route (filters + sort on) and the embedded
  * `projectsArchive` page-builder block (controls toggled per the editor's
  * `showFilter` / `showSort` fields). **Does no fetching** — data arrives as props.
+ *
+ * Deep-linking: the `/projects` route reads `?tag=`/`?tech=` and seeds
+ * `initialCategory` / `initialTech` (category/tech **slugs**), so clicking a
+ * tag or tech chip on a project detail page lands here pre-filtered.
  *
  * Filtering toggles per-card visibility (`block`/`hidden` via `className`) rather
  * than unmounting cards, so Visual-Editing `data-sanity` attrs and the
@@ -69,9 +146,10 @@ function toTime(value: string | null | undefined): number {
  *
  * SSR-safe default: before hydration (`mounted === false`) every card renders,
  * already in newest-first (`publishedAt desc`) order when sorting is enabled,
- * with no filtering — so the server HTML and the first client render match.
+ * with no filtering — so the server HTML and the first client render match; the
+ * seeded filter engages on mount.
  *
- * a11y: the filter is a labelled radio `fieldset`/`legend`; the sort is a
+ * a11y: each filter is a labelled radio `fieldset`/`legend`; the sort is a
  * `<label>`-associated `<select>`. The visible result count is announced via an
  * `aria-live="polite"` region.
  */
@@ -79,28 +157,25 @@ export default function ProjectsList({
   projects,
   showFilter = true,
   showSort = true,
+  initialCategory,
+  initialTech,
   columns = 3,
   headingLevel,
   className,
 }: Props) {
   const mounted = useSyncExternalStore(noopSubscribe, getMountedSnapshot, getServerSnapshot)
 
-  const [activeTag, setActiveTag] = useState<string>(ALL)
+  const [activeTag, setActiveTag] = useState<string>(initialCategory || ALL)
+  const [activeTech, setActiveTech] = useState<string>(initialTech || ALL)
   const [sort, setSort] = useState<SortKey>('created')
 
-  // Unique category tags across all projects, by `_id`. "All" pseudo-tag prepended.
-  const tags = useMemo(() => {
-    const seen = new Map<string, string>()
-    for (const p of projects) {
-      for (const c of p.categories ?? []) {
-        if (c?._id && !seen.has(c._id)) seen.set(c._id, c.title)
-      }
-    }
-    return [{id: ALL, title: 'All'}, ...[...seen].map(([id, title]) => ({id, title}))]
-  }, [projects])
+  // Unique category / tech options across all projects, keyed by slug.
+  const tags = useMemo(() => buildOptions(projects, (p) => p.categories), [projects])
+  const techs = useMemo(() => buildOptions(projects, (p) => p.tech), [projects])
 
-  // Effective state: filter only engages when shown + hydrated; otherwise "All".
+  // Effective state: filters only engage when shown + hydrated; otherwise "All".
   const effectiveTag = showFilter && mounted ? activeTag : ALL
+  const effectiveTech = showFilter && mounted ? activeTech : ALL
 
   // Sort newest-first by the chosen datetime. Stable copy so the source prop
   // order is never mutated (it backs Visual Editing reconciliation upstream).
@@ -112,53 +187,42 @@ export default function ProjectsList({
     return [...projects].sort((a, b) => toTime(b[key]) - toTime(a[key]))
   }, [projects, showSort, sort, mounted])
 
-  // A card is visible when "All" is selected or it carries the active category.
-  const isVisible = (p: Project) =>
-    effectiveTag === ALL || (p.categories ?? []).some((c) => c?._id === effectiveTag)
+  // A card is visible when both the category and tech filters match ("All" passes).
+  const isVisible = (p: Project) => {
+    const tagOk = effectiveTag === ALL || (p.categories ?? []).some((c) => c?.slug === effectiveTag)
+    const techOk = effectiveTech === ALL || (p.tech ?? []).some((t) => t?.slug === effectiveTech)
+    return tagOk && techOk
+  }
 
   const visibleCount = mounted ? ordered.filter(isVisible).length : ordered.length
+  // Only surface the tech filter when there's something to filter by.
+  const showTechFilter = showFilter && techs.length > 1
   const hasControls = showFilter || showSort
 
   return (
     <div className={cn('mt-8', className)}>
       {hasControls && (
         <div className="flex flex-col gap-6 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
-          {/* Filter — labelled radio group (segmented control). */}
+          {/* Filters — labelled radio groups (segmented controls). */}
           {showFilter && (
-            <fieldset className="min-w-0">
-              <legend className="mb-2 text-sm font-medium text-muted-foreground">
-                Filter by category
-              </legend>
-              {/* Native radios sharing `name` form the radio group; the <fieldset>/<legend>
-                  names it. No explicit role needed — the inputs carry the semantics. */}
-              <div className="flex flex-wrap gap-2">
-                {tags.map((tag) => {
-                  const checked = effectiveTag === tag.id
-                  return (
-                    <label
-                      key={tag.id}
-                      className={cn(
-                        'cursor-pointer rounded-md border px-3 py-1.5 text-sm font-medium transition-colors',
-                        'focus-within:outline-none focus-within:ring-1 focus-within:ring-ring',
-                        checked
-                          ? 'border-transparent bg-primary text-primary-foreground'
-                          : 'border-input bg-background text-foreground hover:bg-accent hover:text-accent-foreground',
-                      )}
-                    >
-                      <input
-                        type="radio"
-                        name="project-tag"
-                        value={tag.id}
-                        checked={checked}
-                        onChange={() => setActiveTag(tag.id)}
-                        className="sr-only"
-                      />
-                      {tag.title}
-                    </label>
-                  )
-                })}
-              </div>
-            </fieldset>
+            <div className="flex min-w-0 flex-col gap-5">
+              <RadioFilter
+                legend="Filter by category"
+                name="project-tag"
+                options={tags}
+                value={effectiveTag}
+                onChange={setActiveTag}
+              />
+              {showTechFilter && (
+                <RadioFilter
+                  legend="Filter by tech"
+                  name="project-tech"
+                  options={techs}
+                  value={effectiveTech}
+                  onChange={setActiveTech}
+                />
+              )}
+            </div>
           )}
 
           {/* Sort — labelled native select. */}
