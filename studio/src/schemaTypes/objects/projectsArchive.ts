@@ -88,6 +88,14 @@ export const projectsArchive = defineType({
       hidden: ({parent}) => Boolean(parent?.category),
     }),
     defineField({
+      name: 'showTechFilter',
+      title: 'Show tech filter',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Render the interactive “filter by tech” controls above the grid. Independent of the category filter and of any category constraint.',
+    }),
+    defineField({
       name: 'showSort',
       title: 'Show sort control',
       type: 'boolean',

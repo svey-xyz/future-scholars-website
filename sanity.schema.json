@@ -1338,6 +1338,13 @@
           },
           "optional": true
         },
+        "showTechFilter": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean"
+          },
+          "optional": true
+        },
         "showSort": {
           "type": "objectAttribute",
           "value": {

@@ -224,6 +224,7 @@ export type ProjectsArchive = {
   >
   columns?: 2 | 3
   showFilter?: boolean
+  showTechFilter?: boolean
   showSort?: boolean
 }
 
@@ -1548,6 +1549,7 @@ export type GetPageQueryResult = {
         }> | null
         columns?: 2 | 3
         showFilter?: boolean
+        showTechFilter?: boolean
         showSort?: boolean
         background: null
       }

@@ -17,8 +17,11 @@ type SortKey = 'created' | 'updated'
 
 type Props = {
   projects: Project[]
-  /** Show the "filter by category / tech" radio groups. Default `true` (standalone `/projects`). */
+  /** Show the "filter by category" radio group. Default `true`. */
   showFilter?: boolean
+  /** Show the "filter by tech" radio group. Independent of `showFilter`. Default `true`
+   *  (only rendered when there is more than one tech to filter by). */
+  showTechFilter?: boolean
   /** Show the "sort by" select. Default `true`. When `false`, the incoming order is preserved
    *  (so a hand-picked / pre-ordered selection isn't re-sorted). */
   showSort?: boolean
@@ -167,6 +170,7 @@ function RadioFilter({
 export default function ProjectsList({
   projects,
   showFilter = true,
+  showTechFilter = true,
   showSort = true,
   columns = 3,
   headingLevel,
@@ -174,10 +178,10 @@ export default function ProjectsList({
 }: Props) {
   const mounted = useSyncExternalStore(noopSubscribe, getMountedSnapshot, getServerSnapshot)
 
-  // Seed from the URL only when filters are shown; otherwise default to "All".
+  // Seed from the URL only when the matching filter is shown; otherwise "All".
   const [activeTag, setActiveTag] = useState<string>(() => (showFilter ? seedFromUrl('tag') : ALL))
   const [activeTech, setActiveTech] = useState<string>(() =>
-    showFilter ? seedFromUrl('tech') : ALL,
+    showTechFilter ? seedFromUrl('tech') : ALL,
   )
   const [sort, setSort] = useState<SortKey>('created')
 
@@ -185,9 +189,10 @@ export default function ProjectsList({
   const tags = useMemo(() => buildOptions(projects, (p) => p.categories), [projects])
   const techs = useMemo(() => buildOptions(projects, (p) => p.tech), [projects])
 
-  // Effective state: filters only engage when shown + hydrated; otherwise "All".
+  // Effective state: each filter only engages when its own toggle is on +
+  // hydrated; otherwise "All".
   const effectiveTag = showFilter && mounted ? activeTag : ALL
-  const effectiveTech = showFilter && mounted ? activeTech : ALL
+  const effectiveTech = showTechFilter && mounted ? activeTech : ALL
 
   // Sort newest-first by the chosen datetime. Stable copy so the source prop
   // order is never mutated (it backs Visual Editing reconciliation upstream).
@@ -207,25 +212,30 @@ export default function ProjectsList({
   }
 
   const visibleCount = mounted ? ordered.filter(isVisible).length : ordered.length
-  // Only surface the tech filter when there's something to filter by.
-  const showTechFilter = showFilter && techs.length > 1
-  const hasControls = showFilter || showSort
+  // Only surface a filter when there's more than one option to choose from.
+  const renderTagFilter = showFilter && tags.length > 1
+  const renderTechFilter = showTechFilter && techs.length > 1
+  const hasFilters = renderTagFilter || renderTechFilter
+  const hasControls = hasFilters || showSort
 
   return (
     <div className={cn('mt-8', className)}>
       {hasControls && (
         <div className="flex flex-col gap-6 border-b border-border pb-6 lg:flex-row lg:items-end lg:justify-between">
-          {/* Filters — labelled radio groups (segmented controls). */}
-          {showFilter && (
+          {/* Filters — labelled radio groups (segmented controls). Each toggle is
+              independent: category and tech can be shown together or on their own. */}
+          {hasFilters && (
             <div className="flex min-w-0 flex-col gap-5">
-              <RadioFilter
-                legend="Filter by category"
-                name="project-tag"
-                options={tags}
-                value={effectiveTag}
-                onChange={setActiveTag}
-              />
-              {showTechFilter && (
+              {renderTagFilter && (
+                <RadioFilter
+                  legend="Filter by category"
+                  name="project-tag"
+                  options={tags}
+                  value={effectiveTag}
+                  onChange={setActiveTag}
+                />
+              )}
+              {renderTechFilter && (
                 <RadioFilter
                   legend="Filter by tech"
                   name="project-tech"
@@ -258,7 +268,7 @@ export default function ProjectsList({
       )}
 
       {/* Result count — polite live region. Only meaningful while filtering. */}
-      {showFilter && (
+      {hasFilters && (
         <p aria-live="polite" className="mt-4 text-sm text-muted-foreground">
           {visibleCount} {visibleCount === 1 ? 'project' : 'projects'}
         </p>

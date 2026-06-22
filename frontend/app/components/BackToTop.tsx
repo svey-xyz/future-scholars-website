@@ -1,10 +1,13 @@
 'use client'
 
 import {ChevronUpIcon} from '@heroicons/react/24/outline'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 
 import {Button} from '@/components/ui/button'
 import {cn} from '@/lib/utils'
+
+/** Base gap from the viewport bottom (matches the original `bottom-6` = 1.5rem). */
+const GAP = 24
 
 /**
  * Back-to-top affordance — a tiny client island pinned to the bottom-right of
@@ -30,24 +33,40 @@ import {cn} from '@/lib/utils'
  */
 export default function BackToTop() {
   const [visible, setVisible] = useState(false)
+  const trackRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     // Reveal past ~1 viewport, with a 140px floor so short pages still surface it.
     const threshold = () => Math.max(140, window.innerHeight * 0.2)
+    const footer = document.querySelector('footer')
 
     let raf = 0
-    const onScroll = () => {
-      if (raf) return
-      raf = requestAnimationFrame(() => {
-        raf = 0
-        setVisible(window.scrollY > threshold())
-      })
+    const update = () => {
+      raf = 0
+      setVisible(window.scrollY > threshold())
+
+      // Sticky bottom floor: never let the button enter the footer. Track how far
+      // the footer has risen into the viewport and lift the track by that amount,
+      // keeping a constant GAP above its top edge. Written straight to the DOM so
+      // scroll-driven updates don't churn React state.
+      const track = trackRef.current
+      if (track && footer) {
+        const overlap = window.innerHeight - footer.getBoundingClientRect().top
+        track.style.bottom = `${GAP + Math.max(0, overlap)}px`
+      }
     }
 
-    onScroll() // sync initial state (handles restored scroll positions)
+    const onScroll = () => {
+      if (raf) return
+      raf = requestAnimationFrame(update)
+    }
+
+    update() // sync initial state (handles restored scroll positions)
     window.addEventListener('scroll', onScroll, {passive: true})
+    window.addEventListener('resize', onScroll, {passive: true})
     return () => {
       window.removeEventListener('scroll', onScroll)
+      window.removeEventListener('resize', onScroll)
       if (raf) cancelAnimationFrame(raf)
     }
   }, [])
@@ -59,9 +78,11 @@ export default function BackToTop() {
 
   return (
     <div
+      ref={trackRef}
       inert={!visible}
       aria-hidden={!visible}
-      className="pointer-events-none fixed inset-x-0 bottom-6 z-50 print:hidden"
+      style={{bottom: GAP}}
+      className="pointer-events-none fixed inset-x-0 z-50 print:hidden"
     >
       <div className="container flex justify-end">
         <Button

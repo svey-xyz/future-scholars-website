@@ -26,12 +26,14 @@ type Props = {
  */
 export default function ProjectsArchive({block}: Props) {
   const {heading, subheading, source, projects, limit, columns, category} = block
-  // `showFilter`/`showSort` may predate the deployed TypeGen output — read them
-  // via the same `'x' in block` idiom used for `background` in `BlockRenderer`.
-  // A `category` constraint narrows the grid to one tag, so the filter is
-  // suppressed even if a stale `showFilter: true` lingers from before it was set
-  // (hidden Studio fields keep their stored value).
+  // `showFilter`/`showTechFilter`/`showSort` may predate the deployed TypeGen
+  // output — read them via the same `'x' in block` idiom used for `background` in
+  // `BlockRenderer`. A `category` constraint narrows the grid to one tag, so the
+  // *category* filter is suppressed even if a stale `showFilter: true` lingers
+  // (hidden Studio fields keep their stored value). The tech filter is
+  // independent of the category constraint.
   const showFilter = 'showFilter' in block && block.showFilter === true && !category
+  const showTechFilter = 'showTechFilter' in block && block.showTechFilter === true
   const showSort = 'showSort' in block && block.showSort === true
 
   const all = (projects ?? []) as ProjectCardItem[]
@@ -57,6 +59,7 @@ export default function ProjectsArchive({block}: Props) {
       <ProjectsList
         projects={shown}
         showFilter={showFilter}
+        showTechFilter={showTechFilter}
         showSort={showSort}
         columns={cols}
         headingLevel="h3"
