@@ -33,7 +33,7 @@ export default function FeaturedProjectCard({
     <Card
       data-sanity={dataAttr({id: _id, type: 'project', path: 'title'}).toString()}
       className={cn(
-        'group/card relative grid h-full grid-cols-1 overflow-hidden p-0 transition-[transform,box-shadow,border-color,background-color] duration-300 will-change-transform hover:border-primary/30 hover:shadow-lg motion-safe:hover:-translate-y-1 md:grid-cols-2',
+        'group/card relative grid h-full grid-cols-1 overflow-hidden p-0 transition-[transform,box-shadow,border-color,background-color] duration-300 will-change-transform hover:border-primary/30 hover:shadow-lg motion-safe:hover:-translate-y-1',
         className,
       )}
     >
@@ -47,7 +47,7 @@ export default function FeaturedProjectCard({
 
       {coverImage?.asset?._ref ? (
         <ViewTransition name={`project-card-${slug}`} share="morph">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted md:aspect-auto md:h-full">
+          <div className="absolute inset-0 h-full w-full overflow-hidden bg-muted md:aspect-auto md:h-full">
             <Image
               id={coverImage.asset._ref}
               alt={coverImage.alt || ''}
@@ -57,12 +57,12 @@ export default function FeaturedProjectCard({
               hotspot={coverImage.hotspot}
               crop={coverImage.crop}
               sizes="(min-width: 1024px) 50vw, 100vw"
-              className="h-full w-full object-cover transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/card:scale-105"
+              className="h-full w-full object-cover transition-transform duration-900 ease-out will-change-transform motion-safe:group-hover/card:scale-105"
             />
           </div>
         </ViewTransition>
       ) : (
-        <div aria-hidden="true" className="aspect-[16/9] w-full bg-muted md:aspect-auto md:h-full" />
+        <div aria-hidden="true" className="absolute inset-0 h-full -z-1 w-full bg-muted md:aspect-auto md:h-full" />
       )}
 
       <div className="flex flex-col gap-4 p-6 lg:p-8">

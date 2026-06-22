@@ -200,7 +200,7 @@ export default function ProjectsList({
               variant="up"
               className={cn(
                 visible ? 'block' : 'hidden',
-                featured && featuredSpanClass[columns],
+                // featured && featuredSpanClass[columns],
               )}
             >
               {featured ? (
