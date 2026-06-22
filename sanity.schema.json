@@ -3829,6 +3829,27 @@
         },
         "optional": true
       },
+      "archive": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "postsArchive"
+            },
+            {
+              "type": "string",
+              "value": "projectsArchive"
+            },
+            {
+              "type": "string",
+              "value": "authorsArchive"
+            }
+          ]
+        },
+        "optional": true
+      },
       "background": {
         "type": "objectAttribute",
         "value": {

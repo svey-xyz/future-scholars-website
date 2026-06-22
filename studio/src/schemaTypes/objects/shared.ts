@@ -50,3 +50,61 @@ export const backgroundField = defineField({
   type: 'background',
   description: 'Optional animated background rendered behind this content.',
 })
+
+/**
+ * Archive page-builder block `_type`s and the document type each one lists.
+ * Single source of truth for the `page.archive` designation (`archiveField`
+ * below) and the per-page validation in `documents/page.ts`. The stored
+ * `archive` value IS the matching block `_type`, so the frontend resolves the
+ * canonical listing page with a one-liner (`archive == "projectsArchive"`).
+ *
+ * Adding a new archive block? Add it here and the designation, validation and
+ * frontend lookup all follow automatically.
+ */
+export const ARCHIVE_BLOCK_TYPES = ['postsArchive', 'projectsArchive', 'authorsArchive'] as const
+export type ArchiveBlockType = (typeof ARCHIVE_BLOCK_TYPES)[number]
+
+export const ARCHIVE_OPTIONS: {value: ArchiveBlockType; title: string}[] = [
+  {value: 'postsArchive', title: 'Posts'},
+  {value: 'projectsArchive', title: 'Projects'},
+  {value: 'authorsArchive', title: 'Authors'},
+]
+
+export const isArchiveBlockType = (type: string): type is ArchiveBlockType =>
+  (ARCHIVE_BLOCK_TYPES as readonly string[]).includes(type)
+
+export const archiveTitle = (value: string): string =>
+  ARCHIVE_OPTIONS.find((o) => o.value === value)?.title ?? value
+
+/**
+ * Designates a `page` as the canonical listing for a content type. When set,
+ * the page must contain exactly one matching archive block and no other archive
+ * block types (enforced on `page.pageBuilder` in `documents/page.ts`), and each
+ * archive can be assigned to only one page (the async uniqueness check here).
+ * Leave unset for ordinary pages — archive blocks may still be used freely on
+ * non-archive pages.
+ */
+export const archiveField = defineField({
+  name: 'archive',
+  title: 'Document archive',
+  type: 'string',
+  description:
+    'Make this page the canonical listing for a content type. The page must then contain exactly one matching archive block. Each archive can be assigned to only one page.',
+  options: {
+    list: ARCHIVE_OPTIONS,
+    layout: 'dropdown',
+  },
+  validation: (Rule) =>
+    Rule.custom(async (value, context) => {
+      if (!value) return true
+      const client = context.getClient({apiVersion: '2025-09-25'})
+      const baseId = (context.document?._id || '').replace(/^drafts\./, '')
+      const duplicates = await client.fetch<number>(
+        `count(*[_type == "page" && archive == $archive && !(_id in $self)])`,
+        {archive: value, self: [baseId, `drafts.${baseId}`]},
+      )
+      return duplicates > 0
+        ? `The ${archiveTitle(value)} archive is already assigned to another page. Each archive can be assigned to only one page.`
+        : true
+    }),
+})

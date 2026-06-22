@@ -103,6 +103,7 @@ export const getPageQuery = defineQuery(`
     slug,
     heading,
     subheading,
+    archive,
     ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,
@@ -279,6 +280,14 @@ export const postPagesSlugs = defineQuery(`
 export const pagesSlugs = defineQuery(`
   *[_type == "page" && defined(slug.current)]
   {"slug": slug.current}
+`)
+
+// Resolve the canonical archive page's slug for a given archive type (the stored
+// `archive` value is the block `_type`, e.g. "projectsArchive"). Used to build
+// links to the listing (project detail back-link + taxonomy chips). Each archive
+// is unique to one page (enforced in the Studio schema), so `[0]` is exact.
+export const archivePageSlugQuery = defineQuery(`
+  *[_type == "page" && archive == $archive && defined(slug.current)][0].slug.current
 `)
 
 export const allProjectsQuery = defineQuery(`

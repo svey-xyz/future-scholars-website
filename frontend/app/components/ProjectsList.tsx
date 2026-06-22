@@ -22,10 +22,6 @@ type Props = {
   /** Show the "sort by" select. Default `true`. When `false`, the incoming order is preserved
    *  (so a hand-picked / pre-ordered selection isn't re-sorted). */
   showSort?: boolean
-  /** Pre-selected category **slug** (from `/projects?tag=`). Defaults to "All". */
-  initialCategory?: string | null
-  /** Pre-selected technology **slug** (from `/projects?tech=`). Defaults to "All". */
-  initialTech?: string | null
   /** Grid columns at the widest breakpoint. Default `3`. */
   columns?: 2 | 3
   /** Heading tag for the cards. Omit to use each card's own default (regular `h3`, featured `h2`). */
@@ -58,6 +54,20 @@ function toTime(value: string | null | undefined): number {
   if (!value) return 0
   const t = Date.parse(value)
   return Number.isNaN(t) ? 0 : t
+}
+
+/**
+ * One-shot client-side seed of a filter from the listing URL (`?tag=`/`?tech=`
+ * category/tech **slugs**). Read straight from `window` rather than
+ * `useSearchParams` on purpose: `useSearchParams` would push the whole card grid
+ * to client-only rendering (no SSR HTML → worse CLS/SEO). This runs only in a
+ * `useState` lazy initializer, and the `mounted` gate below keeps the first
+ * client render unfiltered — so it always matches the server HTML before the
+ * seeded filter engages on hydration. SSR returns `ALL`.
+ */
+function seedFromUrl(param: string): string {
+  if (typeof window === 'undefined') return ALL
+  return new URLSearchParams(window.location.search).get(param) || ALL
 }
 
 type Option = {value: string; title: string}
@@ -129,14 +139,15 @@ function RadioFilter({
 
 /**
  * Shared projects root — owns the optional filters (by category + by tech) and
- * sort (created / updated) controls and the responsive card grid. Used both by
- * the standalone `/projects` route (filters + sort on) and the embedded
+ * sort (created / updated) controls and the responsive card grid. Rendered by the
  * `projectsArchive` page-builder block (controls toggled per the editor's
- * `showFilter` / `showSort` fields). **Does no fetching** — data arrives as props.
+ * `showFilter` / `showSort` fields); the projects listing is now a normal page
+ * carrying that block, not a standalone route. **Does no fetching** — data
+ * arrives as props.
  *
- * Deep-linking: the `/projects` route reads `?tag=`/`?tech=` and seeds
- * `initialCategory` / `initialTech` (category/tech **slugs**), so clicking a
- * tag or tech chip on a project detail page lands here pre-filtered.
+ * Deep-linking: when filters are shown, the initial category/tech is seeded from
+ * the listing URL's `?tag=`/`?tech=` (slugs) via {@link seedFromUrl}, so clicking
+ * a tag or tech chip on a project detail page lands here pre-filtered.
  *
  * Filtering toggles per-card visibility (`block`/`hidden` via `className`) rather
  * than unmounting cards, so Visual-Editing `data-sanity` attrs and the
@@ -157,16 +168,17 @@ export default function ProjectsList({
   projects,
   showFilter = true,
   showSort = true,
-  initialCategory,
-  initialTech,
   columns = 3,
   headingLevel,
   className,
 }: Props) {
   const mounted = useSyncExternalStore(noopSubscribe, getMountedSnapshot, getServerSnapshot)
 
-  const [activeTag, setActiveTag] = useState<string>(initialCategory || ALL)
-  const [activeTech, setActiveTech] = useState<string>(initialTech || ALL)
+  // Seed from the URL only when filters are shown; otherwise default to "All".
+  const [activeTag, setActiveTag] = useState<string>(() => (showFilter ? seedFromUrl('tag') : ALL))
+  const [activeTech, setActiveTech] = useState<string>(() =>
+    showFilter ? seedFromUrl('tech') : ALL,
+  )
   const [sort, setSort] = useState<SortKey>('created')
 
   // Unique category / tech options across all projects, keyed by slug.

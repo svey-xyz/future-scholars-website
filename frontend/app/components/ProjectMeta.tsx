@@ -74,11 +74,12 @@ function ExternalMetaLink({
 }
 
 /**
- * A taxonomy chip (tag / tech) that deep-links to the filtered archive:
- * `/projects?{param}={slug}` opens `ProjectsList` pre-filtered to that term.
- * Falls back to a non-interactive `<Badge>` when the term has no slug (nothing
- * to link to). `nav-back` plays the listing-ward directional View Transition,
- * mirroring the header "All projects" link (see docs/TRANSITIONS.md).
+ * A taxonomy chip (tag / tech) that deep-links to the filtered projects archive:
+ * `{archiveBasePath}?{param}={slug}` opens the archive page's `ProjectsList`
+ * pre-filtered to that term. Falls back to a non-interactive `<Badge>` when the
+ * term has no slug or no projects-archive page is designated (nothing to link
+ * to). `nav-back` plays the listing-ward directional View Transition, mirroring
+ * the header "All projects" link (see docs/TRANSITIONS.md).
  */
 function TaxonChip({
   param,
@@ -86,14 +87,16 @@ function TaxonChip({
   title,
   variant,
   className,
+  archiveBasePath,
 }: {
   param: 'tag' | 'tech'
   slug: string | null
   title: string | null
   variant: 'outline' | 'secondary'
   className?: string
+  archiveBasePath?: string | null
 }) {
-  if (!slug) {
+  if (!slug || !archiveBasePath) {
     return (
       <Badge variant={variant} className={className}>
         {title}
@@ -102,7 +105,7 @@ function TaxonChip({
   }
   return (
     <Link
-      href={`/projects?${param}=${encodeURIComponent(slug)}`}
+      href={`${archiveBasePath}?${param}=${encodeURIComponent(slug)}`}
       transitionTypes={['nav-back']}
       aria-label={`Filter projects by ${title ?? slug}`}
       className={cn(
@@ -130,9 +133,13 @@ function TaxonChip({
 export default function ProjectMeta({
   project,
   className,
+  archiveBasePath,
 }: {
   project: Pick<Project, 'publishedAt' | 'updatedAt' | 'categories' | 'tech' | 'website' | 'repo'>
   className?: string
+  /** Base path of the designated projects-archive page (e.g. `/projects`). When
+   *  absent, taxonomy chips render as static badges (no listing to link to). */
+  archiveBasePath?: string | null
 }) {
   const {publishedAt, updatedAt, categories, tech, website, repo} = project
   const hasCategories = Array.isArray(categories) && categories.length > 0
@@ -155,7 +162,14 @@ export default function ProjectMeta({
           <ul className="flex flex-wrap gap-1.5">
             {categories.map((c) => (
               <li key={c._id}>
-                <TaxonChip param="tag" slug={c.slug} title={c.title} variant="outline" className="text-[0.7rem]" />
+                <TaxonChip
+                  param="tag"
+                  slug={c.slug}
+                  title={c.title}
+                  variant="outline"
+                  className="text-[0.7rem]"
+                  archiveBasePath={archiveBasePath}
+                />
               </li>
             ))}
           </ul>
@@ -173,6 +187,7 @@ export default function ProjectMeta({
                   title={t.title}
                   variant="secondary"
                   className="font-mono text-[0.65rem] uppercase tracking-tight"
+                  archiveBasePath={archiveBasePath}
                 />
               </li>
             ))}

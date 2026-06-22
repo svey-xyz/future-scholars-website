@@ -14,10 +14,11 @@ type Props = {
 
 /**
  * Projects-archive page-builder block (SVE-40). A thin server wrapper around the
- * shared {@link ProjectsList} root so the embedded grid is identical to the
- * standalone `/projects` listing. The block owns only its `heading`/`subheading`;
- * the cards, grid, and the optional filter/sort controls all live in
- * `ProjectsList`, toggled by the editor's `showFilter` / `showSort` fields.
+ * shared {@link ProjectsList} root. This block IS the projects listing — a page
+ * designated the Projects archive (`page.archive`) carries exactly one of these.
+ * The block owns only its `heading`/`subheading`; the cards, grid, and the
+ * optional filter/sort controls all live in `ProjectsList`, toggled by the
+ * editor's `showFilter` / `showSort` fields.
  *
  * The block's `projects` projection shares `projectFields` with
  * `AllProjectsQueryResult`, so it feeds `ProjectsList` directly. Editor `columns`

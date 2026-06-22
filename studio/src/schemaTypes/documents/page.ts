@@ -1,7 +1,12 @@
 import {defineField, defineType} from 'sanity'
 import {DocumentIcon} from '@sanity/icons'
 
-import {backgroundField} from '../objects/shared'
+import {
+  archiveField,
+  archiveTitle,
+  backgroundField,
+  isArchiveBlockType,
+} from '../objects/shared'
 
 /**
  * Page schema.  Define and edit the fields for the 'page' content type.
@@ -42,6 +47,7 @@ export const page = defineType({
       title: 'Subheading',
       type: 'string',
     }),
+    archiveField,
     backgroundField,
     defineField({
       name: 'pageBuilder',
@@ -62,6 +68,39 @@ export const page = defineType({
         {type: 'projectsArchive'},
         {type: 'authorsArchive'},
       ],
+      // When this page is designated an archive (`archive` field), it must carry
+      // exactly one matching archive block and no other archive blocks. Archive
+      // blocks remain freely usable on non-archive pages (no constraint there).
+      // The array `of` is static, so this is enforced here rather than by hiding
+      // insert-menu options per-document.
+      validation: (Rule) =>
+        Rule.custom((blocks, context) => {
+          const archive = (context.document as {archive?: string} | undefined)?.archive
+          if (!archive) return true
+
+          const items = (blocks as {_type: string; _key: string}[] | undefined) ?? []
+          const archiveBlocks = items.filter((b) => isArchiveBlockType(b._type))
+          const matching = archiveBlocks.filter((b) => b._type === archive)
+          const others = archiveBlocks.filter((b) => b._type !== archive)
+          const label = archiveTitle(archive)
+
+          if (matching.length === 0) {
+            return `This page is the ${label} archive — add one “${label} Archive” block to the page builder.`
+          }
+          if (matching.length > 1) {
+            return {
+              message: `Only one “${label} Archive” block is allowed on the ${label} archive page.`,
+              paths: matching.slice(1).map((b) => [{_key: b._key}]),
+            }
+          }
+          if (others.length > 0) {
+            return {
+              message: `The ${label} archive page may only contain the “${label} Archive” block. Remove the other archive block(s).`,
+              paths: others.map((b) => [{_key: b._key}]),
+            }
+          }
+          return true
+        }),
       options: {
         insertMenu: {
           // Configure the "Add Item" menu to display a thumbnail preview of the content type. https://www.sanity.io/docs/studio/array-type#efb1fe03459d

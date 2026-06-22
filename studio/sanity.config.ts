@@ -7,6 +7,7 @@ import {defineConfig} from 'sanity'
 import {structureTool} from 'sanity/structure'
 import {visionTool} from '@sanity/vision'
 import {schemaTypes} from './src/schemaTypes'
+import {archiveTitle} from './src/schemaTypes/objects/shared'
 import {structure} from './src/structure'
 import {unsplashImageAsset} from 'sanity-plugin-asset-source-unsplash'
 import { media } from 'sanity-plugin-media'
@@ -87,11 +88,20 @@ const deskPlugins = [
 					select: {
 						name: 'name',
 						slug: 'slug.current',
+						archive: 'archive',
 					},
 					resolve: (doc) => ({
+						// Surface the archive designation so editors can see (in
+						// Presentation) which content type this page lists.
+						message: doc?.archive
+							? `This page is the ${archiveTitle(doc.archive)} archive`
+							: undefined,
+						tone: doc?.archive ? 'positive' : undefined,
 						locations: [
 							{
-								title: doc?.name || 'Untitled',
+								title: doc?.archive
+									? `${doc?.name || 'Untitled'} · ${archiveTitle(doc.archive)} archive`
+									: doc?.name || 'Untitled',
 								href: resolveHref('page', doc?.slug)!,
 							},
 						],
@@ -120,16 +130,16 @@ const deskPlugins = [
 						title: 'title',
 						slug: 'slug.current',
 					},
+					// The projects listing is now a normal page designated the Projects
+					// archive (`page.archive`), at an editor-chosen slug. `defineLocations`'
+					// resolver is synchronous with no dataset access, so it can't look that
+					// slug up — hence only the detail location (no hard-coded `/projects`).
 					resolve: (doc) => ({
 						locations: [
 							{
 								title: doc?.title || 'Untitled',
 								href: resolveHref('project', doc?.slug)!,
 							},
-							{
-								title: 'Projects',
-								href: '/projects',
-							} satisfies DocumentLocation,
 						].filter(Boolean) as DocumentLocation[],
 					}),
 				}),

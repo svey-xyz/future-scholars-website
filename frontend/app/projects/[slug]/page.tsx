@@ -10,7 +10,7 @@ import PortableText from '@/app/components/PortableText'
 import ProjectMeta from '@/app/components/ProjectMeta'
 import Image from '@/app/components/SanityImage'
 import {sanityFetch} from '@/sanity/lib/live'
-import {projectBySlugQuery, projectSlugsQuery} from '@/sanity/lib/queries'
+import {archivePageSlugQuery, projectBySlugQuery, projectSlugsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
 type Props = {
@@ -91,11 +91,25 @@ function EmptyBodyNote() {
  */
 export default async function ProjectPage(props: Props) {
   const params = await props.params
-  const [{data: project}] = await Promise.all([sanityFetch({query: projectBySlugQuery, params})])
+  const [{data: project}, {data: archiveSlug}] = await Promise.all([
+    sanityFetch({query: projectBySlugQuery, params}),
+    // Resolve the designated projects-archive page slug for the back-link +
+    // taxonomy chips. `stega: false` — the value goes into hrefs, so it must not
+    // carry Visual-Editing markers (see CLAUDE.md).
+    sanityFetch({
+      query: archivePageSlugQuery,
+      params: {archive: 'projectsArchive'},
+      stega: false,
+    }),
+  ])
 
   if (!project?._id) {
     return notFound()
   }
+
+  // Base path of the projects listing (e.g. `/projects`). Null when no page is
+  // designated the projects archive yet — back-link + chips degrade gracefully.
+  const archiveBasePath = typeof archiveSlug === 'string' ? `/${archiveSlug}` : null
 
   // Respect the visibility toggle: a hidden project 404s for the public, but
   // stays reachable in Presentation/draft preview so editors can review it.
@@ -110,21 +124,24 @@ export default async function ProjectPage(props: Props) {
     <div className="container my-12 grid gap-12 lg:my-24">
       <article>
         <header className="mb-8 grid gap-6 border-b border-border pb-8">
-          {/* Back-link to the listing. `nav-back` plays the upward/back directional
-              slide (mirror of the card's `nav-forward`), matching the repo
-              convention (see docs/TRANSITIONS.md). The arrow's hover nudge is
-              `motion-safe:` only, so reduced-motion users get a static link. */}
-          <Link
-            href="/projects"
-            transitionTypes={['nav-back']}
-            className="group inline-flex w-fit items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-          >
-            <ArrowLongLeftIcon
-              aria-hidden="true"
-              className="size-4 transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:-translate-x-1"
-            />
-            All projects
-          </Link>
+          {/* Back-link to the designated projects-archive page. `nav-back` plays
+              the upward/back directional slide (mirror of the card's
+              `nav-forward`), matching the repo convention (see docs/TRANSITIONS.md).
+              The arrow's hover nudge is `motion-safe:` only, so reduced-motion
+              users get a static link. Hidden when no projects archive exists. */}
+          {archiveBasePath && (
+            <Link
+              href={archiveBasePath}
+              transitionTypes={['nav-back']}
+              className="group inline-flex w-fit items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+            >
+              <ArrowLongLeftIcon
+                aria-hidden="true"
+                className="size-4 transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:-translate-x-1"
+              />
+              All projects
+            </Link>
+          )}
           <div className="flex max-w-3xl flex-col gap-6">
             <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{project.title}</h1>
             {project.excerpt && (
@@ -179,7 +196,7 @@ export default async function ProjectPage(props: Props) {
             className="md:col-start-3 md:row-start-1 md:border-l md:border-border md:pl-8"
           >
             <h2 className="sr-only">Project details</h2>
-            <ProjectMeta project={project} />
+            <ProjectMeta project={project} archiveBasePath={archiveBasePath} />
           </aside>
         </div>
       </article>

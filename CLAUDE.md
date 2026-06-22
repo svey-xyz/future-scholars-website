@@ -43,7 +43,7 @@ Run from repo root unless noted:
 
 ## Sanity content model
 
-Documents: `page`, `post`, `person`, `project`, `category`. Singleton: `settings` (id `siteSettings`; includes the `builtWith` tech list rendered in the footer). Objects: `callToAction`, `infoSection`, `note`, `scores`, `projectsArchive`, `background`, `button`, `link`, `blockContent`, `blockContentTextOnly` (plus pre-existing `faq`, `stats`, `postsArchive`, etc.). The `page` document has a `pageBuilder` array rendered by `app/components/PageBuilder.tsx` → `BlockRenderer.tsx`; every block (and the `page` itself) can carry an optional `background` (none | animated WebGL shader) via the shared `backgroundField` mixin in `studio/src/schemaTypes/objects/shared.ts`.
+Documents: `page`, `post`, `person`, `project`, `category`. Singleton: `settings` (id `siteSettings`; includes the `builtWith` tech list rendered in the footer). Objects: `callToAction`, `infoSection`, `note`, `scores`, `projectsArchive`, `background`, `button`, `link`, `blockContent`, `blockContentTextOnly` (plus pre-existing `faq`, `stats`, `postsArchive`, etc.). The `page` document has a `pageBuilder` array rendered by `app/components/PageBuilder.tsx` → `BlockRenderer.tsx`; every block (and the `page` itself) can carry an optional `background` (none | animated WebGL shader) via the shared `backgroundField` mixin in `studio/src/schemaTypes/objects/shared.ts`. The `page` also has a single-select `archive` field (the shared `archiveField`): when set to an archive block type (`postsArchive` | `projectsArchive` | `authorsArchive`, see `ARCHIVE_BLOCK_TYPES` in `shared.ts`), the page must contain exactly one matching archive block and no other archive blocks (validated on `pageBuilder`), and each archive is unique to one page (async validation on `archiveField`). Archive blocks remain usable freely on non-archive pages.
 
 The `project` document (`title`, `slug`, `excerpt`, `coverImage`, `publishedAt`/`updatedAt`, `website`, `repo`, `tech[]→category`, `featured`, `body`, `ogImage`) mirrors `post` as a routable doc.
 
@@ -51,7 +51,7 @@ Routing (mirror in Studio's Presentation `mainDocuments` + Next routes):
 - `/` → `settings`
 - `/:slug` → `page`
 - `/posts/:slug` → `post`
-- `/projects` → `project` listing (filter by tech + sort by created/updated)
+- projects/posts/authors **listings are normal `page` documents** designated via `page.archive` (carrying the matching `*Archive` block) — there is no standalone `/projects` route. The detail back-link + taxonomy chips resolve the archive page's slug via `archivePageSlugQuery`; chips deep-link with `?tag=`/`?tech=` (filters seeded client-side in `ProjectsList`).
 - `/projects/:slug` → `project` detail (metadata section; card→detail View-Transition morph `project-card-${slug}`)
 
 ## Queries / data fetching
