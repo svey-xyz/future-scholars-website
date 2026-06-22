@@ -77,6 +77,24 @@ export const projectsArchive = defineType({
         direction: 'horizontal',
       },
     }),
+    defineField({
+      name: 'showFilter',
+      title: 'Show category filter',
+      type: 'boolean',
+      initialValue: false,
+      description: 'Render the interactive “filter by category” controls above the grid.',
+      // A `category` constraint narrows the grid to one tag, leaving nothing to
+      // filter — so the toggle only applies when no category is set.
+      hidden: ({parent}) => Boolean(parent?.category),
+    }),
+    defineField({
+      name: 'showSort',
+      title: 'Show sort control',
+      type: 'boolean',
+      initialValue: false,
+      description:
+        'Render the “sort by” control (newest / recently updated) above the grid. When off, the editor’s order is preserved.',
+    }),
   ],
   preview: {
     select: {heading: 'heading', source: 'source'},

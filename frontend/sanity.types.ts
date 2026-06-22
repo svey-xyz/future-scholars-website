@@ -223,6 +223,8 @@ export type ProjectsArchive = {
     } & ProjectReference
   >
   columns?: 2 | 3
+  showFilter?: boolean
+  showSort?: boolean
 }
 
 export type PostReference = {
@@ -1542,6 +1544,8 @@ export type GetPageQueryResult = {
           }> | null
         }> | null
         columns?: 2 | 3
+        showFilter?: boolean
+        showSort?: boolean
         background: null
       }
     | {

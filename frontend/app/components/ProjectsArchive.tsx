@@ -1,10 +1,9 @@
 import {stegaClean} from '@sanity/client/stega'
 
-import ProjectCard, {type ProjectCardItem} from '@/app/components/ProjectCard'
-import FeaturedProjectCard from '@/app/components/FeaturedProjectCard'
+import ProjectsList from '@/app/components/ProjectsList'
+import {type ProjectCardItem} from '@/app/components/ProjectCard'
 import Reveal from '@/app/components/Reveal'
-import {cn} from '@/lib/utils'
-import {ExtractPageBuilderType, ProjectsArchiveItem} from '@/sanity/lib/types'
+import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 type Props = {
   block: ExtractPageBuilderType<'projectsArchive'>
@@ -13,26 +12,28 @@ type Props = {
   pageType: string
 }
 
-// The block's `projects` projection (`ProjectsArchiveItem`) is structurally the
-// same as `AllProjectsQueryResult[number]` (both use the shared `projectFields`),
-// so the cards take it directly — no widening.
-const asCardItem = (p: ProjectsArchiveItem): ProjectCardItem => p
-
-const colClass: Record<number, string> = {
-  2: 'sm:grid-cols-2',
-  3: 'sm:grid-cols-2 lg:grid-cols-3',
-}
-
 /**
- * Projects-archive page-builder block (SVE-40). Reuses the shared `ProjectCard`
- * / `FeaturedProjectCard` for a consistent embedded list. Server Component — the
- * block has no filter/sort UI (that lives on the standalone `/projects` route);
- * it just renders its pre-projected, pre-ordered `projects` selection. Editor
- * `columns` (2|3) controls the grid; featured items span the row.
+ * Projects-archive page-builder block (SVE-40). A thin server wrapper around the
+ * shared {@link ProjectsList} root so the embedded grid is identical to the
+ * standalone `/projects` listing. The block owns only its `heading`/`subheading`;
+ * the cards, grid, and the optional filter/sort controls all live in
+ * `ProjectsList`, toggled by the editor's `showFilter` / `showSort` fields.
+ *
+ * The block's `projects` projection shares `projectFields` with
+ * `AllProjectsQueryResult`, so it feeds `ProjectsList` directly. Editor `columns`
+ * (2|3) selects the grid width; featured items span the row.
  */
 export default function ProjectsArchive({block}: Props) {
-  const {heading, subheading, source, projects, limit, columns} = block
-  const all = projects ?? []
+  const {heading, subheading, source, projects, limit, columns, category} = block
+  // `showFilter`/`showSort` may predate the deployed TypeGen output — read them
+  // via the same `'x' in block` idiom used for `background` in `BlockRenderer`.
+  // A `category` constraint narrows the grid to one tag, so the filter is
+  // suppressed even if a stale `showFilter: true` lingers from before it was set
+  // (hidden Studio fields keep their stored value).
+  const showFilter = 'showFilter' in block && block.showFilter === true && !category
+  const showSort = 'showSort' in block && block.showSort === true
+
+  const all = (projects ?? []) as ProjectCardItem[]
   // GROQ caps 'latest' at 24; apply the editor's exact limit here.
   const shown = stegaClean(source) === 'latest' ? all.slice(0, limit ?? 6) : all
   const cols = columns === 2 ? 2 : 3
@@ -52,32 +53,13 @@ export default function ProjectsArchive({block}: Props) {
         )}
       </header>
 
-      {shown.length > 0 ? (
-        <ul className={cn('mt-8 grid grid-cols-1 gap-6', colClass[cols])}>
-          {shown.map((project, i) => {
-            const featured = project.featured === true
-            return (
-              <Reveal
-                as="li"
-                key={project._id}
-                i={i % 8}
-                variant="up"
-                // className={cn(featured && cols === 3 ? 'lg:col-span-3 sm:col-span-2' : featured && 'sm:col-span-2')}
-              >
-								<ProjectCard project={asCardItem(project)} headingLevel="h3" />
-
-                {/* {featured ? (
-                  <FeaturedProjectCard project={asCardItem(project)} headingLevel="h3" />
-                ) : (
-                  <ProjectCard project={asCardItem(project)} headingLevel="h3" />
-                )} */}
-              </Reveal>
-            )
-          })}
-        </ul>
-      ) : (
-        <p className="mt-8 text-muted-foreground">No projects to show yet.</p>
-      )}
+      <ProjectsList
+        projects={shown}
+        showFilter={showFilter}
+        showSort={showSort}
+        columns={cols}
+        headingLevel="h3"
+      />
     </section>
   )
 }
