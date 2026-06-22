@@ -59,7 +59,7 @@ export default function ProjectCard({
 
       {coverImage?.asset?._ref ? (
         <ViewTransition name={`project-card-${slug}`} share="morph">
-          <div className="relative aspect-[16/9] w-full overflow-hidden bg-muted">
+          <div className="relative aspect-video w-full overflow-hidden bg-muted">
             <Image
               id={coverImage.asset._ref}
               alt={coverImage.alt || ''}
@@ -69,12 +69,12 @@ export default function ProjectCard({
               hotspot={coverImage.hotspot}
               crop={coverImage.crop}
               sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-              className="h-full w-full object-cover transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/card:scale-105"
+              className="h-full w-full object-cover transition-transform duration-900 ease-out will-change-transform motion-safe:group-hover/card:scale-105"
             />
           </div>
         </ViewTransition>
       ) : (
-        <div aria-hidden="true" className="aspect-[16/9] w-full bg-muted" />
+        <div aria-hidden="true" className="aspect-video w-full bg-muted" />
       )}
 
       <CardHeader className="pt-6">

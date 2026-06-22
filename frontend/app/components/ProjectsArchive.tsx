@@ -62,13 +62,15 @@ export default function ProjectsArchive({block}: Props) {
                 key={project._id}
                 i={i % 8}
                 variant="up"
-                className={cn(featured && cols === 3 ? 'lg:col-span-3 sm:col-span-2' : featured && 'sm:col-span-2')}
+                // className={cn(featured && cols === 3 ? 'lg:col-span-3 sm:col-span-2' : featured && 'sm:col-span-2')}
               >
-                {featured ? (
+								<ProjectCard project={asCardItem(project)} headingLevel="h3" />
+
+                {/* {featured ? (
                   <FeaturedProjectCard project={asCardItem(project)} headingLevel="h3" />
                 ) : (
                   <ProjectCard project={asCardItem(project)} headingLevel="h3" />
-                )}
+                )} */}
               </Reveal>
             )
           })}
