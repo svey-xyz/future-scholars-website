@@ -1,6 +1,7 @@
 {
   "name": "frontend",
   "private": true,
+	"type": "module",
   "scripts": {
     "prebuild": "sanity typegen generate",
     "build": "next build && serwist build",
