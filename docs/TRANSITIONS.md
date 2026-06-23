@@ -9,7 +9,7 @@ Built on React's [`<ViewTransition>`](https://react.dev/reference/react/ViewTran
 | Concern | Where | Notes |
 | --- | --- | --- |
 | Feature flag | `frontend/next.config.ts` → `experimental.viewTransition: true` | Required for Next to trigger transitions on navigation. |
-| App-wide boundary | `frontend/app/components/PageTransition.tsx` | RSC. Wraps `{children}` inside `<main>` in `app/layout.tsx`. Maps `transitionTypes` → directional slides; untyped navigations crossfade. |
+| App-wide boundary | `frontend/app/components/motion/PageTransition.tsx` | RSC. Wraps `{children}` inside `<main>` in `app/layout.tsx`. Maps `transitionTypes` → directional slides; untyped navigations crossfade. |
 | Directional intent | `<Link transitionTypes={[…]}>` | `nav-forward` (going deeper) / `nav-back` (going up). Set on post cards, header/mobile nav links, and the home-logo link. |
 | Shared-element morph | `Posts.tsx` (`CardTitle`) ↔ `app/posts/[slug]/page.tsx` (`<h1>`) | Matching `<ViewTransition name={`post-title-${slug}`} share="morph">`. The title morphs between list and detail. |
 | Suspense reveals | `app/page.tsx`, `app/posts/[slug]/page.tsx` | Fallback wrapped in `<ViewTransition exit="slide-down">`, content in `<ViewTransition enter="slide-up" default="none">`. |

@@ -1,11 +1,11 @@
 import type {Metadata} from 'next'
 
-import PageBuilderPage from '@/app/components/PageBuilder'
-import ShaderBackground from '@/app/components/shader/ShaderBackground'
+import {PageBuilder as PageBuilderPage} from '@/app/components/blocks'
+import {ShaderBackground} from '@/app/components/shader'
 import {sanityFetch} from '@/sanity/lib/live'
 import {getPageQuery, pagesSlugs} from '@/sanity/lib/queries'
 import {GetPageQueryResult} from '@/sanity.types'
-import {OnboardingShell} from '@/app/components/Onboarding'
+import {OnboardingShell} from '@/app/components/starter'
 import { studioUrl } from '@/sanity/lib/api'
 import { title } from 'process'
 
