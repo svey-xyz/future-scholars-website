@@ -13,6 +13,18 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://cdn.sanity.io/**')],
   },
+  async headers() {
+    return [
+      {
+        // Always revalidate the service worker so clients pick up new deployments.
+        source: '/sw.js',
+        headers: [
+          {key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate'},
+          {key: 'Content-Type', value: 'application/javascript; charset=utf-8'},
+        ],
+      },
+    ]
+  },
 }
 
 export default nextConfig
