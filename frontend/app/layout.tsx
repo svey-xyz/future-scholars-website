@@ -1,7 +1,8 @@
 import './globals.css'
 
+import {SerwistProvider} from '@serwist/next/react'
 import {SpeedInsights} from '@vercel/speed-insights/next'
-import type {Metadata} from 'next'
+import type {Metadata, Viewport} from 'next'
 import {Inter, IBM_Plex_Mono} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {toPlainText} from 'next-sanity'
@@ -43,15 +44,30 @@ export async function generateMetadata(): Promise<Metadata> {
   }
   return {
     metadataBase,
+    applicationName: title,
     title: {
       template: `%s | ${title}`,
       default: title,
     },
     description: toPlainText(description),
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title,
+    },
+    formatDetection: {telephone: false},
     openGraph: {
       images: ogImage ? [ogImage] : [],
     },
   }
+}
+
+export const viewport: Viewport = {
+  themeColor: [
+    // Mirrors --primary-accent (light / dark) in app/globals.css.
+    {media: '(prefers-color-scheme: light)', color: '#ff5500'},
+    {media: '(prefers-color-scheme: dark)', color: '#ff7e3d'},
+  ],
 }
 
 const inter = Inter({
@@ -88,36 +104,38 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!CSS.supports('animation-timeline: view()'))document.documentElement.setAttribute('data-reveal-js','')}catch(e){}",
           }}
         />
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="system"
-          enableSystem
-          disableTransitionOnChange
-          initialTheme={initialTheme}
-        >
-          <section className="min-h-screen flex flex-col grow max-w-full pt-24">
-            {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
-            <Toaster />
-            {isDraftMode && (
-              <>
-                <DraftModeToast />
-                {/*  Enable Visual Editing, only to be rendered when Draft Mode is enabled */}
-                <VisualEditing />
-              </>
-            )}
-            {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
-            <SanityLive onError={handleError} />
-            {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
-            <RevealObserver />
-            <Header />
-            <main className="relative flex flex-col grow max-w-full items-center justify-center overflow-x-clip">
-              <PageTransition>{children}</PageTransition>
-            </main>
-            <Footer />
-            {/* Back-to-top affordance — fixed island, outside <main>, inside the theme provider. */}
-            <BackToTop />
-          </section>
-        </ThemeProvider>
+        <SerwistProvider swUrl="/sw.js" disable={process.env.NODE_ENV === 'development'}>
+          <ThemeProvider
+            attribute="class"
+            defaultTheme="system"
+            enableSystem
+            disableTransitionOnChange
+            initialTheme={initialTheme}
+          >
+            <section className="min-h-screen flex flex-col grow max-w-full pt-24">
+              {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
+              <Toaster />
+              {isDraftMode && (
+                <>
+                  <DraftModeToast />
+                  {/*  Enable Visual Editing, only to be rendered when Draft Mode is enabled */}
+                  <VisualEditing />
+                </>
+              )}
+              {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
+              <SanityLive onError={handleError} />
+              {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
+              <RevealObserver />
+              <Header />
+              <main className="relative flex flex-col grow max-w-full items-center justify-center overflow-x-clip">
+                <PageTransition>{children}</PageTransition>
+              </main>
+              <Footer />
+              {/* Back-to-top affordance — fixed island, outside <main>, inside the theme provider. */}
+              <BackToTop />
+            </section>
+          </ThemeProvider>
+        </SerwistProvider>
         <SpeedInsights />
       </body>
     </html>
