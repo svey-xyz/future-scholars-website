@@ -136,7 +136,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             </section>
           </ThemeProvider>
         </SerwistProvider>
-        <SpeedInsights />
+        {/* Speed Insights only resolves on Vercel; mounting it elsewhere 404s
+            `/_vercel/speed-insights/script.js` and logs a console error. */}
+        {process.env.VERCEL && <SpeedInsights />}
       </body>
     </html>
   )
