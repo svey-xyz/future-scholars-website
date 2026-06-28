@@ -16,7 +16,7 @@ import AuthorsArchive from './AuthorsArchive'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
 import {Alert, AlertDescription, AlertTitle} from '@/components/ui/alert'
-import ShaderBackground from '@/app/components/shader/ShaderBackground'
+import {ShaderBackground} from '@/app/components/shader'
 
 type BlockProps = {
   index: number

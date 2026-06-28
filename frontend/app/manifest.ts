@@ -15,6 +15,10 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
   const description = toPlainText(settings?.description || demo.description)
 
   return {
+    // Stable identity + scope so the installed app stays the same PWA across
+    // deploys and the service worker controls every in-app navigation.
+    id: '/',
+    scope: '/',
     name,
     short_name: name,
     description,

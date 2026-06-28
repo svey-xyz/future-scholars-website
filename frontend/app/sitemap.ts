@@ -14,9 +14,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   })
   const headersList = await headers()
   const sitemap: MetadataRoute.Sitemap = []
-  const domain: string = headersList.get('host') as string
+  // Sitemap entries must be absolute URLs with a scheme. Derive the origin from
+  // the request host (http for local hosts, https otherwise), mirroring robots.ts.
+  const host = headersList.get('host') ?? 'localhost:3000'
+  const protocol = /^(localhost|127\.|0\.0\.0\.0)/.test(host) ? 'http' : 'https'
+  const origin = `${protocol}://${host}`
   sitemap.push({
-    url: domain as string,
+    url: origin,
     lastModified: new Date(),
     priority: 1,
     changeFrequency: 'monthly',
@@ -40,17 +44,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         case 'page':
           priority = 0.8
           changeFrequency = 'monthly'
-          url = `${domain}/${p.slug}`
+          url = `${origin}/${p.slug}`
           break
         case 'post':
           priority = 0.5
           changeFrequency = 'never'
-          url = `${domain}/posts/${p.slug}`
+          url = `${origin}/posts/${p.slug}`
           break
         case 'project':
           priority = 0.6
           changeFrequency = 'monthly'
-          url = `${domain}/projects/${p.slug}`
+          url = `${origin}/projects/${p.slug}`
           break
       }
       sitemap.push({

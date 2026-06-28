@@ -104,7 +104,14 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!CSS.supports('animation-timeline: view()'))document.documentElement.setAttribute('data-reveal-js','')}catch(e){}",
           }}
         />
-        <SerwistProvider swUrl="/sw.js" disable={process.env.NODE_ENV === 'development'}>
+        <SerwistProvider
+          swUrl="/sw.js"
+          disable={process.env.NODE_ENV === 'development'}
+          // Don't force a full reload when the network returns — it would discard
+          // in-progress form input / scroll. Content still refreshes live via
+          // <SanityLive>, and the SW updates itself on the next navigation.
+          reloadOnOnline={false}
+        >
           <ThemeProvider
             attribute="class"
             defaultTheme="system"
@@ -136,7 +143,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             </section>
           </ThemeProvider>
         </SerwistProvider>
-        <SpeedInsights />
+        {/* Speed Insights only resolves on Vercel; mounting it elsewhere 404s
+            `/_vercel/speed-insights/script.js` and logs a console error. */}
+        {process.env.VERCEL && <SpeedInsights />}
       </body>
     </html>
   )
