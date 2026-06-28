@@ -21,7 +21,11 @@ const SheetOverlay = React.forwardRef<
 >(({className, ...props}, ref) => (
   <SheetPrimitive.Overlay
     className={cn(
-      'fixed inset-0 z-50 bg-black/80  data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0',
+      // Overlay is opaque from the first painted frame (no enter fade): a
+      // fade-in starts at opacity 0, which briefly reveals the page/header
+      // before the panel slides over it. The panel keeps its slide; the overlay
+      // still fades on close.
+      'fixed inset-0 z-50 bg-black/80 data-[state=closed]:animate-out data-[state=closed]:fade-out-0',
       className,
     )}
     {...props}

@@ -14,6 +14,7 @@ import {
 import {
   Sheet,
   SheetContent,
+  SheetDescription,
   SheetHeader,
   SheetTitle,
   SheetTrigger,
@@ -92,6 +93,10 @@ export default function MobileNav({
         <SheetContent side="right" className="flex w-[88vw] max-w-sm flex-col gap-6">
           <SheetHeader>
             <SheetTitle>Menu</SheetTitle>
+            {/* Radix Dialog wants a description (or an explicit opt-out) for
+                aria-describedby; a visually-hidden one satisfies it and gives
+                screen-reader users context after the "Menu" title. */}
+            <SheetDescription className="sr-only">Site navigation links</SheetDescription>
           </SheetHeader>
 
           {/* `overflow-x-hidden` clips the staggered reveal's translateX so it

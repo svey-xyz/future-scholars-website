@@ -223,6 +223,9 @@ export type ProjectsArchive = {
     } & ProjectReference
   >
   columns?: 2 | 3
+  showFilter?: boolean
+  showTechFilter?: boolean
+  showSort?: boolean
 }
 
 export type PostReference = {
@@ -602,6 +605,7 @@ export type Page = {
   slug: Slug
   heading: string
   subheading?: string
+  archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
   background?: Background
   pageBuilder?: Array<
     | ({

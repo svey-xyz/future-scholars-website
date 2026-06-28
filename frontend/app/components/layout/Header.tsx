@@ -28,7 +28,7 @@ export default async function Header() {
       // padding / shadow shrink as the page scrolls) — zero JS, gated behind
       // prefers-reduced-motion: no-preference. The fixed header is out of flow,
       // so contracting it causes no layout shift (layout reserves `pt-24`).
-      className="app-header fixed inset-x-0 top-0 z-50 h-24 flex items-center bg-background/80 backdrop-blur-lg"
+      className="app-header fixed inset-x-0 top-0 z-40 h-24 flex items-center bg-background/80 backdrop-blur-lg"
       style={{viewTransitionName: 'site-header'}}
     >
       <div className="app-header__inner container px-2 sm:px-6 py-6">

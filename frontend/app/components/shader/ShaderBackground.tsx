@@ -15,7 +15,7 @@ import {
 // (no more silently dropped u_time writes), and the `paused` prop pauses the
 // loop in place without tearing down the WebGL context. Module scope is
 // SSR-safe, so static imports are fine in this client component.
-import {Shader, MethodName, type ShaderArgs} from '@svey-xyz/simple-shader-component'
+import {Shader, type ShaderArgs} from '@svey-xyz/simple-shader-component'
 import {SimpleShaderCanvas} from '@svey-xyz/simple-shader-component/react'
 
 export type ShaderBackgroundProps = {
@@ -26,6 +26,24 @@ export type ShaderBackgroundProps = {
   customColor?: string | null
   opacity?: number | null
 }
+
+// `@svey-xyz/simple-shader-component@1.3.0` ships a broken ESM build: its core
+// entry does `export {U as MethodName, F as domHandler, …}` but `U`/`F` are
+// tree-shaken away and never defined, so `import {MethodName}` resolves to
+// `undefined` at runtime. `MethodName.INIT` then throws on every render of this
+// (dynamically-imported) client component — the rerender loop. A `declare enum`
+// doesn't fix it: `declare` is type-only and emits no runtime value, so it left
+// `MethodName` undefined too. Define the hook-stage selectors as a real runtime
+// object; values mirror the core's `runHooks(n)` lifecycle dispatch. (`Shader`
+// is exported correctly, so it can still be imported from the package.)
+const MethodName = {
+  TOUCH: 0,
+  INIT: 1,
+  LOOP: 2,
+  RENDER: 3,
+  RESIZE: 4,
+  INPUT: 5,
+} as const
 
 /** RGB in the 0–1 range that GLSL `vec3` uniforms expect. */
 type Rgb = readonly [number, number, number]
