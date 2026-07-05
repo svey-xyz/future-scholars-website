@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {ImagesIcon} from '@sanity/icons'
+import {ImagesIcon} from '@sanity/icons/Images'
 
 import {altField, columnsField} from './shared'
 
@@ -25,10 +25,7 @@ export const gallery = defineType({
           name: 'galleryImage',
           title: 'Image',
           options: {hotspot: true, aiAssist: {imageDescriptionField: 'alt'}},
-          fields: [
-            altField,
-            defineField({name: 'caption', title: 'Caption', type: 'string'}),
-          ],
+          fields: [altField, defineField({name: 'caption', title: 'Caption', type: 'string'})],
           preview: {
             select: {media: 'asset', title: 'caption', subtitle: 'alt'},
             prepare({media, title, subtitle}) {

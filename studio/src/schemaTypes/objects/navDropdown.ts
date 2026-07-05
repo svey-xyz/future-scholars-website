@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {ChevronDownIcon} from '@sanity/icons'
+import {ChevronDownIcon} from '@sanity/icons/ChevronDown'
 
 /**
  * A navigation dropdown: a labelled disclosure that groups several nav links.

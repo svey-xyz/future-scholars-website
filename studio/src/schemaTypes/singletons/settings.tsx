@@ -1,9 +1,9 @@
-import {CogIcon} from '@sanity/icons'
+import {CogIcon} from '@sanity/icons/Cog'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Link, Settings} from '../../../sanity.types'
 
 import * as demo from '../../lib/initialValues'
-import { mediaAssetSource } from 'sanity-plugin-media'
+import {mediaAssetSource} from 'sanity-plugin-media'
 
 /**
  * Settings schema Singleton.  Singletons are single documents that are displayed not in a collection, handy for things like site settings and other global configurations.
@@ -116,57 +116,59 @@ export const settings = defineType({
         }),
       ],
     }),
-		defineField({
-			title: 'Logo',
-			name: 'logo',
-			type: 'file',
-			description: 'Site logo. Upload an SVG — it will be served as-is for crisp scaling at any size.',
-			options: {
-				accept: 'image/svg+xml',
-			},
-			validation: Rule =>
-				Rule.custom((value: any) => {
-					if (!value?.asset) return true
-					const mt: string | undefined = value?.asset?.mimeType ?? value?.asset?._ref
-					// asset._ref looks like `file-<hash>-svg`; check both mimeType (deref) and ref suffix
-					if (typeof mt === 'string' && (mt === 'image/svg+xml' || mt.endsWith('-svg'))) return true
-					return 'Logo must be an SVG (image/svg+xml).'
-				}),
-		}),
-		defineField({
-			title: 'Favicon',
-			name: 'favicon',
-			description: 'Browser tab icon. Should be square (e.g. 512×512 PNG). Served via Next.js metadata; no rebuild required.',
-			type: 'image',
-			options: {
-				sources: [mediaAssetSource],
-				hotspot: true,
-				metadata: ['lqip', 'palette', 'exif', 'location'],
-			},
-			fields: [
-				defineField({
-					name: 'alt',
-					title: 'Alternative text',
-					type: 'string',
-					description: 'Context-specific alt text. Falls back to the asset-level description when empty.',
-				}),
-			],
-			preview: {
-				select: {
-					asset: 'asset',
-					title: 'asset.title',
-					description: 'asset.description'
-
-				},
-				prepare(value: any) {
-					return {
-						title: value.title ? value.title : 'Untitled Image',
-						subtitle: value.description,
-						media: value.asset
-					}
-				}
-			},
-		}),
+    defineField({
+      title: 'Logo',
+      name: 'logo',
+      type: 'file',
+      description:
+        'Site logo. Upload an SVG — it will be served as-is for crisp scaling at any size.',
+      options: {
+        accept: 'image/svg+xml',
+      },
+      validation: (Rule) =>
+        Rule.custom((value: any) => {
+          if (!value?.asset) return true
+          const mt: string | undefined = value?.asset?.mimeType ?? value?.asset?._ref
+          // asset._ref looks like `file-<hash>-svg`; check both mimeType (deref) and ref suffix
+          if (typeof mt === 'string' && (mt === 'image/svg+xml' || mt.endsWith('-svg'))) return true
+          return 'Logo must be an SVG (image/svg+xml).'
+        }),
+    }),
+    defineField({
+      title: 'Favicon',
+      name: 'favicon',
+      description:
+        'Browser tab icon. Should be square (e.g. 512×512 PNG). Served via Next.js metadata; no rebuild required.',
+      type: 'image',
+      options: {
+        sources: [mediaAssetSource],
+        hotspot: true,
+        metadata: ['lqip', 'palette', 'exif', 'location'],
+      },
+      fields: [
+        defineField({
+          name: 'alt',
+          title: 'Alternative text',
+          type: 'string',
+          description:
+            'Context-specific alt text. Falls back to the asset-level description when empty.',
+        }),
+      ],
+      preview: {
+        select: {
+          asset: 'asset',
+          title: 'asset.title',
+          description: 'asset.description',
+        },
+        prepare(value: any) {
+          return {
+            title: value.title ? value.title : 'Untitled Image',
+            subtitle: value.description,
+            media: value.asset,
+          }
+        },
+      },
+    }),
     defineField({
       name: 'ogImage',
       title: 'Open Graph Image',
@@ -200,95 +202,92 @@ export const settings = defineType({
         }),
       ],
     }),
-		defineField({
-			title: 'Blurb',
-			name: 'blurb',
-			type: 'string',
-			description: 'Concise description of the site, used primarily for SEO and metadata.',
-		}),
-		defineField({
-			title: 'Contact',
-			name: 'contact',
-			type: 'contact',
-		}),
-		defineField({
-			title: 'Navigation',
-			name: 'navigation',
-			type: 'array',
-			description:
-				'Header navigation. Add top-level links, or dropdowns that group several links under a disclosure label.',
-			of: [
-				defineArrayMember({type: 'navLink'}),
-				defineArrayMember({type: 'navDropdown'}),
-			],
-		}),
-		defineField({
-			title: 'Mobile Navigation',
-			name: 'mobileNav',
-			type: 'object',
-			fields: [
-				defineField({
-					title: 'Show footer content',
-					name: 'showFooterContent',
-					type: 'boolean',
-					description: 'Show footer content (socials, legal) inside the mobile menu',
-					initialValue: true,
-				}),
-			],
-		}),
-		defineField({
-			title: 'Legal',
-			name: 'legal',
-			type: 'string',
-			description: 'Short legal disclaimer shown in the footer / mobile menu',
-		}),
-		defineField({
-			title: 'Built with',
-			name: 'builtWith',
-			type: 'array',
-			description:
-				'Tech / tools the site is built with, shown as chips in the footer. Items with a URL render as external links; name-only items render as plain labels.',
-			of: [
-				defineArrayMember({
-					name: 'builtWithItem',
-					title: 'Item',
-					type: 'object',
-					fields: [
-						defineField({
-							title: 'Name',
-							name: 'name',
-							type: 'string',
-							description: 'Display label, e.g. "Next.js" or "Sanity".',
-							validation: (Rule) => Rule.required(),
-						}),
-						defineField({
-							title: 'URL',
-							name: 'url',
-							type: 'url',
-							description: 'Optional. If set, the chip links here (opens in a new tab).',
-						}),
-						defineField({
-							title: 'Icon',
-							name: 'icon',
-							type: 'string',
-							description: 'Optional short icon hint or emoji shown before the name.',
-						}),
-					],
-					preview: {
-						select: {title: 'name', subtitle: 'url'},
-					},
-				}),
-			],
-		}),
-		defineField({
-			name: 'homepage',
-			title: 'Homepage',
-			type: 'reference',
-			to: [{ type: 'page' }],
-			options: {
-				disableNew: true,
-			},
-		}),
+    defineField({
+      title: 'Blurb',
+      name: 'blurb',
+      type: 'string',
+      description: 'Concise description of the site, used primarily for SEO and metadata.',
+    }),
+    defineField({
+      title: 'Contact',
+      name: 'contact',
+      type: 'contact',
+    }),
+    defineField({
+      title: 'Navigation',
+      name: 'navigation',
+      type: 'array',
+      description:
+        'Header navigation. Add top-level links, or dropdowns that group several links under a disclosure label.',
+      of: [defineArrayMember({type: 'navLink'}), defineArrayMember({type: 'navDropdown'})],
+    }),
+    defineField({
+      title: 'Mobile Navigation',
+      name: 'mobileNav',
+      type: 'object',
+      fields: [
+        defineField({
+          title: 'Show footer content',
+          name: 'showFooterContent',
+          type: 'boolean',
+          description: 'Show footer content (socials, legal) inside the mobile menu',
+          initialValue: true,
+        }),
+      ],
+    }),
+    defineField({
+      title: 'Legal',
+      name: 'legal',
+      type: 'string',
+      description: 'Short legal disclaimer shown in the footer / mobile menu',
+    }),
+    defineField({
+      title: 'Built with',
+      name: 'builtWith',
+      type: 'array',
+      description:
+        'Tech / tools the site is built with, shown as chips in the footer. Items with a URL render as external links; name-only items render as plain labels.',
+      of: [
+        defineArrayMember({
+          name: 'builtWithItem',
+          title: 'Item',
+          type: 'object',
+          fields: [
+            defineField({
+              title: 'Name',
+              name: 'name',
+              type: 'string',
+              description: 'Display label, e.g. "Next.js" or "Sanity".',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              title: 'URL',
+              name: 'url',
+              type: 'url',
+              description: 'Optional. If set, the chip links here (opens in a new tab).',
+            }),
+            defineField({
+              title: 'Icon',
+              name: 'icon',
+              type: 'string',
+              description: 'Optional short icon hint or emoji shown before the name.',
+            }),
+          ],
+          preview: {
+            select: {title: 'name', subtitle: 'url'},
+          },
+        }),
+      ],
+    }),
+    defineField({
+      name: 'homepage',
+      title: 'Homepage',
+      type: 'reference',
+      to: [{type: 'page'}],
+      options: {
+        disableNew: true,
+      },
+    }),
   ],
   preview: {
     prepare() {

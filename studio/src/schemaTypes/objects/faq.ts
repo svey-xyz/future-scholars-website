@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {HelpCircleIcon} from '@sanity/icons'
+import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
 
 /**
  * FAQ — accessible question/answer list. Rendered with native <details>/<summary>

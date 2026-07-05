@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {LinkIcon} from '@sanity/icons'
+import {LinkIcon} from '@sanity/icons/Link'
 
 /**
  * A single navigation link. Reuses the shared `link` object so it can point at a

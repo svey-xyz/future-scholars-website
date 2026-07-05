@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {CodeIcon} from '@sanity/icons'
+import {CodeIcon} from '@sanity/icons/Code'
 
 /**
  * Technology — a single, reusable entry in the tech taxonomy (e.g. Next.js,

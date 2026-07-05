@@ -1,5 +1,9 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {RocketIcon, ComposeSparklesIcon, ImageIcon, LinkIcon, ControlsIcon} from '@sanity/icons'
+import {RocketIcon} from '@sanity/icons/Rocket'
+import {ComposeSparklesIcon} from '@sanity/icons/ComposeSparkles'
+import {ImageIcon} from '@sanity/icons/Image'
+import {LinkIcon} from '@sanity/icons/Link'
+import {ControlsIcon} from '@sanity/icons/Controls'
 
 import {altField} from './shared'
 

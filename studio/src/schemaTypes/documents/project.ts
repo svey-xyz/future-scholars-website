@@ -1,4 +1,4 @@
-import {RocketIcon} from '@sanity/icons'
+import {RocketIcon} from '@sanity/icons/Rocket'
 import {format, parseISO} from 'date-fns'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Project} from '../../../sanity.types'

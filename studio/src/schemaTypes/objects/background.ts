@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {ControlsIcon} from '@sanity/icons'
+import {ControlsIcon} from '@sanity/icons/Controls'
 
 /**
  * Reusable `background` object — an optional animated WebGL shader background

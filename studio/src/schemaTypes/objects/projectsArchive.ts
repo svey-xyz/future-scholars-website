@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {ThLargeIcon} from '@sanity/icons'
+import {ThLargeIcon} from '@sanity/icons/ThLarge'
 
 /**
  * Projects Archive — renders a grid of projects. Source modes:

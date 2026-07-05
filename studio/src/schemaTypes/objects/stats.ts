@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {TrendUpwardIcon} from '@sanity/icons'
+import {TrendUpwardIcon} from '@sanity/icons/TrendUpward'
 
 /**
  * Stats — row of big-number metrics with labels and optional descriptions.

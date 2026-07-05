@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {BlockquoteIcon} from '@sanity/icons'
+import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 
 import {altField} from './shared'
 
@@ -75,7 +75,10 @@ export const testimonials = defineType({
     select: {heading: 'heading', count: 'testimonials'},
     prepare({heading, count}) {
       const n = Array.isArray(count) ? count.length : 0
-      return {title: heading || 'Testimonials', subtitle: `Testimonials · ${n} item${n === 1 ? '' : 's'}`}
+      return {
+        title: heading || 'Testimonials',
+        subtitle: `Testimonials · ${n} item${n === 1 ? '' : 's'}`,
+      }
     },
   },
 })

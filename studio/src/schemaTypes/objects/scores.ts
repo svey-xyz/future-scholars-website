@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {Progress75Icon} from '@sanity/icons'
+import {Progress75Icon} from '@sanity/icons/Progress75'
 
 import {backgroundField} from './shared'
 

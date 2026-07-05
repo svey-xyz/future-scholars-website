@@ -1,5 +1,5 @@
 import {defineField, defineType} from 'sanity'
-import {InfoOutlineIcon} from '@sanity/icons'
+import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 
 import {backgroundField} from './shared'
 

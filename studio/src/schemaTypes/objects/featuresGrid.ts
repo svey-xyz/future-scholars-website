@@ -1,5 +1,5 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {ThLargeIcon} from '@sanity/icons'
+import {ThLargeIcon} from '@sanity/icons/ThLarge'
 
 import {columnsField} from './shared'
 
@@ -78,7 +78,10 @@ export const featuresGrid = defineType({
     select: {heading: 'heading', count: 'features'},
     prepare({heading, count}) {
       const n = Array.isArray(count) ? count.length : 0
-      return {title: heading || 'Features Grid', subtitle: `Features Grid · ${n} item${n === 1 ? '' : 's'}`}
+      return {
+        title: heading || 'Features Grid',
+        subtitle: `Features Grid · ${n} item${n === 1 ? '' : 's'}`,
+      }
     },
   },
 })
