@@ -1,3 +1,11 @@
+<!-- BEGIN:fork-sync-agent-rules -->
+
+# Template & forks: sync from upstream before editing a fork
+
+`sanity-next-clean` is a **template**; sites like `soule-directory-site` are **git forks** kept in sync *from* it. **Before making any edit to a fork, `git fetch` the template and check whether the fork is behind — if it is, sync first (a real `git merge`, never hand-copying), then edit.** Editing a stale fork re-introduces fixed bugs and causes avoidable conflicts. Full procedure + divergence registry: [`docs/FORK-SYNC.md`](docs/FORK-SYNC.md).
+
+<!-- END:fork-sync-agent-rules -->
+
 <!-- BEGIN:nextjs-agent-rules -->
 
 # Next.js: ALWAYS read docs before coding
