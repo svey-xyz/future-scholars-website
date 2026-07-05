@@ -8,14 +8,15 @@ import {draftMode} from 'next/headers'
 import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
 import {ThemeProvider} from '@teispace/next-themes'
-import {getTheme} from '@teispace/next-themes/server'
+import {getThemeScript} from '@teispace/next-themes/server'
+import {Suspense} from 'react'
 
 import {Toaster} from '@/components/ui/sonner'
 import {BackToTop, Footer, Header} from '@/app/components/layout'
 import {PageTransition, RevealObserver} from '@/app/components/motion'
 import {DraftModeToast} from '@/app/components/visual-editing'
 import * as demo from '@/sanity/lib/demo'
-import {sanityFetch, SanityLive} from '@/sanity/lib/live'
+import {getDynamicFetchOptions, sanityFetchMetadata, SanityLive} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 import {handleError} from '@/app/client-utils'
@@ -25,11 +26,10 @@ import {handleError} from '@/app/client-utils'
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function
  */
 export async function generateMetadata(): Promise<Metadata> {
-  const {data: settings} = await sanityFetch({
-    query: settingsQuery,
-    // Metadata should never contain stega
-    stega: false,
-  })
+  // Metadata is never stega-encoded, but perspective must still resolve so
+  // Presentation Tool can preview drafts/releases in a standalone window.
+  const {perspective} = await getDynamicFetchOptions()
+  const {data: settings} = await sanityFetchMetadata({query: settingsQuery, perspective})
   const title = settings?.title || demo.title
   const description = settings?.description || demo.description
 
@@ -83,9 +83,21 @@ const ibmPlexMono = IBM_Plex_Mono({
   display: 'swap',
 })
 
+// Static anti-FOUC theme script rendered in <head>, so it runs before any body
+// pixels paint regardless of streaming order. No `initialTheme`: reading the
+// theme cookie via `getTheme()` would make the whole shell dynamic under
+// Cache Components — the script resolves the stored/system theme client-side
+// pre-paint instead. Options must mirror the <ThemeProvider> below.
+const themeScript = getThemeScript({
+  attribute: 'class',
+  defaultTheme: 'system',
+  enableSystem: true,
+})
+
 export default async function RootLayout({children}: {children: React.ReactNode}) {
+  // `draftMode()` is the one dynamic API a top-level layout may await without
+  // shrinking the static shell (Next.js bypasses caching when it's enabled).
   const {isEnabled: isDraftMode} = await draftMode()
-  const initialTheme = (await getTheme()) ?? undefined
 
   return (
     <html
@@ -93,6 +105,10 @@ export default async function RootLayout({children}: {children: React.ReactNode}
       className={`${inter.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
+      <head>
+        {/* Anti-FOUC: apply the theme class before first paint (see above). */}
+        <script dangerouslySetInnerHTML={{__html: themeScript}} />
+      </head>
       <body className="bg-background text-foreground antialiased relative min-h-screen h-fit w-full overflow-x-hidden flex flex-col">
         {/* Pre-paint: opt into the JS scroll-reveal fallback ONLY on engines that
             lack CSS scroll-driven animations and when motion is allowed. Runs
@@ -117,7 +133,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             defaultTheme="system"
             enableSystem
             disableTransitionOnChange
-            initialTheme={initialTheme}
+            noScript
           >
             <section className="min-h-screen flex flex-col grow max-w-full pt-24">
               {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
@@ -129,15 +145,39 @@ export default async function RootLayout({children}: {children: React.ReactNode}
                   <VisualEditing />
                 </>
               )}
-              {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered. */}
-              <SanityLive onError={handleError} />
+              {/* The <SanityLive> component is responsible for making all sanityFetch calls in your application live, so should always be rendered.
+                  `waitFor="function"` (production only): live events are held back
+                  until the `invalidate-tags` Sanity Function has expired the
+                  affected cache tags, so a client-triggered refresh never re-reads
+                  a stale cache. See docs/CACHING.md. */}
+              <SanityLive
+                onError={handleError}
+                includeDrafts={isDraftMode}
+                waitFor={process.env.VERCEL_ENV === 'production' ? 'function' : undefined}
+              />
               {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
               <RevealObserver />
-              <Header />
+              {/* Header/Footer are cached components (three-layer pattern, see
+                  docs/CACHING.md): statically cached on the published perspective;
+                  in draft mode a dynamic wrapper resolves perspective/stega from
+                  the request inside a Suspense boundary. */}
+              {isDraftMode ? (
+                <Suspense fallback={<HeaderFallback />}>
+                  <DynamicHeader />
+                </Suspense>
+              ) : (
+                <Header perspective="published" stega={false} />
+              )}
               <main className="relative flex flex-col grow max-w-full items-center justify-center overflow-x-clip">
                 <PageTransition>{children}</PageTransition>
               </main>
-              <Footer />
+              {isDraftMode ? (
+                <Suspense>
+                  <DynamicFooter />
+                </Suspense>
+              ) : (
+                <Footer perspective="published" stega={false} />
+              )}
               {/* Back-to-top affordance — fixed island, outside <main>, inside the theme provider. */}
               <BackToTop />
             </section>
@@ -148,5 +188,31 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         {process.env.VERCEL && <SpeedInsights />}
       </body>
     </html>
+  )
+}
+
+/** Draft-mode-only dynamic wrappers (layer 2): resolve request state, pass plain props. */
+async function DynamicHeader() {
+  const {perspective, stega} = await getDynamicFetchOptions()
+  return <Header perspective={perspective} stega={stega} />
+}
+
+async function DynamicFooter() {
+  const {perspective, stega} = await getDynamicFetchOptions()
+  return <Footer perspective={perspective} stega={stega} />
+}
+
+/**
+ * Draft-mode Suspense fallback: the same fixed, height-reserved header shell
+ * (layout already reserves `pt-24`), so streaming in the real header causes no
+ * layout shift.
+ */
+function HeaderFallback() {
+  return (
+    <header
+      aria-hidden="true"
+      className="app-header fixed inset-x-0 top-0 z-40 h-24 flex items-center bg-background/80 backdrop-blur-lg"
+      style={{viewTransitionName: 'site-header'}}
+    />
   )
 }

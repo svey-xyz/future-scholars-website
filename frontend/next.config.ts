@@ -1,6 +1,14 @@
 import type {NextConfig} from 'next'
+import {sanity} from 'next-sanity/live/cache-life'
 
 const nextConfig: NextConfig = {
+  // Cache Components: `sanityFetch` runs inside explicit `'use cache'`
+  // boundaries (three-layer pattern — see docs/CACHING.md). The `sanity`
+  // cacheLife preset makes on-demand revalidation (Sanity Live + the
+  // invalidate-tags Function) the only invalidation path instead of the
+  // default 15-minute time-based revalidation.
+  cacheComponents: true,
+  cacheLife: {default: sanity},
   // Emit browser source maps in production so first-party stack traces are
   // debuggable (satisfies Lighthouse's valid-source-maps best-practice).
   productionBrowserSourceMaps: true,

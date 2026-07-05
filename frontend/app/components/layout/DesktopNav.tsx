@@ -1,6 +1,7 @@
 'use client'
 
 import {usePathname} from 'next/navigation'
+import {stegaClean} from '@sanity/client/stega'
 import {ArrowTopRightOnSquareIcon, ChevronDownIcon} from '@heroicons/react/24/outline'
 
 import {
@@ -87,7 +88,8 @@ function DesktopNavLeaf({
 }) {
   const href = linkResolver(link.link)
   const label = link.resolvedTitle || link.title || ''
-  const isExternal = link.link?.linkType === 'href'
+  // `stegaClean`: enum comparison must ignore draft-mode stega characters.
+  const isExternal = stegaClean(link.link?.linkType) === 'href'
   const opensInNewTab = Boolean(link.link?.openInNewTab)
   const isActive = !isExternal && typeof href === 'string' && href === pathname
 

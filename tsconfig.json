@@ -1,0 +1,18 @@
+{
+  // Root-level TS files only: the Sanity Blueprint + Functions (run on Node 24
+  // on Sanity's infrastructure). The frontend/ and studio/ workspaces have
+  // their own tsconfigs.
+  "compilerOptions": {
+    "target": "esnext",
+    "module": "preserve",
+    "moduleDetection": "force",
+    "moduleResolution": "bundler",
+    "types": ["node"],
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "isolatedModules": true,
+    "forceConsistentCasingInFileNames": true
+  },
+  "include": ["sanity.blueprint.ts", "functions/**/*.ts"]
+}

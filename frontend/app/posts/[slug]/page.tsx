@@ -1,4 +1,5 @@
 import type {Metadata, ResolvingMetadata} from 'next'
+import {draftMode} from 'next/headers'
 import {notFound} from 'next/navigation'
 import {type PortableTextBlock} from 'next-sanity'
 import {Suspense, ViewTransition} from 'react'
@@ -7,7 +8,13 @@ import {Avatar, MorePosts} from '@/app/components/posts'
 import {PortableText} from '@/app/components/portable-text'
 import {SanityImage as Image} from '@/app/components/common'
 import {Skeleton} from '@/components/ui/skeleton'
-import {sanityFetch} from '@/sanity/lib/live'
+import {
+  getDynamicFetchOptions,
+  sanityFetch,
+  sanityFetchMetadata,
+  sanityFetchStaticParams,
+  type DynamicFetchOptions,
+} from '@/sanity/lib/live'
 import {postPagesSlugs, postQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
@@ -20,12 +27,7 @@ type Props = {
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-static-params
  */
 export async function generateStaticParams() {
-  const {data} = await sanityFetch({
-    query: postPagesSlugs,
-    // Use the published perspective in generateStaticParams
-    perspective: 'published',
-    stega: false,
-  })
+  const {data} = await sanityFetchStaticParams({query: postPagesSlugs})
   return data
 }
 
@@ -34,13 +36,8 @@ export async function generateStaticParams() {
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function
  */
 export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const params = await props.params
-  const {data: post} = await sanityFetch({
-    query: postQuery,
-    params,
-    // Metadata should never contain stega
-    stega: false,
-  })
+  const [params, {perspective}] = await Promise.all([props.params, getDynamicFetchOptions()])
+  const {data: post} = await sanityFetchMetadata({query: postQuery, params, perspective})
   const previousImages = (await parent).openGraph?.images || []
   const ogImage = resolveOpenGraphImage(post?.coverImage)
 
@@ -69,9 +66,34 @@ function MorePostsSkeleton() {
   )
 }
 
+/**
+ * Layer 1 of the three-layer pattern (see docs/CACHING.md): branch on
+ * `draftMode()` only.
+ */
 export default async function PostPage(props: Props) {
-  const params = await props.params
-  const [{data: post}] = await Promise.all([sanityFetch({query: postQuery, params})])
+  const {isEnabled: isDraftMode} = await draftMode()
+  if (isDraftMode) {
+    return (
+      <Suspense fallback={<PostFallback />}>
+        {/* `params` stays un-awaited here so the Suspense boundary works. */}
+        <DynamicPost params={props.params} />
+      </Suspense>
+    )
+  }
+  const {slug} = await props.params
+  return <CachedPost slug={slug} perspective="published" stega={false} />
+}
+
+/** Layer 2 (draft mode only): resolve request-time values, pass plain props. */
+async function DynamicPost({params}: Pick<Props, 'params'>) {
+  const [{slug}, {perspective, stega}] = await Promise.all([params, getDynamicFetchOptions()])
+  return <CachedPost slug={slug} perspective={perspective} stega={stega} />
+}
+
+/** Layer 3: cached post render. */
+async function CachedPost({slug, perspective, stega}: {slug: string} & DynamicFetchOptions) {
+  'use cache'
+  const {data: post} = await sanityFetch({query: postQuery, params: {slug}, perspective, stega})
 
   if (!post?._id) {
     return notFound()
@@ -128,12 +150,25 @@ export default async function PostPage(props: Props) {
               }
             >
               <ViewTransition enter="slide-up" default="none">
-                <MorePosts skip={post._id} limit={2} />
+                <MorePosts skip={post._id} limit={2} perspective={perspective} stega={stega} />
               </ViewTransition>
             </Suspense>
           </aside>
         </div>
       </div>
     </>
+  )
+}
+
+/** Draft-mode streaming fallback — mirrors the post header block, no CLS. */
+function PostFallback() {
+  return (
+    <div className="container my-12 grid gap-12 lg:my-24">
+      <div className="max-w-3xl space-y-6">
+        <Skeleton className="h-14 w-2/3" />
+        <Skeleton className="h-10 w-48" />
+        <Skeleton className="h-96 w-full rounded-sm" />
+      </div>
+    </div>
   )
 }

@@ -3,12 +3,17 @@ import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
 import FooterContent from './FooterContent'
 import Reveal from '@/app/components/motion/Reveal'
 import ThemeToggle from './ThemeToggle'
-import {sanityFetch} from '@/sanity/lib/live'
-import {settingsQuery} from '@/sanity/lib/queries'
+import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import type {BuiltWithItem} from '@/sanity/lib/types'
+import {getSettings} from './getSettings'
 
-export default async function Footer() {
-  const {data: settings} = await sanityFetch({query: settingsQuery})
+/**
+ * Cached component (three-layer pattern, see docs/CACHING.md): `perspective`
+ * and `stega` are resolved by the layout and passed in as plain props.
+ */
+export default async function Footer({perspective, stega}: DynamicFetchOptions) {
+  'use cache'
+  const settings = await getSettings({perspective, stega})
   const contact = settings?.contact ?? null
   const legal = settings?.legal ?? null
   const builtWith = settings?.builtWith ?? []

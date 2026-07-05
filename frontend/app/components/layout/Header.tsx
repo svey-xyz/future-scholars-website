@@ -1,17 +1,23 @@
 import Link from 'next/link'
 
-import {sanityFetch} from '@/sanity/lib/live'
-import {settingsQuery} from '@/sanity/lib/queries'
+import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
 import GithubIcon from '@/app/components/icons/GithubIcon'
+import {getSettings} from './getSettings'
 import HeaderNav from './HeaderNav'
 import Logo from './Logo'
 
 const githubHref = 'https://github.com/sanity-io/sanity-template-nextjs-clean'
 
-export default async function Header() {
-  const {data: settings} = await sanityFetch({query: settingsQuery})
+/**
+ * Cached component (three-layer pattern, see docs/CACHING.md): `perspective`
+ * and `stega` are resolved by the layout (published statically, or via
+ * `getDynamicFetchOptions` in draft mode) and passed in as plain props.
+ */
+export default async function Header({perspective, stega}: DynamicFetchOptions) {
+  'use cache'
+  const settings = await getSettings({perspective, stega})
 
   // CMS-driven nav (Phase 4–6). Falls back to an empty list so the header still
   // renders its chrome when `navigation` is unset.

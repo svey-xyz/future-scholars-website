@@ -1,13 +1,9 @@
 'use client'
 
 import {useEffect, useMemo, useRef, useState, useSyncExternalStore} from 'react'
+import {stegaClean} from '@sanity/client/stega'
 
-import {
-  defaultShaderPreset,
-  isShaderPreset,
-  shaderPresets,
-  type ShaderPresetName,
-} from './registry'
+import {defaultShaderPreset, isShaderPreset, shaderPresets, type ShaderPresetName} from './registry'
 
 // SVE-42 hardened build (>=1.2.0): the wrapper's effect now destroys the
 // Shader on unmount/args-change (Strict-Mode-safe — no more duplicate
@@ -95,7 +91,7 @@ function hslChannelsToRgb(value: string): Rgb | null {
 
 function hslToRgb(h: number, s: number, l: number): Rgb {
   const c = (1 - Math.abs(2 * l - 1)) * s
-  const hp = ((h % 360) + 360) % 360 / 60
+  const hp = (((h % 360) + 360) % 360) / 60
   const x = c * (1 - Math.abs((hp % 2) - 1))
   let r = 0
   let g = 0
@@ -160,18 +156,23 @@ function parseCustomColor(value: string | null | undefined): Rgb | null {
  *     resuming doesn't recreate the WebGL context.
  */
 export default function ShaderBackground({
-  preset,
+  preset: rawPreset,
   speed,
   intensity,
-  colorSource,
-  customColor,
+  colorSource: rawColorSource,
+  customColor: rawCustomColor,
   opacity,
 }: ShaderBackgroundProps) {
+  // `stegaClean`: in draft mode these CMS strings carry stega characters —
+  // raw values would fail the preset guard (wrong preset), the `'custom'`
+  // comparisons (wrong color source), and hex parsing (fallback color).
+  const preset = stegaClean(rawPreset)
+  const colorSource = stegaClean(rawColorSource)
+  const customColor = stegaClean(rawCustomColor)
   const presetName: ShaderPresetName = isShaderPreset(preset) ? preset : defaultShaderPreset
   const speedValue = typeof speed === 'number' && speed > 0 ? speed : 1
   const intensityValue = typeof intensity === 'number' && intensity >= 0 ? intensity : 1
-  const resolvedOpacity =
-    typeof opacity === 'number' ? Math.min(Math.max(opacity, 0), 1) : 1
+  const resolvedOpacity = typeof opacity === 'number' ? Math.min(Math.max(opacity, 0), 1) : 1
 
   const wrapperRef = useRef<HTMLDivElement>(null)
 
@@ -270,9 +271,7 @@ export default function ShaderBackground({
   // Per-instance noise seed so multiple backgrounds on one page don't render
   // identical patterns. useState's lazy initializer runs exactly once per
   // mount — a deliberate one-time random, never re-derived on re-render.
-  const [posSeed] = useState(
-    () => new Float32Array([Math.random() * 1000, Math.random() * 1000]),
-  )
+  const [posSeed] = useState(() => new Float32Array([Math.random() * 1000, Math.random() * 1000]))
 
   const args = useMemo<ShaderArgs>(() => {
     const def = shaderPresets[presetName]
@@ -285,8 +284,8 @@ export default function ShaderBackground({
       // the color the INIT hook pushes. The color flows only through the INIT
       // hook (creation) + the recolor effect (theme/custom changes).
       uniforms: [
-				{ name: 'u_time', type: 'float', value: 0.0 },
-				{ name: 'u_posSeed', type: 'vec2', value: posSeed },
+        {name: 'u_time', type: 'float', value: 0.0},
+        {name: 'u_posSeed', type: 'vec2', value: posSeed},
       ],
       hooks: [
         {
@@ -313,7 +312,7 @@ export default function ShaderBackground({
               value: shader.getElapsedTime() * speedValue,
             })
           },
-        }
+        },
       ],
     }
     // `intensityValue` is intentionally NOT consumed yet (the blob preset has
@@ -342,7 +341,7 @@ export default function ShaderBackground({
       ) : (
         // Static CSS gradient fallback — reduced motion or offscreen.
         <div
-					className="absolute inset-0 block h-full w-full min-h-full min-w-full"
+          className="absolute inset-0 block h-full w-full min-h-full min-w-full"
           style={{backgroundImage: gradient, opacity: 0.6}}
         />
       )}

@@ -37,12 +37,7 @@ export default function FooterContent({
       )}
     >
       {hasSocials && (
-        <ul
-          className={cn(
-            'flex flex-wrap gap-x-5 gap-y-2',
-            compact && 'flex-col gap-y-1',
-          )}
-        >
+        <ul className={cn('flex flex-wrap gap-x-5 gap-y-2', compact && 'flex-col gap-y-1')}>
           {socials.map((social) => (
             <li key={social._key}>
               <a
@@ -67,9 +62,7 @@ export default function FooterContent({
         </ul>
       )}
 
-      {legal && (
-        <p className={cn('text-sm text-muted-foreground', compact && 'mt-1')}>{legal}</p>
-      )}
+      {legal && <p className={cn('text-sm text-muted-foreground', compact && 'mt-1')}>{legal}</p>}
     </div>
   )
 }

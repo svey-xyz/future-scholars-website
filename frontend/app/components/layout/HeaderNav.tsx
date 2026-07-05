@@ -6,12 +6,7 @@ import {usePathname} from 'next/navigation'
 import DesktopNav from './DesktopNav'
 import MobileNav from './MobileNav'
 import {cn} from '@/lib/utils'
-import type {
-  NavItem,
-  SettingsContact,
-  SettingsLegal,
-  SettingsMobileNav,
-} from '@/sanity/lib/types'
+import type {NavItem, SettingsContact, SettingsLegal, SettingsMobileNav} from '@/sanity/lib/types'
 
 type HeaderNavProps = {
   navigation: NavItem[]
@@ -38,12 +33,7 @@ type HeaderNavProps = {
  * hamburger below (pure CSS), so the first paint is usable; once mounted, JS
  * takes over and refines the threshold by measured width.
  */
-export default function HeaderNav({
-  navigation,
-  mobileNav,
-  contact,
-  legal,
-}: HeaderNavProps) {
+export default function HeaderNav({navigation, mobileNav, contact, legal}: HeaderNavProps) {
   const trackRef = useRef<HTMLDivElement | null>(null)
   const navRef = useRef<HTMLDivElement | null>(null)
   const pathname = usePathname()

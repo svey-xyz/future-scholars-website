@@ -1,4 +1,4 @@
-import {ViewTransition} from 'react'
+import {Suspense, ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
 import Link from 'next/link'
 import {notFound} from 'next/navigation'
@@ -9,7 +9,14 @@ import {type PortableTextBlock} from 'next-sanity'
 import {PortableText} from '@/app/components/portable-text'
 import {ProjectMeta} from '@/app/components/projects'
 import {SanityImage as Image} from '@/app/components/common'
-import {sanityFetch} from '@/sanity/lib/live'
+import {Skeleton} from '@/components/ui/skeleton'
+import {
+  getDynamicFetchOptions,
+  sanityFetch,
+  sanityFetchMetadata,
+  sanityFetchStaticParams,
+  type DynamicFetchOptions,
+} from '@/sanity/lib/live'
 import {archivePageSlugQuery, projectBySlugQuery, projectSlugsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
@@ -22,12 +29,7 @@ type Props = {
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-static-params
  */
 export async function generateStaticParams() {
-  const {data} = await sanityFetch({
-    query: projectSlugsQuery,
-    // Use the published perspective in generateStaticParams
-    perspective: 'published',
-    stega: false,
-  })
+  const {data} = await sanityFetchStaticParams({query: projectSlugsQuery})
   return data
 }
 
@@ -36,13 +38,11 @@ export async function generateStaticParams() {
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function
  */
 export async function generateMetadata(props: Props, parent: ResolvingMetadata): Promise<Metadata> {
-  const params = await props.params
-  const {data: project} = await sanityFetch({
+  const [params, {perspective}] = await Promise.all([props.params, getDynamicFetchOptions()])
+  const {data: project} = await sanityFetchMetadata({
     query: projectBySlugQuery,
     params,
-    // Static SEO/OG: never contain stega, read the published perspective.
-    perspective: 'published',
-    stega: false,
+    perspective,
   })
   const previousImages = (await parent).openGraph?.images || []
   // Prefer the dedicated OG image; fall back to the cover image.
@@ -78,7 +78,31 @@ function EmptyBodyNote() {
 }
 
 /**
- * Project detail (SVE-41). Rich, accessible RSC render:
+ * Layer 1 of the three-layer pattern (see docs/CACHING.md): branch on
+ * `draftMode()` only.
+ */
+export default async function ProjectPage(props: Props) {
+  const {isEnabled: isDraftMode} = await draftMode()
+  if (isDraftMode) {
+    return (
+      <Suspense fallback={<ProjectFallback />}>
+        {/* `params` stays un-awaited here so the Suspense boundary works. */}
+        <DynamicProject params={props.params} />
+      </Suspense>
+    )
+  }
+  const {slug} = await props.params
+  return <CachedProject slug={slug} perspective="published" stega={false} />
+}
+
+/** Layer 2 (draft mode only): resolve request-time values, pass plain props. */
+async function DynamicProject({params}: Pick<Props, 'params'>) {
+  const [{slug}, {perspective, stega}] = await Promise.all([params, getDynamicFetchOptions()])
+  return <CachedProject slug={slug} perspective={perspective} stega={stega} />
+}
+
+/**
+ * Layer 3: cached project detail (SVE-41). Rich, accessible RSC render:
  *   - single `<h1>` title + optional excerpt;
  *   - hero cover image wrapped in the shared-element morph
  *     (`project-card-${slug}`, `share="morph"`) so the listing thumbnail morphs
@@ -89,16 +113,17 @@ function EmptyBodyNote() {
  *     as a sidebar — matching the original `ProjectInfoSection` layout. Single
  *     column on mobile, body on top.
  */
-export default async function ProjectPage(props: Props) {
-  const params = await props.params
+async function CachedProject({slug, perspective, stega}: {slug: string} & DynamicFetchOptions) {
+  'use cache'
   const [{data: project}, {data: archiveSlug}] = await Promise.all([
-    sanityFetch({query: projectBySlugQuery, params}),
+    sanityFetch({query: projectBySlugQuery, params: {slug}, perspective, stega}),
     // Resolve the designated projects-archive page slug for the back-link +
     // taxonomy chips. `stega: false` — the value goes into hrefs, so it must not
     // carry Visual-Editing markers (see CLAUDE.md).
     sanityFetch({
       query: archivePageSlugQuery,
       params: {archive: 'projectsArchive'},
+      perspective,
       stega: false,
     }),
   ])
@@ -112,9 +137,10 @@ export default async function ProjectPage(props: Props) {
   const archiveBasePath = typeof archiveSlug === 'string' ? `/${archiveSlug}` : null
 
   // Respect the visibility toggle: a hidden project 404s for the public, but
-  // stays reachable in Presentation/draft preview so editors can review it.
-  const {isEnabled: isDraft} = await draftMode()
-  if (project.hidden && !isDraft) {
+  // stays reachable in draft/Presentation preview so editors can review it.
+  // Draft state is already encoded in `perspective` (the cached render must
+  // not read request state directly), so gate on the published perspective.
+  if (project.hidden && perspective === 'published') {
     return notFound()
   }
 
@@ -200,6 +226,19 @@ export default async function ProjectPage(props: Props) {
           </aside>
         </div>
       </article>
+    </div>
+  )
+}
+
+/** Draft-mode streaming fallback — mirrors the project header block, no CLS. */
+function ProjectFallback() {
+  return (
+    <div className="container my-12 grid gap-12 lg:my-24">
+      <div className="max-w-3xl space-y-6">
+        <Skeleton className="h-5 w-28" />
+        <Skeleton className="h-14 w-2/3" />
+        <Skeleton className="h-7 w-full" />
+      </div>
     </div>
   )
 }

@@ -2,14 +2,19 @@ import type {MetadataRoute} from 'next'
 import {toPlainText} from 'next-sanity'
 
 import * as demo from '@/sanity/lib/demo'
-import {sanityFetch} from '@/sanity/lib/live'
+import {sanityFetchMetadata} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 
 // Mirrors --primary-accent (hsl(20 100% 50%)) declared in app/globals.css.
 const THEME_COLOR = '#ff5500'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  const {data: settings} = await sanityFetch({query: settingsQuery, stega: false})
+  // Metadata-route fetch ('use cache' lives in the helper): the installed-PWA
+  // manifest is always published content, never stega.
+  const {data: settings} = await sanityFetchMetadata({
+    query: settingsQuery,
+    perspective: 'published',
+  })
 
   const name = settings?.title || demo.title
   const description = toPlainText(settings?.description || demo.description)

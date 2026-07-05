@@ -1,5 +1,6 @@
 export {default as BlockRenderer} from './BlockRenderer'
 export {default as PageBuilder} from './PageBuilder'
+export {default as CachedPage} from './CachedPage'
 export {default as Hero} from './Hero'
 export {default as Cta} from './Cta'
 export {default as InfoSection} from './InfoSection'

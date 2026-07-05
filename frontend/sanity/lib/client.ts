@@ -9,5 +9,8 @@ export const client = createClient({
   apiVersion,
   useCdn: true,
   token, // Required if you have a private dataset
+  // Default to published content; draft/release perspectives are passed
+  // explicitly per fetch (see the three-layer pattern in docs/CACHING.md).
+  perspective: 'published',
   stega: {studioUrl},
 })

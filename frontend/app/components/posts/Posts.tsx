@@ -1,4 +1,4 @@
-import {sanityFetch} from '@/sanity/lib/live'
+import {sanityFetch, type DynamicFetchOptions} from '@/sanity/lib/live'
 import {morePostsQuery, allPostsQuery} from '@/sanity/lib/queries'
 import {AllPostsQueryResult} from '@/sanity.types'
 import {OnboardingShell} from '@/app/components/starter/Onboarding'
@@ -21,10 +21,22 @@ const Posts = ({
   </div>
 )
 
-export const MorePosts = async ({skip, limit}: {skip: string; limit: number}) => {
+/**
+ * Cached components (three-layer pattern, see docs/CACHING.md): callers
+ * resolve `perspective`/`stega` outside the cache boundary and pass them in.
+ */
+export const MorePosts = async ({
+  skip,
+  limit,
+  perspective,
+  stega,
+}: {skip: string; limit: number} & DynamicFetchOptions) => {
+  'use cache'
   const {data} = await sanityFetch({
     query: morePostsQuery,
     params: {skip, limit},
+    perspective,
+    stega,
   })
 
   if (!data || data.length === 0) {
@@ -40,8 +52,9 @@ export const MorePosts = async ({skip, limit}: {skip: string; limit: number}) =>
   )
 }
 
-export const AllPosts = async () => {
-  const {data} = await sanityFetch({query: allPostsQuery})
+export const AllPosts = async ({perspective, stega}: DynamicFetchOptions) => {
+  'use cache'
+  const {data} = await sanityFetch({query: allPostsQuery, perspective, stega})
 
   if (!data || data.length === 0) {
     return (

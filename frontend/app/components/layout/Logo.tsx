@@ -23,8 +23,7 @@ import type {SVGProps} from 'react'
  */
 
 // A blocky "Z" monogram, drawn once and reused per layer. Sized to a 48×48 box.
-const Z_PATH =
-  'M10 12 H38 V19 L23 36 H38 V44 H10 V37 L25 20 H10 Z'
+const Z_PATH = 'M10 12 H38 V19 L23 36 H38 V44 H10 V37 L25 20 H10 Z'
 
 type LogoMarkProps = SVGProps<SVGSVGElement> & {
   /**
@@ -38,11 +37,7 @@ type LogoMarkProps = SVGProps<SVGSVGElement> & {
   decorative?: boolean
 }
 
-export default function Logo({
-  title = 'Svey — home',
-  decorative = false,
-  ...props
-}: LogoMarkProps) {
+export default function Logo({title = 'Svey — home', decorative = false, ...props}: LogoMarkProps) {
   return (
     <svg
       viewBox="0 0 48 48"

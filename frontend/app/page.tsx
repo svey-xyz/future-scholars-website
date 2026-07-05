@@ -1,83 +1,106 @@
-import {Suspense, ViewTransition} from 'react'
-import Link from 'next/link'
-import {PortableText} from '@portabletext/react'
-import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
+import type {Metadata} from 'next'
+import {draftMode} from 'next/headers'
+import {Suspense} from 'react'
 
-import {AllPosts} from '@/app/components/posts'
-import {GetStartedCode, SideBySideIcons, OnboardingShell} from '@/app/components/starter'
-import {Button} from '@/components/ui/button'
+import {CachedPage} from '@/app/components/blocks'
+import {getSettings} from '@/app/components/layout'
+import {OnboardingShell} from '@/app/components/starter'
 import {Skeleton} from '@/components/ui/skeleton'
-import {getPageQuery, pagesSlugs, settingsQuery} from '@/sanity/lib/queries'
-import {sanityFetch} from '@/sanity/lib/live'
-import {dataAttr} from '@/sanity/lib/utils'
-import PageRoute from '@/app/[slug]/page'
-import { Metadata } from 'next'
-import { studioUrl } from '@/sanity/lib/api'
-
-/**
- * Generate the static params for the page.
- * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-static-params
- */
-export async function generateStaticParams() {
-	const { data: settings } = await sanityFetch({
-		query: settingsQuery,
-		stega: false,
-		perspective: 'published',
-	})
-
-	return settings?.homepage?.slug ? [{ slug: settings.homepage.slug.current }] : []
-}
+import {
+  getDynamicFetchOptions,
+  sanityFetchMetadata,
+  type DynamicFetchOptions,
+} from '@/sanity/lib/live'
+import {getPageQuery, settingsQuery} from '@/sanity/lib/queries'
+import {studioUrl} from '@/sanity/lib/api'
 
 /**
  * Generate metadata for the page.
  * Learn more: https://nextjs.org/docs/app/api-reference/functions/generate-metadata#generatemetadata-function
  */
 export async function generateMetadata(): Promise<Metadata> {
-	const { data: settings } = await sanityFetch({
-		query: settingsQuery,
-		stega: false,
-	})
+  const {perspective} = await getDynamicFetchOptions()
+  const {data: settings} = await sanityFetchMetadata({query: settingsQuery, perspective})
+  const slug = settings?.homepage?.slug?.current
+  if (!slug) {
+    return {}
+  }
 
-	const { data: page } = await sanityFetch({
-		query: getPageQuery,
-		params: new Promise((resolve) => {
-			resolve({ slug: settings?.homepage?.slug.current || '' })
-		}),
-		// Metadata should never contain stega
-		stega: false,
-	})
+  const {data: page} = await sanityFetchMetadata({
+    query: getPageQuery,
+    params: {slug},
+    perspective,
+  })
 
-	return {
-		title: page?.name,
-		description: page?.heading,
-	} satisfies Metadata
+  return {
+    title: page?.name,
+    description: page?.heading,
+  } satisfies Metadata
 }
 
-
+/**
+ * The homepage renders whichever `page` document the `settings` singleton
+ * designates. Layer 1 of the three-layer pattern (see docs/CACHING.md):
+ * branch on `draftMode()` only.
+ */
 export default async function Page() {
-	const { data: settings } = await sanityFetch({
-		query: settingsQuery,
-		stega: false,
-	})
+  const {isEnabled: isDraftMode} = await draftMode()
+  if (isDraftMode) {
+    return (
+      <Suspense fallback={<HomeFallback />}>
+        <DynamicHome />
+      </Suspense>
+    )
+  }
+  return <CachedHome perspective="published" stega={false} />
+}
 
-	if (!settings || !settings.homepage?.slug) {
-		return (
-			 <div className="py-40">
-				<OnboardingShell
-					message={{
-						title: `A homepage is not set yet`,
-						description: 'Get started by setting a homepage in the Sanity Studio site settings.',
-					}}
-					link={{
-						title: 'Set Homepage',
-						href: `${studioUrl}/structure/intent/edit/id=siteSettings;type=siteSettings;path=homepage`,
-					}}
-					type="siteSettings"
-					path="homepage"
-				/>
-			</div>
-		)
-	}
+/** Layer 2 (draft mode only): resolve request-time values, pass plain props. */
+async function DynamicHome() {
+  const {perspective, stega} = await getDynamicFetchOptions()
+  return <CachedHome perspective={perspective} stega={stega} />
+}
 
-	return <PageRoute params={new Promise((resolve, reject) => { resolve({ slug: settings.homepage?.slug.current || '' }) })} />
+/** Layer 3: resolve the designated homepage from settings, render it cached. */
+async function CachedHome({perspective, stega}: DynamicFetchOptions) {
+  'use cache'
+  const settings = await getSettings({perspective, stega})
+  const slug = settings?.homepage?.slug?.current
+
+  if (!slug) {
+    return (
+      <div className="py-40">
+        <OnboardingShell
+          message={{
+            title: `A homepage is not set yet`,
+            description: 'Get started by setting a homepage in the Sanity Studio site settings.',
+          }}
+          link={{
+            title: 'Set Homepage',
+            href: `${studioUrl}/structure/intent/edit/id=siteSettings;type=siteSettings;path=homepage`,
+          }}
+          type="siteSettings"
+          path="homepage"
+        />
+      </div>
+    )
+  }
+
+  return <CachedPage slug={slug} perspective={perspective} stega={stega} />
+}
+
+/** Draft-mode streaming fallback — mirrors the page header block, no CLS. */
+function HomeFallback() {
+  return (
+    <div className="my-12 lg:my-24">
+      <div className="container">
+        <div className="border-b border-border pb-6">
+          <div className="max-w-3xl space-y-4">
+            <Skeleton className="h-14 w-2/3" />
+            <Skeleton className="h-6 w-1/2" />
+          </div>
+        </div>
+      </div>
+    </div>
+  )
 }

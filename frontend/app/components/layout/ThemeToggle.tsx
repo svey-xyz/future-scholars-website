@@ -56,17 +56,19 @@ export default function ThemeToggle({className}: {className?: string}) {
       aria-label={label}
     >
       <SunIcon
-				className={cn('block dark:hidden transform rotate-0 dark:-rotate-180 duration-150 delay-100',
-					'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
-					'group-hover:scale-[1.1] group-hover:-rotate-10 group-active:scale-[0.9]'
-				)}
+        className={cn(
+          'block dark:hidden transform rotate-0 dark:-rotate-180 duration-150 delay-100',
+          'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+          'group-hover:scale-[1.1] group-hover:-rotate-10 group-active:scale-[0.9]',
+        )}
         aria-hidden="true"
       />
       <MoonIcon
-				className={cn('absolute hidden dark:block transform rotate-90 dark:rotate-0 duration-150 delay-100',
-					'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
-					'group-hover:scale-[1.1] group-hover:rotate-10 group-active:scale-[0.9]'
-				)}
+        className={cn(
+          'absolute hidden dark:block transform rotate-90 dark:rotate-0 duration-150 delay-100',
+          'transition-[scale,rotate,transform] motion-reduce:transition-none motion-reduce:group-hover:scale-100',
+          'group-hover:scale-[1.1] group-hover:rotate-10 group-active:scale-[0.9]',
+        )}
         aria-hidden="true"
       />
       <span className="sr-only">{label}</span>

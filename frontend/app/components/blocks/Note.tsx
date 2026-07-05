@@ -1,4 +1,5 @@
 import {type PortableTextBlock} from 'next-sanity'
+import {stegaClean} from '@sanity/client/stega'
 import {
   InformationCircleIcon,
   ExclamationTriangleIcon,
@@ -75,9 +76,12 @@ const iconOverrides = {
 } as const
 
 export default function Note({block}: Props) {
-  const tone = (block?.tone ?? 'info') as Tone
-  const {label, Icon: DefaultIcon, surface, accent} = tones[tone]
-  const Icon = (block?.icon && iconOverrides[block.icon]) || DefaultIcon
+  // `stegaClean`: enum values arrive stega-encoded in draft mode — using them
+  // raw as lookup keys returns `undefined` and crashes (tones[tone]).
+  const tone = (stegaClean(block?.tone) ?? 'info') as Tone
+  const iconName = stegaClean(block?.icon) as keyof typeof iconOverrides | undefined
+  const {label, Icon: DefaultIcon, surface, accent} = tones[tone] ?? tones.info
+  const Icon = (iconName && iconOverrides[iconName]) || DefaultIcon
 
   if (!block?.content?.length) return null
 

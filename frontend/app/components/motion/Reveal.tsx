@@ -40,6 +40,13 @@ export default function Reveal<T extends React.ElementType = 'div'>({
   return (
     <Tag
       data-reveal=""
+      // `data-revealed` is toggled by RevealObserver OUTSIDE React. Under Cache
+      // Components the layout's static shell (and thus the observer) hydrates
+      // before streamed page segments do, so in-viewport elements can be marked
+      // revealed before their segment hydrates — React would then flag the
+      // attribute as a hydration mismatch. Scoped to this element's attributes
+      // only; child content mismatches still warn.
+      suppressHydrationWarning
       className={cn(variants[variant], className)}
       style={i ? ({...style, '--reveal-i': i} as React.CSSProperties) : style}
       {...rest}

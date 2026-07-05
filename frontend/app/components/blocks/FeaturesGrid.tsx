@@ -16,6 +16,8 @@ import {
   StarIcon,
 } from '@heroicons/react/24/outline'
 
+import {stegaClean} from '@sanity/client/stega'
+
 import ResolvedLink from '@/app/components/common/ResolvedLink'
 import Reveal from '@/app/components/motion/Reveal'
 import {cn} from '@/lib/utils'
@@ -74,7 +76,10 @@ export default function FeaturesGrid({block}: Props) {
 
       <ul className={cn('mt-10 grid grid-cols-1 gap-8', colClass[cols])}>
         {items.map((feature, i) => {
-          const Icon = feature.icon ? icons[feature.icon] : null
+          // `stegaClean`: enum arrives stega-encoded in draft mode; raw value
+          // would miss the lookup and silently drop the icon.
+          const iconName = stegaClean(feature.icon)
+          const Icon = iconName ? icons[iconName] : null
           const link = feature.link
           const hasLink = Boolean(link && (link.href || link.page || link.post))
 

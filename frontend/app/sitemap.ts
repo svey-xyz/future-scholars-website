@@ -1,5 +1,5 @@
 import {MetadataRoute} from 'next'
-import {sanityFetch} from '@/sanity/lib/live'
+import {sanityFetchMetadata} from '@/sanity/lib/live'
 import {sitemapData} from '@/sanity/lib/queries'
 import {headers} from 'next/headers'
 
@@ -9,8 +9,11 @@ import {headers} from 'next/headers'
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const allPostsAndPages = await sanityFetch({
+  // Metadata-route fetch ('use cache' lives in the helper): crawler-facing, so
+  // always the published perspective and never stega.
+  const allPostsAndPages = await sanityFetchMetadata({
     query: sitemapData,
+    perspective: 'published',
   })
   const headersList = await headers()
   const sitemap: MetadataRoute.Sitemap = []
@@ -29,14 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   if (allPostsAndPages != null && allPostsAndPages.data.length != 0) {
     let priority: number
     let changeFrequency:
-      | 'monthly'
-      | 'always'
-      | 'hourly'
-      | 'daily'
-      | 'weekly'
-      | 'yearly'
-      | 'never'
-      | undefined
+      'monthly' | 'always' | 'hourly' | 'daily' | 'weekly' | 'yearly' | 'never' | undefined
     let url: string
 
     for (const p of allPostsAndPages.data) {

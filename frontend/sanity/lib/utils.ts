@@ -1,3 +1,5 @@
+import {stegaClean} from '@sanity/client/stega'
+
 import {Link} from '@/sanity.types'
 import {dataset, projectId, studioUrl} from '@/sanity/lib/api'
 import {createDataAttribute, CreateDataAttributeProps} from 'next-sanity'
@@ -30,12 +32,14 @@ export function resolveOpenGraphImage(
 export function linkResolver(link: Link | DereferencedLink | undefined) {
   if (!link) return null
 
-  // If linkType is not set but href is, lets set linkType to "href".  This comes into play when pasting links into the portable text editor because a link type is not assumed.
-  if (!link.linkType && link.href) {
-    link.linkType = 'href'
-  }
+  // `stegaClean`: in draft mode enum values carry stega characters — a raw
+  // switch would fall through to `default` and null every nav link.
+  // If linkType is not set but href is, treat it as "href". This comes into
+  // play when pasting links into the portable text editor because a link type
+  // is not assumed.
+  const linkType = stegaClean(link.linkType) ?? (link.href ? 'href' : undefined)
 
-  switch (link.linkType) {
+  switch (linkType) {
     case 'href':
       return link.href || null
     case 'page':

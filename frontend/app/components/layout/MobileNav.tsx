@@ -2,15 +2,12 @@
 
 import {useState, useSyncExternalStore, type CSSProperties} from 'react'
 import {usePathname} from 'next/navigation'
+import {stegaClean} from '@sanity/client/stega'
 import {ArrowTopRightOnSquareIcon, ChevronDownIcon} from '@heroicons/react/24/outline'
 
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible'
+import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible'
 import {
   Sheet,
   SheetContent,
@@ -155,17 +152,15 @@ function MobileLeaf({
 }) {
   const href = linkResolver(link.link)
   const label = link.resolvedTitle || link.title || ''
-  const isExternal = link.link?.linkType === 'href'
+  // `stegaClean`: enum comparison must ignore draft-mode stega characters.
+  const isExternal = stegaClean(link.link?.linkType) === 'href'
   const opensInNewTab = Boolean(link.link?.openInNewTab)
   const isActive = !isExternal && typeof href === 'string' && href === pathname
 
   return (
     // Wrapper carries the per-item stagger cascade for the Sheet reveal
     // (`--reveal-i` drives the cascade declared in globals.css).
-    <div
-      className={cn(!nested && 'mobile-nav-item')}
-      style={{'--reveal-i': index} as CSSVars}
-    >
+    <div className={cn(!nested && 'mobile-nav-item')} style={{'--reveal-i': index} as CSSVars}>
       <ResolvedLink
         link={link.link}
         ariaCurrent={isActive ? 'page' : undefined}
@@ -205,7 +200,7 @@ function MobileDropdown({
 }) {
   // Open the section if it contains the active route.
   const containsActive = links.some((l) => {
-    if (l.link?.linkType === 'href') return false
+    if (stegaClean(l.link?.linkType) === 'href') return false
     const href = linkResolver(l.link)
     return typeof href === 'string' && href === pathname
   })

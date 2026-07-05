@@ -1,4 +1,5 @@
 import React from 'react'
+import {stegaClean} from '@sanity/client/stega'
 
 import Cta from './Cta'
 import Info from './InfoSection'
@@ -60,7 +61,9 @@ export default function BlockRenderer({block, index, pageId, pageType}: BlockPro
     // canvas sits behind the content. The `data-sanity` attr stays on the same
     // editable node so Visual Editing keeps targeting the block.
     const background = 'background' in block ? block.background : null
-    const hasShader = background?.type === 'shader'
+    // `stegaClean`: enum values carry stega characters in draft mode — a raw
+    // comparison would never match and the shader background would vanish.
+    const hasShader = stegaClean(background?.type) === 'shader'
 
     const rendered = React.createElement(Blocks[block._type], {
       key: block._key,
