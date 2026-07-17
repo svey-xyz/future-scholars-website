@@ -39,6 +39,13 @@ export const testimonials = defineType({
             }),
             defineField({name: 'authorRole', title: 'Author role / company', type: 'string'}),
             defineField({
+              name: 'sourceUrl',
+              title: 'Source link',
+              type: 'url',
+              description: 'Optional link to the original article or review',
+              validation: (Rule) => Rule.uri({scheme: ['http', 'https']}),
+            }),
+            defineField({
               name: 'authorImage',
               title: 'Author image',
               type: 'image',
