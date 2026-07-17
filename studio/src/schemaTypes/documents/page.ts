@@ -42,6 +42,22 @@ export const page = defineType({
       title: 'Subheading',
       type: 'string',
     }),
+    defineField({
+      name: 'titleDisplay',
+      title: 'Title display',
+      type: 'string',
+      description:
+        'How the heading & subheading render at the top of the page. Defaults to Plain — and is hidden automatically when a Hero block leads the page (the hero owns the headline; the heading stays screen-reader-only). Pick an option to override.',
+      options: {
+        list: [
+          {title: 'Plain', value: 'plain'},
+          {title: 'Highlighted', value: 'highlighted'},
+          {title: 'None', value: 'none'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    }),
     archiveField,
     backgroundField,
     defineField({

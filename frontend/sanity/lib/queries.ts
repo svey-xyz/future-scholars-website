@@ -103,6 +103,7 @@ export const getPageQuery = defineQuery(`
     slug,
     heading,
     subheading,
+    titleDisplay,
     archive,
     ${backgroundFields},
     "pageBuilder": pageBuilder[]{
