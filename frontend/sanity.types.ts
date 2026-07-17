@@ -98,6 +98,7 @@ export type Testimonials = {
     quote: string
     authorName: string
     authorRole?: string
+    sourceUrl?: string
     authorImage?: AuthorImage
     _type: 'testimonial'
     _key: string
@@ -1610,6 +1611,7 @@ export type GetPageQueryResult = {
           quote: string
           authorName: string
           authorRole?: string
+          sourceUrl?: string
           authorImage?: AuthorImage
           _type: 'testimonial'
           _key: string
