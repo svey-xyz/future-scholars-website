@@ -110,10 +110,13 @@ in `app/layout.tsx`), `MorePosts`/`AllPosts` (`app/components/posts/Posts.tsx`).
 
    ```sh
    npx sanity blueprints init   # first time only — connects the local blueprint to a stack
+   npx sanity blueprints deploy # the function must exist before env vars can be set
    npx sanity functions env add invalidate-tags REVALIDATE_TAGS_URL https://<prod-domain>/api/revalidate-tags
    npx sanity functions env add invalidate-tags SANITY_REVALIDATE_TAGS_SECRET <same secret>
-   npx sanity blueprints deploy
    ```
+
+   (Env vars take effect without a redeploy; on a fresh stack, `functions env
+   add` before the first deploy fails with `Unable to find function`.)
 
 3. Verify: publish a change in Studio, then
    `npx sanity functions logs invalidate-tags` should show
