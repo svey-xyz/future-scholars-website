@@ -1,6 +1,8 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 
+import {sortFields} from './shared'
+
 /**
  * Projects Archive — renders a grid of projects. Source modes:
  *  - `latest`  newest N (limit), optionally filtered by category
@@ -102,6 +104,14 @@ export const projectsArchive = defineType({
       initialValue: false,
       description:
         'Render the “sort by” control (newest / recently updated) above the grid. When off, the editor’s order is preserved.',
+    }),
+    ...sortFields({
+      fields: [
+        {title: 'Published date', value: 'publishedAt'},
+        {title: 'Last updated', value: 'updatedAt'},
+        {title: 'Title', value: 'title'},
+      ],
+      initialField: 'publishedAt',
     }),
   ],
   preview: {

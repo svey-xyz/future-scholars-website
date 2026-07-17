@@ -227,6 +227,8 @@ export type ProjectsArchive = {
   showFilter?: boolean
   showTechFilter?: boolean
   showSort?: boolean
+  sortField?: 'publishedAt' | 'updatedAt' | 'title'
+  sortDirection?: 'desc' | 'asc'
 }
 
 export type PostReference = {
@@ -249,6 +251,8 @@ export type PostsArchive = {
     } & PostReference
   >
   columns?: 2 | 3
+  sortField?: 'date' | 'title'
+  sortDirection?: 'desc' | 'asc'
 }
 
 export type Hero = {
@@ -1506,6 +1510,8 @@ export type GetPageQueryResult = {
           } | null
         }> | null
         columns?: 2 | 3
+        sortField?: 'date' | 'title'
+        sortDirection?: 'asc' | 'desc'
         background: null
       }
     | {
@@ -1555,6 +1561,8 @@ export type GetPageQueryResult = {
         showFilter?: boolean
         showTechFilter?: boolean
         showSort?: boolean
+        sortField?: 'publishedAt' | 'title' | 'updatedAt'
+        sortDirection?: 'asc' | 'desc'
         background: null
       }
     | {

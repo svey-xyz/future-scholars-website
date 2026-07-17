@@ -1,5 +1,6 @@
 import {stegaClean} from '@sanity/client/stega'
 
+import {applyArchiveSort} from './archiveSort'
 import PostCard from '@/app/components/posts/PostCard'
 import Reveal from '@/app/components/motion/Reveal'
 import {Badge} from '@/components/ui/badge'
@@ -22,7 +23,16 @@ const colClass: Record<number, string> = {
 export default function PostsArchive({block}: Props) {
   const {heading, subheading, source, posts, limit, columns, category} = block
   const cols = columns ?? 3
-  const all = posts ?? []
+  // Editor-configured default ordering (sortField/sortDirection) — hand-picked
+  // sources keep the manual order. Applied before the 'latest' limit so the
+  // limit selects from the sorted set.
+  const picked = stegaClean(source) === 'picked'
+  const all = picked
+    ? (posts ?? [])
+    : applyArchiveSort(posts ?? [], block, {
+        date: (p) => (p.date ? Date.parse(p.date) : NaN),
+        title: (p) => p.title,
+      })
   // GROQ caps 'latest' at 24; apply the editor's exact limit here.
   const shown = stegaClean(source) === 'latest' ? all.slice(0, limit ?? 6) : all
 

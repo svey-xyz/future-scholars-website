@@ -1,6 +1,8 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {DocumentsIcon} from '@sanity/icons/Documents'
 
+import {sortFields} from './shared'
+
 /**
  * Posts Archive — renders a grid of posts. Source modes:
  *  - `latest`  newest N (limit), optionally filtered by category
@@ -75,6 +77,13 @@ export const postsArchive = defineType({
         layout: 'radio',
         direction: 'horizontal',
       },
+    }),
+    ...sortFields({
+      fields: [
+        {title: 'Published date', value: 'date'},
+        {title: 'Title', value: 'title'},
+      ],
+      initialField: 'date',
     }),
   ],
   preview: {

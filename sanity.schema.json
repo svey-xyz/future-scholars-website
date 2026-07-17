@@ -1358,6 +1358,44 @@
             "type": "boolean"
           },
           "optional": true
+        },
+        "sortField": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "publishedAt"
+              },
+              {
+                "type": "string",
+                "value": "updatedAt"
+              },
+              {
+                "type": "string",
+                "value": "title"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortDirection": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "desc"
+              },
+              {
+                "type": "string",
+                "value": "asc"
+              }
+            ]
+          },
+          "optional": true
         }
       }
     }
@@ -1489,6 +1527,40 @@
               {
                 "type": "number",
                 "value": 3
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortField": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "date"
+              },
+              {
+                "type": "string",
+                "value": "title"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortDirection": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "desc"
+              },
+              {
+                "type": "string",
+                "value": "asc"
               }
             ]
           },

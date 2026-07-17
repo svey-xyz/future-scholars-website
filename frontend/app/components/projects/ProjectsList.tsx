@@ -25,6 +25,10 @@ type Props = {
   /** Show the "sort by" select. Default `true`. When `false`, the incoming order is preserved
    *  (so a hand-picked / pre-ordered selection isn't re-sorted). */
   showSort?: boolean
+  /** Initial value of the sort control (editor default from the archive block's
+   *  `sortField`, issue #16). Only meaningful with `showSort`; the SSR render
+   *  uses it too, so first paint matches the server order. Default `'created'`. */
+  initialSort?: SortKey
   /** Grid columns at the widest breakpoint. Default `3`. */
   columns?: 2 | 3
   /** Heading tag for the cards. Omit to use each card's own default (regular `h3`, featured `h2`). */
@@ -172,6 +176,7 @@ export default function ProjectsList({
   showFilter = true,
   showTechFilter = true,
   showSort = true,
+  initialSort = 'created',
   columns = 3,
   headingLevel,
   className,
@@ -183,7 +188,7 @@ export default function ProjectsList({
   const [activeTech, setActiveTech] = useState<string>(() =>
     showTechFilter ? seedFromUrl('tech') : ALL,
   )
-  const [sort, setSort] = useState<SortKey>('created')
+  const [sort, setSort] = useState<SortKey>(initialSort)
 
   // Unique category / tech options across all projects, keyed by slug.
   const tags = useMemo(() => buildOptions(projects, (p) => p.categories), [projects])
@@ -199,7 +204,7 @@ export default function ProjectsList({
   // When sorting is disabled, the incoming order is preserved as-is.
   const ordered = useMemo(() => {
     if (!showSort) return projects
-    const effectiveSort: SortKey = mounted ? sort : 'created'
+    const effectiveSort: SortKey = mounted ? sort : initialSort
     const key = effectiveSort === 'updated' ? 'updatedAt' : 'publishedAt'
     return [...projects].sort((a, b) => toTime(b[key]) - toTime(a[key]))
   }, [projects, showSort, sort, mounted])
