@@ -2,8 +2,11 @@
 
 import {useMemo, useState, useSyncExternalStore} from 'react'
 
+import {stegaClean} from '@sanity/client/stega'
+
 import ProjectCard, {type ProjectCardItem} from './ProjectCard'
 import FeaturedProjectCard from './FeaturedProjectCard'
+import {saveProjectNavContext} from './nav-context'
 import Reveal from '@/app/components/motion/Reveal'
 import {cn} from '@/lib/utils'
 
@@ -260,7 +263,7 @@ export default function ProjectsList({
               </label>
               <select
                 id="project-sort"
-                value={mounted ? sort : 'created'}
+                value={mounted ? sort : initialSort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
                 className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
@@ -279,7 +282,25 @@ export default function ProjectsList({
         </p>
       )}
 
-      <ul className={cn('mt-6 grid grid-cols-1 gap-6', gridColsClass[columns])}>
+      <ul
+        className={cn('mt-6 grid grid-cols-1 gap-6', gridColsClass[columns])}
+        // Snapshot the visible (filtered) projects in rendered (sorted) order
+        // when a card link is clicked, so the detail page's prev/next pages
+        // through THIS list and its back link can restore it (issue #17).
+        // Capture-phase delegation: the synchronous sessionStorage write lands
+        // before navigation. Slugs/titles are stega-cleaned — they become
+        // hrefs/labels on the detail page.
+        onClickCapture={(event) => {
+          const anchor = (event.target as HTMLElement).closest?.('a[href]')
+          if (!anchor) return
+          saveProjectNavContext({
+            entries: ordered
+              .filter(isVisible)
+              .map((p) => ({slug: stegaClean(p.slug), title: stegaClean(p.title)})),
+            from: window.location.pathname + window.location.search,
+          })
+        }}
+      >
         {ordered.map((project, i) => {
           const visible = !mounted || isVisible(project)
           const featured = project.featured === true

@@ -315,3 +315,15 @@ export const projectSlugsQuery = defineQuery(`
   *[_type == "project" && defined(slug.current) && !hidden]
   {"slug": slug.current}
 `)
+
+/**
+ * Default-order slug/title list backing the project detail's prev/next
+ * pagination (issue #17) when no in-tab nav context exists. Order matches the
+ * archive block's server default (`coalesce(publishedAt, _createdAt) desc`).
+ */
+export const projectNavListQuery = defineQuery(`
+  *[_type == "project" && defined(slug.current) && !hidden] | order(coalesce(publishedAt, _createdAt) desc) {
+    "slug": slug.current,
+    title
+  }
+`)

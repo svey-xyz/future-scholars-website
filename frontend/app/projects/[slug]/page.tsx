@@ -1,13 +1,12 @@
 import {Suspense, ViewTransition} from 'react'
 import type {Metadata, ResolvingMetadata} from 'next'
-import Link from 'next/link'
 import {notFound} from 'next/navigation'
 import {draftMode} from 'next/headers'
 import {ArrowLongLeftIcon, InformationCircleIcon} from '@heroicons/react/24/outline'
 import {type PortableTextBlock} from 'next-sanity'
 
 import {PortableText} from '@/app/components/portable-text'
-import {ProjectMeta} from '@/app/components/projects'
+import {ProjectBackLink, ProjectMeta, ProjectPagination} from '@/app/components/projects'
 import {SanityImage as Image} from '@/app/components/common'
 import {Skeleton} from '@/components/ui/skeleton'
 import {
@@ -17,7 +16,12 @@ import {
   sanityFetchStaticParams,
   type DynamicFetchOptions,
 } from '@/sanity/lib/live'
-import {archivePageSlugQuery, projectBySlugQuery, projectSlugsQuery} from '@/sanity/lib/queries'
+import {
+  archivePageSlugQuery,
+  projectBySlugQuery,
+  projectNavListQuery,
+  projectSlugsQuery,
+} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
 type Props = {
@@ -115,7 +119,7 @@ async function DynamicProject({params}: Pick<Props, 'params'>) {
  */
 async function CachedProject({slug, perspective, stega}: {slug: string} & DynamicFetchOptions) {
   'use cache'
-  const [{data: project}, {data: archiveSlug}] = await Promise.all([
+  const [{data: project}, {data: archiveSlug}, {data: navList}] = await Promise.all([
     sanityFetch({query: projectBySlugQuery, params: {slug}, perspective, stega}),
     // Resolve the designated projects-archive page slug for the back-link +
     // taxonomy chips. `stega: false` — the value goes into hrefs, so it must not
@@ -126,6 +130,9 @@ async function CachedProject({slug, perspective, stega}: {slug: string} & Dynami
       perspective,
       stega: false,
     }),
+    // Default-order prev/next fallback list (issue #17). `stega: false` —
+    // slugs become hrefs, titles are plain button labels.
+    sanityFetch({query: projectNavListQuery, perspective, stega: false}),
   ])
 
   if (!project?._id) {
@@ -156,9 +163,10 @@ async function CachedProject({slug, perspective, stega}: {slug: string} & Dynami
               The arrow's hover nudge is `motion-safe:` only, so reduced-motion
               users get a static link. Hidden when no projects archive exists. */}
           {archiveBasePath && (
-            <Link
+            // Context-aware (issue #17): prefers same-origin history / the
+            // originating filtered list; SSR + no-JS fall back to this href.
+            <ProjectBackLink
               href={archiveBasePath}
-              transitionTypes={['nav-back']}
               className="group inline-flex w-fit items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
             >
               <ArrowLongLeftIcon
@@ -166,7 +174,7 @@ async function CachedProject({slug, perspective, stega}: {slug: string} & Dynami
                 className="size-4 transition-transform duration-300 ease-out will-change-transform motion-safe:group-hover:-translate-x-1"
               />
               All projects
-            </Link>
+            </ProjectBackLink>
           )}
           <div className="flex max-w-3xl flex-col gap-6">
             <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{project.title}</h1>
@@ -225,6 +233,11 @@ async function CachedProject({slug, perspective, stega}: {slug: string} & Dynami
             <ProjectMeta project={project} archiveBasePath={archiveBasePath} />
           </aside>
         </div>
+
+        {/* Prev/next through the visitor's originating list (or the default
+            order). The fallback list is fetched stega: false; the context
+            entries are stega-cleaned at capture time (ProjectsList). */}
+        <ProjectPagination slug={project.slug} fallbackEntries={navList ?? []} className="mt-12" />
       </article>
     </div>
   )

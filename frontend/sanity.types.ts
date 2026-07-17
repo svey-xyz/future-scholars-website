@@ -1920,6 +1920,14 @@ export type ProjectSlugsQueryResult = Array<{
   slug: string
 }>
 
+// Source: sanity/lib/queries.ts
+// Variable: projectNavListQuery
+// Query: *[_type == "project" && defined(slug.current) && !hidden] | order(coalesce(publishedAt, _createdAt) desc) {    "slug": slug.current,    title  }
+export type ProjectNavListQueryResult = Array<{
+  slug: string
+  title: string
+}>
+
 // Query TypeMap
 import '@sanity/client'
 declare module '@sanity/client' {
@@ -1936,5 +1944,6 @@ declare module '@sanity/client' {
     '\n  *[_type == "project" && defined(slug.current) && !hidden] | order(featured desc, coalesce(publishedAt, _createdAt) desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n  }\n': AllProjectsQueryResult
     '\n  *[_type == "project" && slug.current == $slug] [0] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n    },\n    ogImage,\n  }\n': ProjectBySlugQueryResult
     '\n  *[_type == "project" && defined(slug.current) && !hidden]\n  {"slug": slug.current}\n': ProjectSlugsQueryResult
+    '\n  *[_type == "project" && defined(slug.current) && !hidden] | order(coalesce(publishedAt, _createdAt) desc) {\n    "slug": slug.current,\n    title\n  }\n': ProjectNavListQueryResult
   }
 }
