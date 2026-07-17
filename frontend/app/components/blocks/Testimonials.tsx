@@ -1,3 +1,5 @@
+import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
+
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
 import {Avatar as AvatarRoot, AvatarFallback} from '@/components/ui/avatar'
@@ -59,7 +61,9 @@ export default function Testimonials({block}: Props) {
                   &rdquo;
                 </span>
                 <figure className="relative flex h-full flex-col gap-4 p-6">
-                  <blockquote className="leading-7 text-pretty">{t.quote}</blockquote>
+                  <blockquote cite={t.sourceUrl || undefined} className="leading-7 text-pretty">
+                    {t.quote}
+                  </blockquote>
                   <figcaption className="mt-auto flex items-center gap-3">
                     <AvatarRoot className="h-10 w-10 transition-transform duration-300 will-change-transform motion-safe:group-hover/quote:scale-110">
                       {ref ? (
@@ -83,6 +87,20 @@ export default function Testimonials({block}: Props) {
                         <span className="text-sm text-muted-foreground">{t.authorRole}</span>
                       )}
                     </span>
+                    {t.sourceUrl && (
+                      <a
+                        href={t.sourceUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-md font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                      >
+                        Source
+                        <ArrowTopRightOnSquareIcon aria-hidden="true" className="size-3.5" />
+                        <span className="sr-only">
+                          : original article for {t.authorName}&rsquo;s quote (opens in new tab)
+                        </span>
+                      </a>
+                    )}
                   </figcaption>
                 </figure>
               </Card>
