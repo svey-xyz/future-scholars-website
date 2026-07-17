@@ -210,7 +210,7 @@ export default function ProjectsList({
     const effectiveSort: SortKey = mounted ? sort : initialSort
     const key = effectiveSort === 'updated' ? 'updatedAt' : 'publishedAt'
     return [...projects].sort((a, b) => toTime(b[key]) - toTime(a[key]))
-  }, [projects, showSort, sort, mounted])
+  }, [projects, showSort, sort, mounted, initialSort])
 
   // A card is visible when both the category and tech filters match ("All" passes).
   const isVisible = (p: Project) => {
