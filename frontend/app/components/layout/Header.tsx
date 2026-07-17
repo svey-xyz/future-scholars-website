@@ -3,7 +3,7 @@ import Link from 'next/link'
 import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
-import GithubIcon from '@/app/components/icons/GithubIcon'
+import {SocialIcon} from '@/app/components/icons'
 import {getSettings} from './getSettings'
 import HeaderNav from './HeaderNav'
 import Logo from './Logo'
@@ -69,7 +69,7 @@ export default async function Header({perspective, stega}: DynamicFetchOptions) 
             <Button asChild size="lg" className="hidden sm:inline-flex rounded-full">
               <a href={githubHref} target="_blank" rel="noopener noreferrer">
                 <span className="whitespace-nowrap">View on GitHub</span>
-                <GithubIcon className="h-5 w-5" />
+                <SocialIcon platform="github" className="h-5 w-5" />
               </a>
             </Button>
           </div>
