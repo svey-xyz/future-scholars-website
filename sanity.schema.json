@@ -992,6 +992,10 @@
               {
                 "type": "string",
                 "value": "carousel"
+              },
+              {
+                "type": "string",
+                "value": "collage"
               }
             ]
           },

@@ -170,7 +170,7 @@ export type Gallery = {
         _key: string
       } & GalleryVideo)
   >
-  layout?: 'grid' | 'masonry' | 'carousel'
+  layout?: 'grid' | 'masonry' | 'carousel' | 'collage'
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
@@ -1346,7 +1346,7 @@ export type GetPageQueryResult = {
               aspect?: 'auto' | 'square' | 'video'
             }
         > | null
-        layout?: 'carousel' | 'grid' | 'masonry'
+        layout?: 'carousel' | 'collage' | 'grid' | 'masonry'
         columns?: 2 | 3 | 4
         aspect?: 'auto' | 'square' | 'video'
         enableLightbox?: boolean

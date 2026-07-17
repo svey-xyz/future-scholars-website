@@ -606,3 +606,58 @@
   transform: translate(calc((var(--fan-scroll) + var(--fan-hover)) * 3.5px), calc((var(--fan-scroll) + var(--fan-hover)) * 2.5px))
     rotate(calc((var(--fan-scroll) + var(--fan-hover)) * 9deg));
 }
+
+/* ================================================================
+   Gallery drift collage  (gallery block, layout: "collage" — issue #18)
+   Scattered tiles ride `.parallax-drift` (per-cell `--drift` speed) so
+   collage layers slide past one another on scroll (CSS scroll-driven;
+   no-op without support). Tiles rest at a slight per-item rotation —
+   static composition, so it stays under reduced motion — and straighten +
+   lift on hover/keyboard focus (that part is motion-gated). Cells stack
+   via `--z`; hover/focus bumps the cell above its overlapping neighbours
+   so the lifted tile (and its focus ring) is never covered. The list root
+   carries `isolate`, scoping these z-indexes so a lifted tile never rises
+   above the fixed site header in the root stacking context.
+   ================================================================ */
+.gal-collage-cell {
+  position: relative;
+  z-index: var(--z, 0);
+}
+.gal-collage-cell:hover,
+.gal-collage-cell:focus-within {
+  z-index: 40;
+}
+.gal-collage-tile {
+  transform: rotate(var(--rot, 0deg));
+}
+/* Depth shadow on the media box only (not the caption). Decorative. */
+.gal-collage-tile :where(figure > div) {
+  box-shadow: 0 16px 40px -16px rgb(0 0 0 / 0.35);
+}
+@media (prefers-reduced-motion: no-preference) {
+  .gal-collage-tile {
+    transition: transform 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  .gal-collage-cell:hover .gal-collage-tile,
+  .gal-collage-cell:focus-within .gal-collage-tile {
+    transform: rotate(0deg) translateY(-0.375rem) scale(1.03);
+  }
+
+  /* Scroll parallax drift — cells drift as their section crosses the
+     viewport. Speed/direction via --drift (positive = rises against scroll). */
+  @supports (animation-timeline: view()) {
+    @keyframes a-drift {
+      from {
+        transform: translateY(calc(var(--drift, 60px)));
+      }
+      to {
+        transform: translateY(calc(var(--drift, 60px) * -1));
+      }
+    }
+    .parallax-drift {
+      animation: a-drift linear both;
+      animation-timeline: view();
+      animation-range: cover;
+    }
+  }
+}
