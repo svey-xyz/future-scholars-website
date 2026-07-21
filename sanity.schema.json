@@ -992,6 +992,10 @@
               {
                 "type": "string",
                 "value": "carousel"
+              },
+              {
+                "type": "string",
+                "value": "collage"
               }
             ]
           },
@@ -1358,6 +1362,44 @@
             "type": "boolean"
           },
           "optional": true
+        },
+        "sortField": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "publishedAt"
+              },
+              {
+                "type": "string",
+                "value": "updatedAt"
+              },
+              {
+                "type": "string",
+                "value": "title"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortDirection": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "desc"
+              },
+              {
+                "type": "string",
+                "value": "asc"
+              }
+            ]
+          },
+          "optional": true
         }
       }
     }
@@ -1489,6 +1531,40 @@
               {
                 "type": "number",
                 "value": 3
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortField": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "date"
+              },
+              {
+                "type": "string",
+                "value": "title"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "sortDirection": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "desc"
+              },
+              {
+                "type": "string",
+                "value": "asc"
               }
             ]
           },
@@ -3840,6 +3916,27 @@
         "type": "objectAttribute",
         "value": {
           "type": "string"
+        },
+        "optional": true
+      },
+      "titleDisplay": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "plain"
+            },
+            {
+              "type": "string",
+              "value": "highlighted"
+            },
+            {
+              "type": "string",
+              "value": "none"
+            }
+          ]
         },
         "optional": true
       },

@@ -1,6 +1,6 @@
 'use client'
 
-import {useState, useSyncExternalStore, type CSSProperties} from 'react'
+import {useEffect, useState, useSyncExternalStore, type CSSProperties} from 'react'
 import {usePathname} from 'next/navigation'
 import {stegaClean} from '@sanity/client/stega'
 import {ArrowTopRightOnSquareIcon, ChevronDownIcon} from '@heroicons/react/24/outline'
@@ -12,7 +12,6 @@ import {
   Sheet,
   SheetContent,
   SheetDescription,
-  SheetHeader,
   SheetTitle,
   SheetTrigger,
 } from '@/components/ui/sheet'
@@ -48,6 +47,31 @@ type MobileNavProps = {
  */
 const subscribe = () => () => {}
 
+/**
+ * Full-screen menu that slides down from behind the fixed header.
+ *
+ * Stacking: the header is `z-40`; the sheet panel sits at `z-30`, so the
+ * header stays visible on top and the hamburger morphs into the X — that X is
+ * the menu's close affordance (no in-panel close button, `showClose={false}`).
+ *
+ * The Sheet is **non-modal** (`modal={false}`) — the Radix pattern for a
+ * dialog under persistent, interactive chrome. Radix's `DialogContentNonModal`
+ * disables the focus trap and outside-pointer-events lock and skips dismissal
+ * when the outside target is the trigger, so the header keeps working while
+ * open: the X toggles closed, and the logo/CTA dismiss on pointerdown then
+ * navigate on click. Esc still closes; focus returns to the hamburger.
+ *
+ * The two modal behaviours worth keeping are restored manually while open
+ * (see the effect below): a body scroll lock, and `inert` on `main`/`footer`
+ * — the regions the panel visually covers — so background content leaves the
+ * tab order and a11y tree without (unlike Radix's modal `hideOthers`) taking
+ * the header with it. A route-change guard closes the menu after header
+ * navigations.
+ *
+ * The panel pads `pt-24` to clear the header's expanded chrome; its own
+ * background runs to the viewport top *behind* the (translucent) header, so
+ * the contracted (scrolled) header never shows a seam.
+ */
 export default function MobileNav({
   navigation,
   mobileNav,
@@ -67,6 +91,38 @@ export default function MobileNav({
   const showFooter = Boolean(mobileNav?.showFooterContent)
   const close = () => setOpen(false)
 
+  // Close after route changes (header logo/CTA navigations happen outside the
+  // sheet, so no in-panel onClick can catch them). In-panel links also close
+  // via onNavigate — needed when the target is the current route. "Adjust
+  // state during render" per react.dev/you-might-not-need-an-effect.
+  const [prevPathname, setPrevPathname] = useState(pathname)
+  if (prevPathname !== pathname) {
+    setPrevPathname(pathname)
+    if (open) setOpen(false)
+  }
+
+  // Non-modal Sheet: restore the two modal behaviours we still want while
+  // open. Scroll lock on <body>, and `inert` on the regions the panel covers
+  // (main/footer) so their content drops out of the tab order and the a11y
+  // tree — the header intentionally stays live.
+  useEffect(() => {
+    if (!open) return
+    const {body} = document
+    const prevOverflow = body.style.overflow
+    body.style.overflow = 'hidden'
+    const covered = Array.from(document.querySelectorAll<HTMLElement>('main, footer'))
+    const prevInert = covered.map((el) => el.inert)
+    covered.forEach((el) => {
+      el.inert = true
+    })
+    return () => {
+      body.style.overflow = prevOverflow
+      covered.forEach((el, i) => {
+        el.inert = prevInert[i]
+      })
+    }
+  }, [open])
+
   if (!mounted) {
     // Reserve the slot so layout doesn't shift when the button appears.
     return <div className={cn('h-9 w-9', className)} aria-hidden="true" />
@@ -74,7 +130,7 @@ export default function MobileNav({
 
   return (
     <div className={className}>
-      <Sheet open={open} onOpenChange={setOpen}>
+      <Sheet open={open} onOpenChange={setOpen} modal={false}>
         <SheetTrigger asChild>
           <Button
             variant="ghost"
@@ -85,23 +141,28 @@ export default function MobileNav({
             <HamburgerIcon open={open} />
           </Button>
         </SheetTrigger>
-        {/* Radix Dialog (Sheet) supplies focus-trap, Esc-to-close, and returns
-            focus to the trigger on close. */}
-        <SheetContent side="right" className="flex w-[88vw] max-w-sm flex-col gap-6">
-          <SheetHeader>
-            <SheetTitle>Menu</SheetTitle>
-            {/* Radix Dialog wants a description (or an explicit opt-out) for
-                aria-describedby; a visually-hidden one satisfies it and gives
-                screen-reader users context after the "Menu" title. */}
-            <SheetDescription className="sr-only">Site navigation links</SheetDescription>
-          </SheetHeader>
+        {/* Non-modal Radix Dialog: Esc-to-close and focus-return still apply;
+            no overlay is rendered (the opaque panel covers the viewport).
+            Full-viewport top-slide: width / height / padding overrides beat
+            the top variant via tailwind-merge; z-30 keeps it under the z-40
+            header. */}
+        <SheetContent
+          side="top"
+          showClose={false}
+          className="inset-x-0 top-0 z-30 flex h-full w-full max-w-none flex-col gap-0 overflow-hidden border-b-0 p-0 pt-24"
+        >
+          {/* Dialog accessible name/description — visually the header above
+              (logo + X) is the menu's chrome, so both stay sr-only. */}
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          <SheetDescription className="sr-only">Site navigation links</SheetDescription>
 
           {/* `overflow-x-hidden` clips the staggered reveal's translateX so it
               can't spawn a flickering horizontal scrollbar (which reflowed the
-              header/footer). The -mx/px pair keeps focus rings off the clip edge. */}
+              header/footer). `overscroll-contain` keeps rubber-banding from
+              reaching the locked page behind. */}
           <nav
             aria-label="Mobile"
-            className="-mx-1 flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto px-1"
+            className="container flex flex-1 flex-col gap-1 overflow-x-hidden overflow-y-auto overscroll-contain py-6"
           >
             {navigation.map((item, i) =>
               item._type === 'navDropdown' ? (
@@ -126,10 +187,10 @@ export default function MobileNav({
           </nav>
 
           {showFooter && (
-            <>
-              <Separator />
+            <div className="container shrink-0 pb-8">
+              <Separator className="mb-4" />
               <FooterContent contact={contact} legal={legal} compact />
-            </>
+            </div>
           )}
         </SheetContent>
       </Sheet>

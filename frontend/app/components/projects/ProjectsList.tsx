@@ -2,8 +2,11 @@
 
 import {useMemo, useState, useSyncExternalStore} from 'react'
 
+import {stegaClean} from '@sanity/client/stega'
+
 import ProjectCard, {type ProjectCardItem} from './ProjectCard'
 import FeaturedProjectCard from './FeaturedProjectCard'
+import {saveProjectNavContext} from './nav-context'
 import Reveal from '@/app/components/motion/Reveal'
 import {cn} from '@/lib/utils'
 
@@ -25,6 +28,10 @@ type Props = {
   /** Show the "sort by" select. Default `true`. When `false`, the incoming order is preserved
    *  (so a hand-picked / pre-ordered selection isn't re-sorted). */
   showSort?: boolean
+  /** Initial value of the sort control (editor default from the archive block's
+   *  `sortField`, issue #16). Only meaningful with `showSort`; the SSR render
+   *  uses it too, so first paint matches the server order. Default `'created'`. */
+  initialSort?: SortKey
   /** Grid columns at the widest breakpoint. Default `3`. */
   columns?: 2 | 3
   /** Heading tag for the cards. Omit to use each card's own default (regular `h3`, featured `h2`). */
@@ -172,6 +179,7 @@ export default function ProjectsList({
   showFilter = true,
   showTechFilter = true,
   showSort = true,
+  initialSort = 'created',
   columns = 3,
   headingLevel,
   className,
@@ -183,7 +191,7 @@ export default function ProjectsList({
   const [activeTech, setActiveTech] = useState<string>(() =>
     showTechFilter ? seedFromUrl('tech') : ALL,
   )
-  const [sort, setSort] = useState<SortKey>('created')
+  const [sort, setSort] = useState<SortKey>(initialSort)
 
   // Unique category / tech options across all projects, keyed by slug.
   const tags = useMemo(() => buildOptions(projects, (p) => p.categories), [projects])
@@ -199,10 +207,10 @@ export default function ProjectsList({
   // When sorting is disabled, the incoming order is preserved as-is.
   const ordered = useMemo(() => {
     if (!showSort) return projects
-    const effectiveSort: SortKey = mounted ? sort : 'created'
+    const effectiveSort: SortKey = mounted ? sort : initialSort
     const key = effectiveSort === 'updated' ? 'updatedAt' : 'publishedAt'
     return [...projects].sort((a, b) => toTime(b[key]) - toTime(a[key]))
-  }, [projects, showSort, sort, mounted])
+  }, [projects, showSort, sort, mounted, initialSort])
 
   // A card is visible when both the category and tech filters match ("All" passes).
   const isVisible = (p: Project) => {
@@ -255,7 +263,7 @@ export default function ProjectsList({
               </label>
               <select
                 id="project-sort"
-                value={mounted ? sort : 'created'}
+                value={mounted ? sort : initialSort}
                 onChange={(e) => setSort(e.target.value as SortKey)}
                 className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
               >
@@ -274,7 +282,25 @@ export default function ProjectsList({
         </p>
       )}
 
-      <ul className={cn('mt-6 grid grid-cols-1 gap-6', gridColsClass[columns])}>
+      <ul
+        className={cn('mt-6 grid grid-cols-1 gap-6', gridColsClass[columns])}
+        // Snapshot the visible (filtered) projects in rendered (sorted) order
+        // when a card link is clicked, so the detail page's prev/next pages
+        // through THIS list and its back link can restore it (issue #17).
+        // Capture-phase delegation: the synchronous sessionStorage write lands
+        // before navigation. Slugs/titles are stega-cleaned — they become
+        // hrefs/labels on the detail page.
+        onClickCapture={(event) => {
+          const anchor = (event.target as HTMLElement).closest?.('a[href]')
+          if (!anchor) return
+          saveProjectNavContext({
+            entries: ordered
+              .filter(isVisible)
+              .map((p) => ({slug: stegaClean(p.slug), title: stegaClean(p.title)})),
+            from: window.location.pathname + window.location.search,
+          })
+        }}
+      >
         {ordered.map((project, i) => {
           const visible = !mounted || isVisible(project)
           const featured = project.featured === true

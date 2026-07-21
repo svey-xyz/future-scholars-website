@@ -1,6 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import PageBuilder from './PageBuilder'
+import {PageTitle} from '@/app/components/layout'
 import {ShaderBackground} from '@/app/components/shader'
 import {OnboardingShell} from '@/app/components/starter'
 import {sanityFetch, type DynamicFetchOptions} from '@/sanity/lib/live'
@@ -65,16 +66,14 @@ export default async function CachedPage({
           />
         </div>
       ) : null}
-      <div className="container">
-        <div className="border-b border-border pb-6">
-          <div className="max-w-3xl">
-            <h1 className="text-4xl text-foreground sm:text-5xl lg:text-7xl">{page.heading}</h1>
-            <p className="mt-4 text-base font-light uppercase leading-relaxed text-muted-foreground lg:text-lg">
-              {page.subheading}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* `_type` is safe raw (underscore-prefixed — stega never encodes it);
+          PageTitle stega-cleans the display mode itself. */}
+      <PageTitle
+        heading={page.heading}
+        subheading={page.subheading}
+        display={page.titleDisplay}
+        heroLeads={page.pageBuilder?.[0]?._type === 'hero'}
+      />
       <PageBuilder page={page as GetPageQueryResult} />
     </div>
   )

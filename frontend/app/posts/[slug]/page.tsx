@@ -15,7 +15,8 @@ import {
   sanityFetchStaticParams,
   type DynamicFetchOptions,
 } from '@/sanity/lib/live'
-import {postPagesSlugs, postQuery} from '@/sanity/lib/queries'
+import {JsonLd, blogPostingJsonLd} from '@/app/components/seo'
+import {postPagesSlugs, postQuery, settingsQuery} from '@/sanity/lib/queries'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 
 type Props = {
@@ -99,8 +100,20 @@ async function CachedPost({slug, perspective, stega}: {slug: string} & DynamicFe
     return notFound()
   }
 
+  // JSON-LD is metadata (crawler-facing): always built from the published
+  // perspective, never stega — matching generateMetadata, not the page body.
+  const {data: settings} = await sanityFetchMetadata({
+    query: settingsQuery,
+    perspective: 'published',
+  })
+  const {data: publishedPost} =
+    perspective === 'published' && !stega
+      ? {data: post}
+      : await sanityFetchMetadata({query: postQuery, params: {slug}, perspective: 'published'})
+
   return (
     <>
+      {publishedPost && <JsonLd data={blogPostingJsonLd(publishedPost, settings)} />}
       <div className="container my-12 grid gap-12 lg:my-24">
         <div>
           <div className="mb-6 grid gap-6 border-b border-border pb-6">

@@ -13,6 +13,7 @@ import {Suspense} from 'react'
 
 import {Toaster} from '@/components/ui/sonner'
 import {BackToTop, Footer, Header} from '@/app/components/layout'
+import {SiteJsonLd} from '@/app/components/seo'
 import {PageTransition, RevealObserver} from '@/app/components/motion'
 import {DraftModeToast} from '@/app/components/visual-editing'
 import * as demo from '@/sanity/lib/demo'
@@ -157,6 +158,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               />
               {/* Scroll-reveal fallback for engines without CSS scroll timelines. */}
               <RevealObserver />
+              {/* Site-wide WebSite/Organization structured data (published
+                  perspective always — see SiteJsonLd). */}
+              <SiteJsonLd />
               {/* Header/Footer are cached components (three-layer pattern, see
                   docs/CACHING.md): statically cached on the published perspective;
                   in draft mode a dynamic wrapper resolves perspective/stega from

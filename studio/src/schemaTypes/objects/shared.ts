@@ -52,6 +52,49 @@ export const backgroundField = defineField({
 })
 
 /**
+ * Default-ordering fields for archive blocks (issue #16, pattern from
+ * vsc-website). Each archive block spreads `...sortFields({...})` with its own
+ * per-type field list; the frontend applies the stored values via
+ * `applyArchiveSort` (frontend/app/components/blocks/archiveSort.ts) after the
+ * GROQ resolution. Hand-picked sources keep the editor's manual order, so the
+ * controls hide for `source == "picked"`.
+ */
+export const sortFields = ({
+  fields,
+  initialField,
+  initialDirection = 'desc',
+}: {
+  fields: {title: string; value: string}[]
+  initialField: string
+  initialDirection?: 'asc' | 'desc'
+}) => [
+  defineField({
+    name: 'sortField',
+    title: 'Sort by',
+    type: 'string',
+    initialValue: initialField,
+    description: 'Default ordering for this archive. Hand-picked sources keep your manual order.',
+    options: {list: fields, layout: 'radio', direction: 'horizontal'},
+    hidden: ({parent}) => (parent as {source?: string} | undefined)?.source === 'picked',
+  }),
+  defineField({
+    name: 'sortDirection',
+    title: 'Sort direction',
+    type: 'string',
+    initialValue: initialDirection,
+    options: {
+      list: [
+        {title: 'Descending (newest / Z→A first)', value: 'desc'},
+        {title: 'Ascending (oldest / A→Z first)', value: 'asc'},
+      ],
+      layout: 'radio',
+      direction: 'horizontal',
+    },
+    hidden: ({parent}) => (parent as {source?: string} | undefined)?.source === 'picked',
+  }),
+]
+
+/**
  * Archive page-builder block `_type`s and the document type each one lists.
  * Single source of truth for the `page.archive` designation (`archiveField`
  * below) and the per-page validation in `documents/page.ts`. The stored

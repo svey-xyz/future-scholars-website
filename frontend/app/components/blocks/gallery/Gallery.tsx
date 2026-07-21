@@ -1,6 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import GalleryCarousel from './GalleryCarousel'
+import GalleryCollage from './GalleryCollage'
 import GalleryGrid from './GalleryGrid'
 import GalleryLightbox from './GalleryLightbox'
 import GalleryMasonry from './GalleryMasonry'
@@ -55,6 +56,8 @@ export default function Gallery({block}: Props) {
   const layoutEl =
     layout === 'carousel' ? (
       <GalleryCarousel items={items} aspect={aspect} enableLightbox={enableLightbox} />
+    ) : layout === 'collage' ? (
+      <GalleryCollage items={items} enableLightbox={enableLightbox} />
     ) : layout === 'masonry' ? (
       <GalleryMasonry items={items} columns={columns} aspect={aspect} enableLightbox={enableLightbox} />
     ) : (

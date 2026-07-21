@@ -1,5 +1,6 @@
 import {stegaClean} from '@sanity/client/stega'
 
+import {applyArchiveSort, toTime} from './archiveSort'
 import ProjectsList from '@/app/components/projects/ProjectsList'
 import {type ProjectCardItem} from '@/app/components/projects/ProjectCard'
 import Reveal from '@/app/components/motion/Reveal'
@@ -36,7 +37,22 @@ export default function ProjectsArchive({block}: Props) {
   const showTechFilter = 'showTechFilter' in block && block.showTechFilter === true
   const showSort = 'showSort' in block && block.showSort === true
 
-  const all = (projects ?? []) as ProjectCardItem[]
+  // Editor-configured default ordering (sortField/sortDirection, issue #16) —
+  // hand-picked sources keep the manual order. Applied before the 'latest'
+  // limit so the limit selects from the sorted set.
+  const picked = stegaClean(source) === 'picked'
+  const sortField = stegaClean(block.sortField ?? undefined)
+  const all = picked
+    ? ((projects ?? []) as ProjectCardItem[])
+    : (applyArchiveSort(projects ?? [], block, {
+        publishedAt: (p) => toTime(p.publishedAt),
+        updatedAt: (p) => toTime(p.updatedAt ?? p.publishedAt),
+        title: (p) => p.title,
+      }) as ProjectCardItem[])
+  // Seed the interactive sort control from the editor default where it maps
+  // (the control only offers the two date sorts; a 'title' default simply
+  // starts the control on 'created' if the user engages it).
+  const initialSort = sortField === 'updatedAt' ? ('updated' as const) : ('created' as const)
   // GROQ caps 'latest' at 24; apply the editor's exact limit here.
   const shown = stegaClean(source) === 'latest' ? all.slice(0, limit ?? 6) : all
   const cols = columns === 2 ? 2 : 3
@@ -61,6 +77,7 @@ export default function ProjectsArchive({block}: Props) {
         showFilter={showFilter}
         showTechFilter={showTechFilter}
         showSort={showSort}
+        initialSort={initialSort}
         columns={cols}
         headingLevel="h3"
       />

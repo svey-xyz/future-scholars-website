@@ -46,11 +46,13 @@ export const gallery = defineType({
           {title: 'Grid', value: 'grid'},
           {title: 'Masonry', value: 'masonry'},
           {title: 'Carousel', value: 'carousel'},
+          {title: 'Collage', value: 'collage'},
         ],
         layout: 'radio',
       },
     }),
-    columnsField,
+    // Collage composes its own scattered slots — columns/aspect don't apply.
+    {...columnsField, hidden: ({parent}) => (parent as {layout?: string})?.layout === 'collage'},
     defineField({
       name: 'aspect',
       title: 'Image aspect ratio',
@@ -64,6 +66,8 @@ export const gallery = defineType({
         ],
         layout: 'radio',
       },
+      // Collage always uses intrinsic ratios (`auto`).
+      hidden: ({parent}) => (parent as {layout?: string})?.layout === 'collage',
     }),
     defineField({
       name: 'enableLightbox',

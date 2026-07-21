@@ -18,6 +18,10 @@ export type GalleryAspect = NonNullable<GalleryBlock['aspect']>
 export type ProjectsArchiveBlock = ExtractPageBuilderType<'projectsArchive'>
 export type ProjectsArchiveItem = NonNullable<ProjectsArchiveBlock['projects']>[number]
 
+// `page.titleDisplay` display modes (see layout/PageTitle.tsx). Mirrors the
+// schema options list in studio documents/page.ts; unset = auto.
+export type TitleDisplay = 'plain' | 'highlighted' | 'none'
+
 // Represents a Link after GROQ dereferencing (page/post become slug strings)
 export type DereferencedLink = {
   _type: 'link'

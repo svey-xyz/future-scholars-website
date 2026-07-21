@@ -23,6 +23,9 @@ yarn-error.log*
 .env.*
 !.env.example
 
+# migration artifacts (large tarballs — keep local; see docs/MIGRATION.md)
+/backups
+
 # vercel
 .vercel
 .next
