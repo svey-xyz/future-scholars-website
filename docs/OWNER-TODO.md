@@ -3,7 +3,7 @@
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
 Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
 
-Last updated: 2026-09-13 (after S0–S3 and the content seed).
+Last updated: 2026-09-13 (after S0–S3, the content seed, and the image migration prep).
 
 ---
 
@@ -56,10 +56,6 @@ Last updated: 2026-09-13 (after S0–S3 and the content seed).
 
 ## Content and client
 
-- [ ] **7b. Add `futurescholarsmontessori.com` to the egress allowlist**, or download the legacy image
-      set yourself. No agent session can reach the host, so the ~60 legacy images can't be uploaded from
-      here. Copy was captured through the desktop browser pane; binaries can't come back that way.
-
 - [ ] **8. Upload `frontend/public/brand/logo-full.svg` to `settings.logo` in Studio** (plan Q13).
       It's a `file` field, not an `image`. The site itself reads the SVGs from `public/`, so this is
       only for editor-facing previews.
@@ -79,12 +75,11 @@ Last updated: 2026-09-13 (after S0–S3 and the content seed).
       `facebook.com/FutureScholarsMontessoriAcademy`. Confirm it's still theirs, and ask whether
       Instagram or anything else exists.
 
-- [ ] **12. The photo shoot is now a blocker, not a nice-to-have** (plan Q5). I measured every image on
-      the old site: **not one is 1000px or wider.** The best photography is 720×480; the homepage slider
-      files are 928×345 letterbox strips. The client's own brief asks for a large image at the top of
-      every page — nothing they currently own can fill it. Three ways out: a shoot, licensed stock as a
-      stopgap, or a non-photographic masthead (brand colour field + logo). Worth raising early, since it
-      changes the look of every page. Detail in `content/legacy/IMAGE-MANIFEST.md`.
+- [ ] **12. Raise the photo shoot with the client** (plan Q5) — no longer blocking, but still the right
+      answer. Not one image on the old site is 1000px or wider; the best photography is 720×480. Every
+      page now opens with a brand-colour masthead panel instead, which ships fine and swaps to a
+      photograph per page whenever real images arrive. Worth showing them the brand panel first — they
+      may like it, in which case the shoot becomes a nice-to-have rather than a rescue.
 
 - [ ] **13. Two smaller client questions:** tuition on the site or "contact us for rates" (Q6), and
       whether to keep the "Recognition From The Mayor" item and where (Q7).
