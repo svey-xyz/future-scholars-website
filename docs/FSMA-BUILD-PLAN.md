@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1 + S2 done · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 6) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S3 done · content seeded · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 7) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -154,12 +154,13 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 
 | # | Question | Owner | Status |
 |---|---|---|---|
-| Q1 | Social accounts: which platforms, and the exact URLs? Floating social rail needs real targets. | Client | **TBD** — build the rail data-driven off `settings.contact.socials`; renders nothing if empty |
-| Q2 | Confirmed street address, phone, general email, office hours (needed for About, `mailto:`/`tel:`, JSON-LD) | Client | **TBD** — pull from legacy `contact.htm` in S7 and send to client to verify |
+| Q1 | Social accounts: which platforms, and the exact URLs? | Client | **Partly answered 2026-09-13** — Facebook found in the legacy chrome (`facebook.com/FutureScholarsMontessoriAcademy`) and seeded into `settings.contact.socials`. Still ask whether Instagram or anything else exists. Rail stays data-driven |
+| Q2 | Confirmed street address, phone, general email, office hours | Client | **Extracted 2026-09-13, awaiting confirmation.** 1920 Bank St., Ottawa ON K1V 7Z8 · (613) 244-FSMA (3762) · fax (613) 244-3764 · info@futurescholarsmontessori.com · futurescholarsmontessori@gmail.com · 7:30 am–5:30 pm, Montessori day 8:30 am–3:30 pm · opened January 2013. Seeded into `settings` and the About page behind a `TODO(client)` note block |
 | Q3 | ~~Photo consent for existing images of children~~ | Client | ✅ **Resolved 2026-09-13** — releases cover web use (D17) |
 | Q4 | Vector logo / brand fonts | Client | ✅ **Done 2026-09-13** — recreated per D8; wordmark set in Orbitron (SIL OFL) and converted to outlines, so no font dependency ships with the SVGs |
-| Q5 | New photography — will the client supply a shoot? | Client | TBD |
+| Q5 | New photography — will the client supply a shoot? | Client | **Now blocking, 2026-09-13.** Measured every legacy image: **none is ≥1000px**. The best photography is 720×480; the homepage slider PNGs are 928×345 letterbox strips. Nothing on the old site can carry a masthead at the size D12/§7.6 specify. See `content/legacy/IMAGE-MANIFEST.md`. Either a shoot, licensed stock, or a non-photographic masthead treatment |
 | Q13 | `settings.logo` (the editor-facing SVG upload) and the Studio's other content seeding need Sanity write access, which no agent session has (Q11). Owner uploads `frontend/public/brand/logo-full.svg` in Studio | svey | **TBD, opened 2026-09-13** |
+| Q14 | Legacy host `futurescholarsmontessori.com` is **not** on the egress allowlist, so no agent session can download the images. Copy was captured through the desktop browser pane; binaries can't come that way. Add the host, or download the image set locally and upload with the Sanity CLI | svey | **TBD, opened 2026-09-13** — blocks S10's image pipeline |
 | Q6 | Tuition/fee information — publish on About/Admissions or "contact us for rates"? | Client | TBD |
 | Q7 | Legacy "Recognition From The Mayor" item — keep, and where? | Client | TBD |
 | Q8 | ~~Sanity viewer token for `SANITY_API_READ_TOKEN`~~ | svey | ✅ **Resolved 2026-09-13** — token present in `frontend/.env.local`; the app no longer throws at module evaluation |
@@ -516,20 +517,23 @@ frontend's use of these fields (Q11).
 ### S3 — Schema: programs, testimonials, faculty
 **Goal:** the content model for FSMA's actual subject matter.
 
-- [ ] Add `documents/program.ts`: `name`, `slug`, `ageRange`, `ratio`, `summary`, `body` (blockContent),
+- [x] Add `documents/program.ts`: `name`, `slug`, `ageRange`, `ratio`, `summary`, `body` (blockContent),
       `image`, `hours`/`schedule` note, `orderRank` (or explicit `order` number), `masthead`
-- [ ] Add `objects/programsGrid.ts` block: heading, subheading, mode (all | selected), `programs`
+- [x] Add `objects/programsGrid.ts` block: heading, subheading, mode (all | selected), `programs`
       (references), columns
-- [ ] Promote testimonials to documents: `documents/testimonial.ts` (`quote`, `authorName`,
+- [x] Promote testimonials to documents: `documents/testimonial.ts` (`quote`, `authorName`,
       `authorRole`, `featured` bool, `order`). Extend the existing `testimonials` block with
       `source: manual | documents` + `limit`, keeping the inline array intact for back-compat — log divergence
-- [ ] `person` currently holds only `firstName`, `lastName`, `picture`. Add `role`, `bio`
+- [x] `person` currently holds only `firstName`, `lastName`, `picture`. Add `role`, `bio`
       (blockContentTextOnly), `credentials`, `order` — additive, log in the FORK-SYNC registry
-- [ ] Register new types in `schemaTypes/index.ts`; add them to `page.pageBuilder.of` where they're blocks
-- [ ] Structure: list Programs and Testimonials as their own sections, ordered
-- [ ] `npm run sanity:typegen`; commit generated files
+- [x] Register new types in `schemaTypes/index.ts`; add them to `page.pageBuilder.of` where they're blocks
+- [x] Structure: list Programs and Testimonials as their own sections, ordered — and dropped from the
+      generic alphabetical list so they aren't shown twice
+- [x] `npm run sanity:typegen`; commit generated files
 
-**Acceptance:** an editor can create a program and a testimonial and place a programs grid on a page.
+**Acceptance:** an editor can create a program and a testimonial and place a programs grid on a page ✅
+(typegen/type-check/lint clean; three programs and five testimonials exist in `production`). **Schema is not
+deployed** — owner runs `cd studio && npx sanity schema deploy` before the Studio renders the new types.
 
 ---
 
@@ -572,11 +576,14 @@ socials appear/disappear correctly and are keyboard reachable.
 ### S6 — Home page (Milestone A deliverable)
 **Goal:** a real page the client can look at.
 
-- [ ] Capture legacy copy: fetch `index.html`, `about.htm`, `maria.htm`, `programs.htm`,
-      `testamonials.htm`, `contact.htm`, `admissions.htm` → `content/legacy/*.md` (committed, for reference)
-- [ ] Download legacy imagery from the old site; document dimensions/quality and flag anything too small
-      for masthead use (D17: releases are confirmed, so publishing is fine)
-- [ ] Seed script or manual Studio entry: settings (title, blurb, contact TODOs, navigation, homepage ref)
+- [x] Capture legacy copy — **all 13 pages**, not just the seven listed, → `content/legacy/*.md` (committed).
+      Captured through the desktop browser pane; the legacy host is off the egress allowlist (Q14)
+- [x] Document dimensions/quality of the legacy imagery → `content/legacy/IMAGE-MANIFEST.md`. **Every image
+      fails the masthead bar** (Q5)
+- [ ] Download the legacy imagery — **blocked on Q14** (host not on the allowlist)
+- [x] Seed `settings` — title, blurb, description, legal, homepage ref, full side-nav (§6.2) with the
+      Programs dropdown, contact block with address/phone/hours/Facebook, `foundingDate`, `areaServed`.
+      `priceRange` and `geo` deliberately left empty: Q6 is unanswered and coordinates would be invented
 - [ ] Build the home page in the page builder: masthead → mission/vision (infoSection) → programs grid →
       featured testimonial → gallery teaser → CTA (`mailto:` "Book a tour")
 - [ ] Add optional `seo` object (`metaTitle`, `metaDescription`, `ogImage`, `noIndex`) to `page` —
@@ -720,6 +727,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | S0 | cowork/opus | `feat/fsma-s0-setup` (local, unpushed) | **Partial — blocked on Q8.** Upstream remote added; fork history regrafted onto `upstream/main` (was unrelated histories); deps installed; `staging` dataset created; env files written; typegen/type-check/lint clean; Studio boots | Frontend cannot boot without `SANITY_API_READ_TOKEN` (Q8). Vercel + Studio deploy carried to **S0b**. `main` needs a force-push by the owner. Sandbox quirks documented in §5.1 |
 | 2026-09-13 | S2 | cowork/opus | `feat/fsma-s2-schema` (local, unpushed, branched off the S0 branch since S0 isn't merged) | **Done.** contact address/hours/mapUrl; new `masthead` object + page-level field; `schoolInfo` fieldset on settings; blog/portfolio types hidden from the Studio list *and* the New-document menu; archive blocks kept in the union behind a validation guard (see §12); typegen/type-check/lint clean; Studio boots | Q8 closed. **New blocker Q11**: `*.sanity.io` is off the egress allowlist, so no agent session can render the frontend against Sanity or verify Presentation. New Q12: logo source JPG missing for S1. Two more sandbox quirks in §5.1 (`.next` must be deleted, not renamed) |
 | 2026-09-13 | S1 | cowork/opus | `feat/fsma-s1-brand` (local, unpushed) | **Done.** Logo recreated as outlined SVG (full/reversed/mark/mark-reversed) + full icon set; FSMA palette applied with three a11y corrections; light theme forced; Outfit wired as `--font-display`; manifest rebranded; contrast table in §12 | Q4 and Q12 closed. **New Q13**: `settings.logo` upload is owner-side. Type-check/lint/format clean; served CSS verified. Q11 still blocks any rendered-page or Lighthouse check |
+| 2026-09-13 | S3 + content seed | cowork/opus | `main` (local, unpushed) | **Done.** S3 schema (program, testimonial, programsGrid, faculty fields). Legacy site scraped verbatim to `content/legacy/`. 17 documents created and published in `production`: settings, 6 pages, 3 programs, 5 testimonials, 2 directors | Q4/Q12 closed earlier; Q1 partly answered, Q2 extracted pending confirmation. **Q5 now blocking** (no legacy image ≥1000px). **New Q14**: legacy host off the allowlist, so images can't be downloaded. Also caught and reverted a lockfile bump I had committed in the previous session — see §12 |
 
 ---
 
@@ -785,3 +793,8 @@ AAA 7:1 bar §7.2 sets; non-text pairs against SC 1.4.11's 3:1.
 `--brand-accent` (#FABB0F) is **1.62:1** on `--background` and is deliberately absent from this table as a
 light-background colour: it is only ever a fill on dark or `--primary` surfaces. Anything meaningful on
 light uses `--brand-accent-strong`.
+| 2026-09-13 | Legacy copy scraped through the **desktop browser pane**, not WebFetch or curl | `futurescholarsmontessori.com` is not on the egress allowlist for either the container or the device VM, and WebFetch hit its session limit. The browser pane reaches the site as the user's own browser, and same-origin `fetch` + `DOMParser` inside it returns the real markup — so the copy is genuinely verbatim rather than a model's summary. Binaries can't come back this way, hence Q14 | — |
+| 2026-09-13 | Documents created for **undeployed** types (`program`, `testimonial`) | Content Lake is schemaless — it accepted them. The deployed schema record only governs Studio rendering and MCP validation, so seeding does not have to wait on a schema deploy. The owner still has to deploy before the Studio can show them | — |
+| 2026-09-13 | Content seeded **published**, not left as drafts | The frontend reads the published perspective; drafts would render an empty site for the client review. Nothing is publicly reachable yet (no Vercel project), so publishing carries no exposure | — |
+| 2026-09-13 | `settings.priceRange` and `settings.geo` left empty | Q6 (publish tuition or not) is unanswered, and coordinates for the address would be invented precision — §0 rule 8 | — |
+| 2026-09-13 | **Reverted a `package-lock.json` bump I committed in the S1 session** | `git add -A` swept up a lockfile npm had rewritten mid-session, floating `next` 16.2.10 → 16.3.5 and `sanity` 6.5 → 6.13. That silently broke `main`: `experimental.viewTransition` no longer exists in Next 16.3, and the newer `next-sanity` brands query results as `StegaString<T>`, which fails against every component prop typed as plain `string` — 19 errors across template files. §5.1 already said never to commit that churn and I did it anyway. Restored to the lockfile at `c8f5b69`. **The underlying exposure is the template's caret ranges**: any `npm install` can float these again. Worth pinning `next`, `sanity` and `next-sanity` exactly in the template | — |

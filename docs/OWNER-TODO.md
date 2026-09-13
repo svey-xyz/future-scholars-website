@@ -3,7 +3,7 @@
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
 Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
 
-Last updated: 2026-09-13 (after S0, S1, S2).
+Last updated: 2026-09-13 (after S0–S3 and the content seed).
 
 ---
 
@@ -56,6 +56,10 @@ Last updated: 2026-09-13 (after S0, S1, S2).
 
 ## Content and client
 
+- [ ] **7b. Add `futurescholarsmontessori.com` to the egress allowlist**, or download the legacy image
+      set yourself. No agent session can reach the host, so the ~60 legacy images can't be uploaded from
+      here. Copy was captured through the desktop browser pane; binaries can't come back that way.
+
 - [ ] **8. Upload `frontend/public/brand/logo-full.svg` to `settings.logo` in Studio** (plan Q13).
       It's a `file` field, not an `image`. The site itself reads the SVGs from `public/`, so this is
       only for editor-facing previews.
@@ -63,18 +67,24 @@ Last updated: 2026-09-13 (after S0, S1, S2).
 - [ ] **9. Show the client the heading typeface in context before it's locked.** S1 shipped **Outfit**;
       §7.3 asks for Outfit and Poppins side by side. Reversible until they've seen it.
 
-- [ ] **10. Get the client to confirm the contact facts** — street address, phone, general email,
-      office hours (plan Q2). S7 can't publish any of it otherwise, and S11's JSON-LD needs the
-      address and hours. Pull the current values off legacy `contact.htm` and send them back for a
-      yes/no rather than asking cold.
+- [ ] **10. Get the client to confirm the contact facts.** Already pulled off the old site and seeded,
+      so this is now a yes/no list rather than an open question:
+      1920 Bank St., Ottawa ON K1V 7Z8 · phone (613) 244-FSMA (3762) · fax (613) 244-3764 ·
+      info@futurescholarsmontessori.com and futurescholarsmontessori@gmail.com ·
+      open 7:30 am–5:30 pm with the Montessori day 8:30 am–3:30 pm · opened January 2013 ·
+      directors Agata Attersoll and Priyanka Aggarwal. The About page carries a visible
+      `TODO(client)` notice until these are confirmed; S12 greps for it.
 
-- [ ] **11. Social accounts — which platforms, exact URLs** (plan Q1). The floating rail is built
-      data-driven and renders nothing while `settings.contact.socials` is empty, so this isn't
-      blocking, but the client asked for it specifically.
+- [ ] **11. Social accounts** (plan Q1). Facebook was in the old site's chrome and is already seeded:
+      `facebook.com/FutureScholarsMontessoriAcademy`. Confirm it's still theirs, and ask whether
+      Instagram or anything else exists.
 
-- [ ] **12. Ask about a photo shoot** (plan Q5). Releases are in hand (D17), but the legacy images are
-      small — anything used at masthead scale (~2000px wide) will not survive the crop. This is the
-      single biggest risk to how the finished site looks.
+- [ ] **12. The photo shoot is now a blocker, not a nice-to-have** (plan Q5). I measured every image on
+      the old site: **not one is 1000px or wider.** The best photography is 720×480; the homepage slider
+      files are 928×345 letterbox strips. The client's own brief asks for a large image at the top of
+      every page — nothing they currently own can fill it. Three ways out: a shoot, licensed stock as a
+      stopgap, or a non-photographic masthead (brand colour field + logo). Worth raising early, since it
+      changes the look of every page. Detail in `content/legacy/IMAGE-MANIFEST.md`.
 
 - [ ] **13. Two smaller client questions:** tuition on the site or "contact us for rates" (Q6), and
       whether to keep the "Recognition From The Mayor" item and where (Q7).
@@ -83,8 +93,9 @@ Last updated: 2026-09-13 (after S0, S1, S2).
 
 ## Notes
 
-- Legacy imagery can't be downloaded from any agent session either — same allowlist. If item 2 doesn't
-  cover `futurescholarsmontessori.com`, you'll need to pull the image set down yourself for S6/S10.
-  (Reading the legacy *copy* works — that goes through a different path.)
+- **Watch the lockfile.** The template pins `next`, `sanity` and `next-sanity` with caret ranges, so any
+  `npm install` can float them to a new minor. That happened this session and broke `main` (Next 16.3
+  dropped `experimental.viewTransition`; newer `next-sanity` brands results as `StegaString<T>`). Reverted
+  — but worth pinning those three exactly in the template so it can't recur.
 - File deletion in the repo folder needs a per-session grant. Both Next.js and Sanity Studio wedge on a
   stale cache that can only be cleared with `rm -rf`, so grant it early in a session.
