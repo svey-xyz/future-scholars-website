@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** Not started · **Last updated:** 2026-09-13 · **Owner:** Hayden Soule (svey)
+**Status:** Not started · **Last updated:** 2026-09-13 (rev 3) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -80,8 +80,9 @@ feasible), AODA-aware copy, Vercel deploy, 301 map from the old `.htm` URLs.
 **Out of scope (confirmed):** contact/enquiry forms (use `mailto:`/`tel:` links only), French/bilingual,
 blog/news/events, calendar, parent portal or logins, online payments, analytics, cookie consent.
 
-**Known content risks:** legacy imagery is small and dated; photo-consent status for images of children is
-unverified. Flag to client before reuse (see §4).
+**Known content risks:** legacy imagery is small and dated — resolution, not permission, is the constraint
+(releases are in hand, D17). Expect to re-encode, crop tightly, and ask the client for a photo shoot for
+anything used at masthead scale (Q5).
 
 ---
 
@@ -91,8 +92,8 @@ unverified. Flag to client before reuse (see §4).
 |---|---|---|
 | Repo | `github.com/svey-xyz/future-scholars-website` | ✅ exists |
 | Upstream template | `sanity-next-clean` — add as `upstream` remote | ⬜ verify in S0 |
-| Sanity project | **not yet created** — `TODO(S0)` | ⬜ |
-| Sanity datasets | `production`, `staging` | ⬜ |
+| Sanity project | **FSMA** — project ID `wzs9gcps`, org `oqjnHYtnD` | ✅ created |
+| Sanity datasets | `production` ✅ (ACL: public) · `staging` — create in S0 | 🟡 |
 | Studio hosting | separate, `sanity deploy` → `SANITY_STUDIO_STUDIO_HOST` (studio is **not** mounted at `/studio` in this template) | ⬜ |
 | Frontend hosting | Vercel, project linked to the repo | ⬜ S0 |
 | Domain | `futurescholarsmontessori.com` — client's existing DNS provider, CNAME/A updated at cutover | ⬜ S12 |
@@ -101,7 +102,7 @@ unverified. Flag to client before reuse (see §4).
 **Environment variables** (frontend `.env.local`, mirrored into Vercel for Preview + Production):
 
 ```
-NEXT_PUBLIC_SANITY_PROJECT_ID=
+NEXT_PUBLIC_SANITY_PROJECT_ID=wzs9gcps
 NEXT_PUBLIC_SANITY_DATASET=production
 NEXT_PUBLIC_SANITY_API_VERSION=2025-09-25
 NEXT_PUBLIC_SANITY_STUDIO_URL=https://<studio-host>.sanity.studio
@@ -112,10 +113,11 @@ SANITY_REVALIDATE_TAGS_SECRET=    # webhook secret, see docs/CACHING.md
 Studio `.env` (`studio/.env.local`): `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_DATASET`,
 `SANITY_STUDIO_PREVIEW_URL`, `SANITY_STUDIO_STUDIO_HOST`.
 
-> **Note for S0:** the Sanity MCP connector was **not available** in the planning session, so the project
-> could not be created programmatically. Create it via CLI in S0 (`npx sanity@latest login`, then
-> `npx sanity@latest projects create "Future Scholars Montessori"`), or in manage.sanity.io, and record the
-> project ID here.
+**Sanity state, verified 2026-09-13:** `production` exists (ACL `public` — a read token is therefore only
+needed for drafts/Presentation, not for published reads). `staging` not yet created. **No schema deployed
+yet.** The Studio in `studio/` is the only source of schema: deploy with `npx sanity@latest schema deploy`
+and regenerate types with `npm run sanity:typegen`. Never manage this project's schema through the Sanity
+MCP `deploy_schema` tool — it creates a competing MCP-managed schema record alongside the Studio one.
 
 ---
 
@@ -139,6 +141,7 @@ Studio `.env` (`studio/.env.local`): `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_
 | D14 | Light theme only in the UI; dark tokens stay defined in `globals.css` but the theme toggle is removed and the app is forced light. |
 | D15 | `ShaderBackground` (WebGL) is **not used** on this site — inappropriate weight/battery cost for a school marketing site. Keep the code, don't wire it. |
 | D16 | Milestone A (rough draft of Studio + one page) within days; finals over several weeks. |
+| D17 | Legacy photography is **cleared for web use** — client holds releases (confirmed 2026-09-13). Gallery is no longer gated. |
 
 ---
 
@@ -148,7 +151,7 @@ Studio `.env` (`studio/.env.local`): `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_
 |---|---|---|---|
 | Q1 | Social accounts: which platforms, and the exact URLs? Floating social rail needs real targets. | Client | **TBD** — build the rail data-driven off `settings.contact.socials`; renders nothing if empty |
 | Q2 | Confirmed street address, phone, general email, office hours (needed for About, `mailto:`/`tel:`, JSON-LD) | Client | **TBD** — pull from legacy `contact.htm` in S7 and send to client to verify |
-| Q3 | Photo consent for existing images of children — do current releases cover web use? | Client | **TBD — do not publish gallery to production until answered** |
+| Q3 | ~~Photo consent for existing images of children~~ | Client | ✅ **Resolved 2026-09-13** — releases cover web use (D17) |
 | Q4 | Vector logo / brand fonts | Client | ❌ none available — recreate per D8 |
 | Q5 | New photography — will the client supply a shoot? | Client | TBD |
 | Q6 | Tuition/fee information — publish on About/Admissions or "contact us for rates"? | Client | TBD |
@@ -161,7 +164,8 @@ Studio `.env` (`studio/.env.local`): `SANITY_STUDIO_PROJECT_ID`, `SANITY_STUDIO_
 Facts about the fork as of planning (verify with `git log` before assuming):
 
 - **Monorepo npm workspaces:** `frontend/` (Next.js) + `studio/` (Sanity Studio). Node ≥22.12.
-- **Next.js 16** (App Router, RSC), **React 19**, **TypeScript 6**.
+- **Next.js 16** (App Router, RSC), **React 19**, **TypeScript 6**. `cacheComponents: true` with the
+  `sanity` cacheLife preset in `frontend/next.config.ts` — on-demand revalidation only, no time-based TTL.
 - **Tailwind v4** (CSS-first config in `frontend/app/globals.css`, `@theme inline`), **shadcn/ui** in
   `frontend/components/ui`, Radix primitives.
 - **Sanity v6**, `next-sanity` 13, Live Content API, Presentation/visual editing, `sanity-plugin-media`,
@@ -182,7 +186,8 @@ Facts about the fork as of planning (verify with `git log` before assuming):
 - **Existing page-builder blocks:** hero, callToAction, infoSection, featuresGrid, stats, scores,
   testimonials, gallery (grid/masonry/carousel/collage + lightbox), faq, note, postsArchive,
   projectsArchive, authorsArchive.
-- **Existing documents:** page, post, project, person, category, technology. **Singleton:** settings
+- **Existing documents:** page, post, project, person, category, technology. `person` is thin —
+  `firstName`, `lastName`, `picture` only; it has no role, bio or credentials (see S3). **Singleton:** settings
   (title, description, logo, favicon, ogImage, metadataBase, blurb, contact{email, phone, socials},
   navigation[navLink|navDropdown], mobileNav, legal, builtWith, homepage).
 - **Existing routes:** `/`, `/[slug]`, `/posts/[slug]`, `/projects/[slug]`, `sitemap.ts`, `robots.ts`,
@@ -215,7 +220,7 @@ cd studio && npx sanity deploy    # studio hosting
 | — Toddlers | `/programs/toddlers` | `toddler-class.htm` | 18 mo–3 yrs, ratio 1:5 |
 | — Casa | `/programs/casa` | `casa-class.htm` | 3–6 yrs, ratio 1:8 |
 | Testimonials | `/testimonials` | `testamonials.htm` (sic) | |
-| Gallery | `/gallery` | `pictures.htm` | Gated on Q3 |
+| Gallery | `/gallery` | `pictures.htm` | Releases confirmed (D17) |
 | About Us | `/about` | `about.htm` + `admissions.htm` + `contact.htm` | Anchored sections `#about`, `#admissions`, `#contact`, plus accessibility statement |
 
 Dropped: `parents.htm`, `links.htm` (confirm any live content worth folding into About before redirecting).
@@ -348,8 +353,9 @@ Each session is one agent run, one branch, one PR. **Milestone A (client draft) 
 
 - [ ] Add `upstream` remote for the template; `git fetch upstream`; merge if behind; record result in §11
 - [ ] `npm install` at root; confirm `npm run dev` boots frontend + studio
-- [ ] Create Sanity project `Future Scholars Montessori`; create `production` + `staging` datasets
-- [ ] Record project ID in §2; write `frontend/.env.local` and `studio/.env.local`
+- [x] ~~Create Sanity project~~ — done out of session: **FSMA**, `wzs9gcps`, org `oqjnHYtnD`, `production` dataset exists
+- [ ] Create the `staging` dataset (`npx sanity dataset create staging`) — verified absent 2026-09-13
+- [ ] Write `frontend/.env.local` and `studio/.env.local` (values in §2 — project ID is known)
 - [ ] Create viewer token → `SANITY_API_READ_TOKEN`; generate `SANITY_REVALIDATE_TAGS_SECRET`
 - [ ] `npm run sanity:typegen` clean; `npm run type-check` clean
 - [ ] Link Vercel project to the repo, set env vars for Preview + Production, enable password protection
@@ -365,17 +371,24 @@ Each session is one agent run, one branch, one PR. **Milestone A (client draft) 
 **Goal:** the visual system exists as code and assets. No page work.
 **Read first:** §7, `docs/A11Y.md` (Color & contrast).
 
-- [ ] Recreate the logo as SVG per §7.4 (full, reversed, mark) → `frontend/public/brand/`
+- [ ] Recreate the logo as SVG per §7.4 (full, reversed, mark) → `frontend/public/brand/`. The rail and
+      masthead read these from `public/`, not from Sanity, so they cost no fetch. `settings.logo` is a
+      **`file`** field (not `image`) — upload `logo-full.svg` there for editor-facing use
 - [ ] Regenerate `favicon.svg`, `app/icon.svg`, `apple-icon.png`, PWA icons in `public/icons/`
 - [ ] Apply the §7.2 palette to `:root` in `globals.css`; keep `.dark` defined but unused (D14)
-- [ ] Force light theme: remove `ThemeToggle` from UI, set the provider to light/forced (keep the
-      dependency and component file — D13/D14 hygiene)
+- [ ] Force light theme: remove `ThemeToggle` from UI, set `<ThemeProvider>` in `app/layout.tsx` to
+      forced light (keep the dependency and component file — D13/D14 hygiene). **Gotcha:** the inline
+      pre-paint script constant near the top of `layout.tsx` mirrors the provider options — change both or
+      the first paint disagrees with the provider.
 - [ ] Pick and wire the heading typeface via `next/font`; expose `--font-display`
 - [ ] Contrast-audit every token pair; record the table in §12
 - [ ] Update `app/manifest.ts` (name, short_name, theme_color, background_color)
 
 **Acceptance:** template pages render in FSMA colours/type with no contrast failures; brand SVGs are crisp
 at 32px and 1200px; Lighthouse a11y ≥95.
+
+**If the session overruns:** the logo trace is the unpredictable part. Ship the SVGs, log the rest as S1b
+in §11, and stop — do not half-apply the palette.
 
 ---
 
@@ -410,7 +423,8 @@ at 32px and 1200px; Lighthouse a11y ≥95.
 - [ ] Promote testimonials to documents: `documents/testimonial.ts` (`quote`, `authorName`,
       `authorRole`, `featured` bool, `order`). Extend the existing `testimonials` block with
       `source: manual | documents` + `limit`, keeping the inline array intact for back-compat — log divergence
-- [ ] Confirm `person` covers faculty needs (name, role, photo, bio, credentials); add `credentials` if absent
+- [ ] `person` currently holds only `firstName`, `lastName`, `picture`. Add `role`, `bio`
+      (blockContentTextOnly), `credentials`, `order` — additive, log in the FORK-SYNC registry
 - [ ] Register new types in `schemaTypes/index.ts`; add them to `page.pageBuilder.of` where they're blocks
 - [ ] Structure: list Programs and Testimonials as their own sections, ordered
 - [ ] `npm run sanity:typegen`; commit generated files
@@ -460,8 +474,8 @@ socials appear/disappear correctly and are keyboard reachable.
 
 - [ ] Capture legacy copy: fetch `index.html`, `about.htm`, `maria.htm`, `programs.htm`,
       `testamonials.htm`, `contact.htm`, `admissions.htm` → `content/legacy/*.md` (committed, for reference)
-- [ ] Download legacy imagery from the old site; document dimensions/quality; **do not publish gallery
-      images to production until Q3 is answered**
+- [ ] Download legacy imagery from the old site; document dimensions/quality and flag anything too small
+      for masthead use (D17: releases are confirmed, so publishing is fine)
 - [ ] Seed script or manual Studio entry: settings (title, blurb, contact TODOs, navigation, homepage ref)
 - [ ] Build the home page in the page builder: masthead → mission/vision (infoSection) → programs grid →
       featured testimonial → gallery teaser → CTA (`mailto:` "Book a tour")
@@ -521,8 +535,8 @@ anchors land correctly from the redirect map.
 - [ ] Image pipeline: re-encode legacy images, upload via Sanity CLI/asset API, write real alt text for
       every image (schema-enforced)
 - [ ] Lightbox a11y: Esc, arrow keys, focus restore, `aria-modal`, captions announced
-- [ ] **Gate:** if Q3 (photo consent) is unresolved, ship `/gallery` with `noIndex` and a placeholder, and
-      log it in §4
+- [x] ~~Gate on photo consent~~ — removed: client confirmed releases cover web use (D17, 2026-09-13)
+- [ ] Sort/curate rather than dumping the legacy set — cut anything under ~1000px on the long edge
 
 **Acceptance:** gallery is fully keyboard operable; every image has meaningful alt; no CLS from image loads.
 
@@ -601,6 +615,8 @@ Append one row per session. Keep it terse.
 | Date | Session | Agent | Branch/PR | Outcome | Notes / carried over |
 |---|---|---|---|---|---|
 | 2026-09-13 | Plan | planning | — | This document created | Sanity project not yet created; MCP connector unavailable at planning time |
+| 2026-09-13 | Plan rev 2 | planning | — | Sanity project IDs recorded; photo-consent gate removed | — |
+| 2026-09-13 | Plan rev 3 | planning | — | Repo re-verified against the plan; Sanity connector confirmed working | `production` exists (public ACL), no `staging`, no schema deployed; `person` doc is thinner than assumed |
 
 ---
 
@@ -613,3 +629,5 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-13 | Masthead is a page-level field, not a page-builder block | Client wants it on every page; a field enforces that and prevents editors reordering it below content | — |
 | 2026-09-13 | Unused template doc types hidden rather than deleted | Fork must keep merging cleanly from `sanity-next-clean` | — |
 | 2026-09-13 | No WebGL shader background | Battery/perf cost unjustified for a school marketing site | — |
+| 2026-09-13 | Legacy photos may be published (D17) | Client confirmed releases cover web use | Q3 gate in S10 |
+| 2026-09-13 | Schema stays Studio-managed (CLI deploy), never MCP `deploy_schema` | A local Studio is the source of truth; an MCP-managed schema record would compete with it | — |
