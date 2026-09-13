@@ -40,6 +40,14 @@ Request-time APIs (`cookies()`, `params`, `searchParams`) are forbidden inside
 `'use cache'`. `draftMode()` is the one exception — a top-level component that
 only awaits `draftMode()` still prerenders into the static shell.
 
+Draft mode bypasses **every** `'use cache'` boundary: with draft mode enabled,
+cached components re-run as uncached request-time fetches. Layers 2–3 must
+therefore always render inside `<Suspense>` — a fetching component left
+outside one prerenders fine in published mode but throws the blocking-route
+error the moment Presentation opens the page. This applies even to components
+pinned to `perspective: 'published'` (e.g. `SiteJsonLd`): pinning fixes the
+*data*, not the cache bypass.
+
 ```tsx
 // Layer 1 — Page/Layout: branch on draftMode() ONLY. No 'use cache' here.
 export default async function Page(props: Props) {
@@ -93,6 +101,9 @@ in `app/layout.tsx`), `MorePosts`/`AllPosts` (`app/components/posts/Posts.tsx`).
   `perspective: 'published'` / `stega: false` inside page-content components
   (breaks Visual Editing + release previews). Hardcoding IS correct in
   `generateStaticParams`, metadata routes, and route handlers.
+- Every fetching component reachable in draft mode needs a `<Suspense>`
+  ancestor — `'use cache'` alone is not enough, since draft mode bypasses it
+  (see above).
 - Never call `sanityFetch` in a `'use server'` action — resolve
   `getDynamicFetchOptions()` inside the action, forward to a `'use cache'`
   helper.
