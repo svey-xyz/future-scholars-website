@@ -83,6 +83,7 @@ export const page = defineType({
         {type: 'stats'},
         {type: 'scores'},
         {type: 'testimonials'},
+        {type: 'programsGrid'},
         {type: 'gallery'},
         {type: 'faq'},
         {type: 'note'},

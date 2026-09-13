@@ -1,4 +1,6 @@
 import {CogIcon} from '@sanity/icons/Cog'
+import {BlockElementIcon} from '@sanity/icons/BlockElement'
+import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 import {TagIcon} from '@sanity/icons/Tag'
 import type {StructureBuilder, StructureResolver, StructureResolverContext} from 'sanity/structure'
 import {DocumentActionComponent, DocumentActionsContext, Template} from 'sanity'
@@ -14,6 +16,10 @@ import pluralize from 'pluralize-esm'
 // are hidden from the Studio rather than deleted, so merges from
 // `sanity-next-clean` stay clean. Restore by removing them from this list.
 const FSMA_HIDDEN_TYPES = ['post', 'project', 'technology', 'category']
+
+// Listed above in their own ordered sections, so drop them from the generic
+// alphabetical list rather than showing each type twice.
+const FSMA_PROMOTED_TYPES = ['program', 'testimonial']
 
 const DISABLED_TYPES = ['settings', 'assist.instruction.context', ...FSMA_HIDDEN_TYPES]
 
@@ -35,9 +41,33 @@ export const structure = (S: StructureBuilder, context: StructureResolverContext
       // S.documentTypeListItem('taxonomy').title('Taxonomies').icon(_TagIcon),
       S.divider(),
 
+      // FSMA: programs and testimonials get their own ordered sections rather
+      // than falling through to the alphabetical default list below.
+      S.listItem()
+        .title('Programs')
+        .icon(BlockElementIcon)
+        .child(
+          S.documentTypeList('program')
+            .title('Programs')
+            .defaultOrdering([{field: 'order', direction: 'asc'}]),
+        ),
+      S.listItem()
+        .title('Testimonials')
+        .icon(BlockquoteIcon)
+        .child(
+          S.documentTypeList('testimonial')
+            .title('Testimonials')
+            .defaultOrdering([{field: 'order', direction: 'asc'}]),
+        ),
+      S.divider(),
+
       ...S.documentTypeListItems()
         // Remove the "assist.instruction.context" and "settings" content  from the list of content types
-        .filter((listItem: any) => !DISABLED_TYPES.includes(listItem.getId()))
+        .filter(
+          (listItem: any) =>
+            !DISABLED_TYPES.includes(listItem.getId()) &&
+            !FSMA_PROMOTED_TYPES.includes(listItem.getId()),
+        )
         // Pluralize the title of each document type.  This is not required but just an option to consider.
         .map((listItem) => {
           return listItem.title(pluralize(listItem.getTitle() as string))

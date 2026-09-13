@@ -1,5 +1,5 @@
 import {UserIcon} from '@sanity/icons/User'
-import {defineField, defineType} from 'sanity'
+import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Person} from '../../../sanity.types'
 
 /**
@@ -55,18 +55,48 @@ export const person = defineType({
       },
       validation: (rule) => rule.required(),
     }),
+    // FSMA fork (build plan S3): the template's `person` is name + picture only.
+    // Faculty on the About page need a role and a short bio. Additive — logged
+    // in the FORK-SYNC divergence registry.
+    defineField({
+      name: 'role',
+      title: 'Role',
+      type: 'string',
+      description: 'e.g. "Director", "Casa Directress".',
+    }),
+    defineField({
+      name: 'credentials',
+      title: 'Credentials',
+      type: 'array',
+      of: [defineArrayMember({type: 'string'})],
+      options: {layout: 'tags'},
+      description: 'e.g. "AMS credentialled, 2000", "BA English Literature, Carleton".',
+    }),
+    defineField({
+      name: 'bio',
+      title: 'Bio',
+      type: 'blockContentTextOnly',
+    }),
+    defineField({
+      name: 'order',
+      title: 'Order',
+      type: 'number',
+      description: 'Ascending display order in the faculty list.',
+    }),
   ],
+  orderings: [{title: 'Order', name: 'order', by: [{field: 'order', direction: 'asc'}]}],
   // List preview configuration. https://www.sanity.io/docs/previews-list-views
   preview: {
     select: {
       firstName: 'firstName',
       lastName: 'lastName',
+      role: 'role',
       picture: 'picture',
     },
     prepare(selection) {
       return {
         title: `${selection.firstName} ${selection.lastName}`,
-        subtitle: 'Person',
+        subtitle: selection.role || 'Person',
         media: selection.picture,
       }
     },

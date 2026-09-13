@@ -1,5 +1,7 @@
 import {person} from './documents/person'
 import {page} from './documents/page'
+import {program} from './documents/program'
+import {testimonial} from './documents/testimonial'
 import {post} from './documents/post'
 import {project} from './documents/project'
 import {category} from './documents/category'
@@ -13,6 +15,7 @@ import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {contact} from './objects/contact'
 import {masthead} from './objects/masthead'
+import {programsGrid} from './objects/programsGrid'
 import {social} from './objects/social'
 import {navLink} from './objects/navLink'
 import {navDropdown} from './objects/navDropdown'
@@ -37,6 +40,8 @@ export const schemaTypes = [
   settings,
   // Documents
   page,
+  program,
+  testimonial,
   post,
   project,
   person,
@@ -64,6 +69,7 @@ export const schemaTypes = [
   galleryVideo,
   featuresGrid,
   testimonials,
+  programsGrid,
   faq,
   stats,
   scores,
