@@ -31,7 +31,8 @@
   "dependencies": {
     "@sanity/blueprints": "^0.21.0",
     "@sanity/functions": "^1.4.0",
-    "@svey-xyz/simple-shader-component": "^1.3.1"
+    "@svey-xyz/simple-shader-component": "^1.3.1",
+    "react-dom": "^19.3.0"
   },
   "devDependencies": {
     "@sanity/prettier-config": "^3.0.0",

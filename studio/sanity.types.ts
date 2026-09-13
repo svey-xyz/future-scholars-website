@@ -15,6 +15,14 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type Address = {
+  street?: string
+  city?: string
+  region?: string
+  postalCode?: string
+  country?: string
+}
+
 export type SanityImageAssetReference = {
   _ref: string
   _type: 'reference'
@@ -90,14 +98,38 @@ export type Faq = {
   }>
 }
 
+export type ProgramReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'program'
+}
+
+export type ProgramsGrid = {
+  _type: 'programsGrid'
+  heading?: string
+  subheading?: string
+  mode?: 'all' | 'selected'
+  programs?: Array<
+    {
+      _key: string
+    } & ProgramReference
+  >
+  columns?: 2 | 3 | 4
+}
+
 export type Testimonials = {
   _type: 'testimonials'
   heading?: string
   subheading?: string
+  source?: 'manual' | 'documents'
+  featuredOnly?: boolean
+  limit?: number
   testimonials?: Array<{
     quote: string
     authorName: string
     authorRole?: string
+    sourceUrl?: string
     authorImage?: AuthorImage
     _type: 'testimonial'
     _key: string
@@ -169,7 +201,7 @@ export type Gallery = {
         _key: string
       } & GalleryVideo)
   >
-  layout?: 'grid' | 'masonry' | 'carousel'
+  layout?: 'grid' | 'masonry' | 'carousel' | 'collage'
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
@@ -226,6 +258,8 @@ export type ProjectsArchive = {
   showFilter?: boolean
   showTechFilter?: boolean
   showSort?: boolean
+  sortField?: 'publishedAt' | 'updatedAt' | 'title'
+  sortDirection?: 'desc' | 'asc'
 }
 
 export type PostReference = {
@@ -248,6 +282,8 @@ export type PostsArchive = {
     } & PostReference
   >
   columns?: 2 | 3
+  sortField?: 'date' | 'title'
+  sortDirection?: 'desc' | 'asc'
 }
 
 export type Hero = {
@@ -306,10 +342,39 @@ export type Social = {
   url: string
 }
 
+export type Masthead = {
+  _type: 'masthead'
+  variant: 'brand' | 'image'
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  tone?: 'primary' | 'ink' | 'secondary'
+  eyebrow?: string
+  showLogo?: boolean
+  logoPlacement?: 'center' | 'bottomLeft'
+  height?: 'tall' | 'standard' | 'compact'
+  overlay?: 'none' | 'light' | 'medium' | 'strong'
+  focalNote?: string
+}
+
 export type Contact = {
   _type: 'contact'
   email?: string
   phone?: string
+  address?: Address
+  hours?: Array<{
+    days: string
+    time: string
+    schemaOrg?: string
+    _type: 'hoursRow'
+    _key: string
+  }>
+  mapUrl?: string
   socials?: Array<
     {
       _key: string
@@ -513,6 +578,53 @@ export type SanityImageHotspot = {
   width: number
 }
 
+export type Testimonial = {
+  _id: string
+  _type: 'testimonial'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  quote: string
+  authorName: string
+  authorRole?: string
+  authorImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  featured?: boolean
+  order?: number
+}
+
+export type Program = {
+  _id: string
+  _type: 'program'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  slug: Slug
+  ageRange: string
+  ratio?: string
+  classroomName?: string
+  summary: string
+  body?: BlockContent
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  scheduleNote?: string
+  order: number
+  masthead?: Masthead
+}
+
 export type SanityFileAssetReference = {
   _ref: string
   _type: 'reference'
@@ -573,6 +685,13 @@ export type Settings = {
   }
   blurb?: string
   contact?: Contact
+  foundingDate?: string
+  areaServed?: Array<string>
+  priceRange?: string
+  geo?: {
+    lat?: number
+    lng?: number
+  }
   navigation?: Array<
     | ({
         _key: string
@@ -605,6 +724,8 @@ export type Page = {
   slug: Slug
   heading: string
   subheading?: string
+  titleDisplay?: 'plain' | 'highlighted' | 'none'
+  masthead?: Masthead
   archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
   background?: Background
   pageBuilder?: Array<
@@ -629,6 +750,9 @@ export type Page = {
     | ({
         _key: string
       } & Testimonials)
+    | ({
+        _key: string
+      } & ProgramsGrid)
     | ({
         _key: string
       } & Gallery)
@@ -693,6 +817,10 @@ export type Person = {
     alt?: string
     _type: 'image'
   }
+  role?: string
+  credentials?: Array<string>
+  bio?: BlockContentTextOnly
+  order?: number
 }
 
 export type SanityAssistInstructionTask = {
@@ -939,12 +1067,15 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Address
   | SanityImageAssetReference
   | AuthorImage
   | Note
   | Scores
   | Stats
   | Faq
+  | ProgramReference
+  | ProgramsGrid
   | Testimonials
   | FeaturesGrid
   | GalleryVideo
@@ -961,6 +1092,7 @@ export type AllSanitySchemaTypes =
   | NavDropdown
   | NavLink
   | Social
+  | Masthead
   | Contact
   | PageReference
   | Link
@@ -976,6 +1108,8 @@ export type AllSanitySchemaTypes =
   | Project
   | SanityImageCrop
   | SanityImageHotspot
+  | Testimonial
+  | Program
   | SanityFileAssetReference
   | Settings
   | Page

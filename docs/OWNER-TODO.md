@@ -3,7 +3,7 @@
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
 Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
 
-Last updated: 2026-09-13 (after S0–S3, the content seed, and the image migration prep).
+Last updated: 2026-09-13 (after S0–S3, the content seed and the image migration).
 
 ---
 
@@ -55,6 +55,19 @@ Last updated: 2026-09-13 (after S0–S3, the content seed, and the image migrati
 ---
 
 ## Content and client
+
+- [ ] **8b. Three quick client questions the images raised:**
+      1. The three photos beside the old testimonials have no attribution in the markup. Who is in
+         each? They're uploaded but deliberately unattached — pairing one with a named family would
+         assert something the old site never said. (Q16)
+      2. `maria.gif` is a photograph of Maria Montessori, not FSMA's own image. Worth checking
+         provenance before republishing it. (Q17)
+      3. The "Recognition From The Mayor" certificate is uploaded and unplaced, still waiting on
+         Q7 — keep it, and where?
+
+- [ ] **8c. Alt text pass before launch.** All 107 gallery images have alt text, but it's album-level
+      and indexed ("Halloween celebration … 7 of 16") rather than describing that specific photo. It
+      clears the schema and is honest; a pass with eyes on the images would make it good.
 
 - [ ] **8. Upload `frontend/public/brand/logo-full.svg` to `settings.logo` in Studio** (plan Q13).
       It's a `file` field, not an `image`. The site itself reads the SVGs from `public/`, so this is

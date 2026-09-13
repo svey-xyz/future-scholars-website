@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S3 done · content seeded · images staged for upload · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 8) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S3 done · content + images seeded · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 9) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -161,9 +161,11 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q5 | New photography — will the client supply a shoot? | Client | **Unblocked for now, 2026-09-13** — masthead gained a `brand` variant (flat colour panel + reversed logo) and every page is seeded with one, so the design ships without photography. Still the right long-term answer. Measured every legacy image: **none is ≥1000px**. The best photography is 720×480; the homepage slider PNGs are 928×345 letterbox strips. Nothing on the old site can carry a masthead at the size D12/§7.6 specify. See `content/legacy/IMAGE-MANIFEST.md`. Either a shoot, licensed stock, or a non-photographic masthead treatment |
 | Q13 | `settings.logo` (the editor-facing SVG upload) and the Studio's other content seeding need Sanity write access, which no agent session has (Q11). Owner uploads `frontend/public/brand/logo-full.svg` in Studio | svey | **TBD, opened 2026-09-13** |
 | Q14 | ~~Legacy host off the egress allowlist~~ | svey | ✅ **Resolved 2026-09-13** — the **apex** is allowlisted (`www.` still 403s; use the apex). Full crawl found 27 pages / 270 image paths |
-| Q15 | **Sanity token with `create` permission** for asset upload. The app's `SANITY_API_READ_TOKEN` is viewer-scoped (403 on the assets endpoint) and the Studio CLI isn't logged in on the agent VM. Owner runs `SANITY_API_WRITE_TOKEN=sk... node scripts/migrate-legacy-images.mjs` | svey | **TBD, opened 2026-09-13** — the only thing between here and the images being in Sanity |
+| Q15 | ~~Sanity token with `create` permission for asset upload~~ | svey | ✅ **Resolved 2026-09-13** — owner ran the migration; 124 assets in `production`, 111 referenced by content |
+| Q16 | Three testimonial photos from the legacy page have no attribution in the markup. Pairing one with a named family would assert something the source doesn't say — who is in each? | Client | **TBD, opened 2026-09-13** — assets uploaded, deliberately unattached |
+| Q17 | `legacy-maria.gif` is a photograph of Maria Montessori, not FSMA's own image. Check provenance before republishing | svey | **TBD, opened 2026-09-13** |
 | Q6 | Tuition/fee information — publish on About/Admissions or "contact us for rates"? | Client | TBD |
-| Q7 | Legacy "Recognition From The Mayor" item — keep, and where? | Client | TBD |
+| Q7 | Legacy "Recognition From The Mayor" item — keep, and where? | Client | TBD — the certificate scan is uploaded (`legacy-FutureScholarsMayor.jpg`) and sitting unplaced until this is answered |
 | Q8 | ~~Sanity viewer token for `SANITY_API_READ_TOKEN`~~ | svey | ✅ **Resolved 2026-09-13** — token present in `frontend/.env.local`; the app no longer throws at module evaluation |
 | Q9 | Vercel project creation + linking, and mirroring env vars into Preview/Production | svey | Deferred to S0b (2026-09-13) |
 | Q10 | Sanity CLI login on the dev machine (`npx sanity login`) — needed for `schema deploy` (S2) and `sanity deploy` | svey | Owner runs CLI deploys manually (2026-09-13) |
@@ -639,12 +641,18 @@ anchors land correctly from the redirect map.
 
 - [ ] `/testimonials` from testimonial documents; attribution matches legacy exactly (don't paraphrase
       parents' words)
-- [ ] `/gallery` using the existing gallery block (grid or masonry + lightbox)
-- [ ] Image pipeline: re-encode legacy images, upload via Sanity CLI/asset API, write real alt text for
-      every image (schema-enforced)
+- [x] `/gallery` using the existing gallery block — grid and masonry, lightbox on, one block per album
+- [x] Image pipeline: 124 assets uploaded via `scripts/migrate-legacy-images.mjs`; 13 gallery blocks /
+      107 images on `/gallery`, plus a home teaser, program cards and director portraits
+- [ ] **Alt text is album-level, not per-image** ("Halloween celebration … (7 of 16)"). Clears the
+      schema and is honest, but a vision or human pass over the 107 would make it good. Do before launch
+- [ ] Re-encode: everything is still the legacy 720×480 original. Fine for a gallery grid; revisit if
+      any of these are ever used larger
 - [ ] Lightbox a11y: Esc, arrow keys, focus restore, `aria-modal`, captions announced
 - [x] ~~Gate on photo consent~~ — removed: client confirmed releases cover web use (D17, 2026-09-13)
-- [ ] Sort/curate rather than dumping the legacy set — cut anything under ~1000px on the long edge
+- [x] ~~Cut anything under ~1000px~~ — **reversed by the client 2026-09-13**: preserve everything
+      regardless of resolution. The 115 legacy thumbnails are still excluded (Sanity derives its own);
+      13 further assets are uploaded but unplaced, listed in `content/legacy/IMAGE-MANIFEST.md`
 
 **Acceptance:** gallery is fully keyboard operable; every image has meaningful alt; no CLS from image loads.
 
@@ -730,6 +738,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | S1 | cowork/opus | `feat/fsma-s1-brand` (local, unpushed) | **Done.** Logo recreated as outlined SVG (full/reversed/mark/mark-reversed) + full icon set; FSMA palette applied with three a11y corrections; light theme forced; Outfit wired as `--font-display`; manifest rebranded; contrast table in §12 | Q4 and Q12 closed. **New Q13**: `settings.logo` upload is owner-side. Type-check/lint/format clean; served CSS verified. Q11 still blocks any rendered-page or Lighthouse check |
 | 2026-09-13 | S3 + content seed | cowork/opus | `main` (local, unpushed) | **Done.** S3 schema (program, testimonial, programsGrid, faculty fields). Legacy site scraped verbatim to `content/legacy/`. 17 documents created and published in `production`: settings, 6 pages, 3 programs, 5 testimonials, 2 directors | Q4/Q12 closed earlier; Q1 partly answered, Q2 extracted pending confirmation. **Q5 now blocking** (no legacy image ≥1000px). **New Q14**: legacy host off the allowlist, so images can't be downloaded. Also caught and reverted a lockfile bump I had committed in the previous session — see §12 |
 | 2026-09-13 | Image migration + brand masthead | cowork/opus | `main` (local, unpushed) | Full recursive crawl of the legacy site (27 pages, 270 image paths — 14 gallery pages the index never links to). `scripts/migrate-legacy-images.mjs` written and dry-run clean: 131 uploads. Masthead gained a `brand` variant; all 6 pages and 3 programs seeded with one and published | Q14 closed (apex allowlisted). **New Q15**: upload needs a token with `create`; owner runs the script. Wiring assets into gallery/program/testimonial/person documents follows once it has run |
+| 2026-09-13 | Gallery wiring | cowork/opus | `main` (local, unpushed) | Owner ran the migration (124 assets). Built 13 gallery blocks / 107 images on `/gallery`, a 6-image home teaser, 3 program card images and both director portraits. Verified: 0 missing alt, 0 broken asset refs | Q15 closed. **New Q16** (testimonial photos have no attribution — left unattached) and **Q17** (maria.gif provenance). Alt text is album-level; flagged in S10 for a per-image pass |
 
 ---
 
@@ -803,3 +812,6 @@ light uses `--brand-accent-strong`.
 | 2026-09-13 | Masthead gained a `brand` variant; `image` is conditionally required | The client asked for a large image atop every page, and the legacy set cannot supply one (Q5). Rather than leave every page without a masthead, or ship a 3× upscale, the object now renders a flat brand-colour panel with the reversed logo. `tone` (blue / ink / sky) keeps the six pages from looking identical. Swapping to photography later is a per-page field change, not a schema change | §7.6, which assumed a photograph |
 | 2026-09-13 | Legacy thumbnails not uploaded | The 115 thumbs are 99×66 and 200×200 crops of images already in the set, and Sanity derives its own. Uploading them would triple the media library and make it unusable for the client. `--include-thumbs` is there if that call is ever reversed | — |
 | 2026-09-13 | Image upload is a committed script the owner runs, not an agent action | Asset creation needs a `create`-scoped token; the owner would rather not hand one to an agent, and the CLI isn't logged in on the agent VM. A reviewable, idempotent script in `scripts/` is also the better artifact — S10 needs a repeatable pipeline, not a one-off | — |
+| 2026-09-13 | Galleries split one-block-per-album rather than one big grid | The legacy site had 13 separate album pages; collapsing them into a single 107-image grid would lose the only organisation the content has. One `gallery` block per album keeps the albums legible and lets each pick its own layout — masonry for the big mixed sets, grid for the small even ones | — |
+| 2026-09-13 | Testimonial photos uploaded but not attached | The legacy markup places three photos near the quotes with no attribution. Attaching one to "The Lewandowski Family" would assert something the source never says, which §0 rule 8 forbids. Assets are preserved; Q16 asks the client | — |
+| 2026-09-13 | Gallery alt text is album-level and indexed, not per-frame | 107 images; per-frame description needs eyes on each one. Album-level alt ("Easter celebration … (3 of 10)") is accurate, satisfies the schema and tells a screen-reader user what the image is. Logged in S10 as a pre-launch polish item rather than pretended to be finished | §9's "all images have alt" — met, but at a coarser grain than ideal |

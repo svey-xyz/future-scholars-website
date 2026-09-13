@@ -68,3 +68,59 @@ has to change. The photo shoot (Q5) is still the right long-term answer.
 
 The **apex** host `futurescholarsmontessori.com` is allowlisted as of 2026-09-13; `www.` is not, and
 requests to it still 403. Use the apex everywhere.
+
+---
+
+## Migration result (2026-09-13)
+
+`scripts/migrate-legacy-images.mjs` ran; **124 image assets** are in `production`. Fewer than the 131
+the dry run counted because Sanity deduplicates by content hash — several images are byte-identical
+across albums and collapsed into one asset each — and `1213grad/grad6.jpg` 404s.
+
+**111 of the 124 are referenced by content.** The Gallery page carries 13 gallery blocks / 107 images,
+every one with alt text and a resolving asset:
+
+| Block | Images | Layout |
+|---|---|---|
+| The Roses room — Infants | 6 | grid |
+| The Shamrock room — Toddlers | 4 | grid |
+| The Violet room — Casa | 7 | grid |
+| Casa children at work | 9 | masonry |
+| Around the school | 7 | grid |
+| Outside | 12 | masonry |
+| Halloween 2013 | 16 | masonry |
+| Christmas 2013 | 8 | grid |
+| Graduation 2012–13 | 6 | grid |
+| Valentine's Day 2014 | 8 | grid |
+| Easter 2014 | 10 | masonry |
+| Gardening | 7 | grid |
+| Baking | 7 | grid |
+
+Also wired: a six-image teaser on the home page, program card images for all three programs, and both
+director portraits (which also clears `person.picture`'s required-field validation).
+
+### The 13 assets deliberately left unreferenced
+
+Preserved in the dataset, not placed on any page:
+
+- `legacy-FutureScholarsMayor.jpg` — the "Recognition From The Mayor" certificate. **Q7** is still
+  open: keep it, and where?
+- `legacy-maria.gif` — the Maria Montessori portrait from `maria.htm`. A 250×326 GIF of a historical
+  photograph; check provenance before republishing it (it is not FSMA's own image).
+- `legacy-mapicon.jpg` — a decorative map pin from the old contact page. Superseded by the `mapUrl`
+  link (D6: no embedded map).
+- `legacy-homepage-hp1/2/3.png` — the jssor slider strips, 928×345. Unusable at any size the new
+  design needs.
+- `legacy-FutureScholarsPrgInf2/3`, `PrgTdlr2/3` — the second and third program thumbnails; one per
+  program is enough for a card.
+- `legacy-FutureScholarsTest3/4/5.jpg` — the three photos beside the testimonials on the old page.
+  **Left off deliberately:** the legacy markup gives no attribution, so pairing one with a named
+  family would assert something the source does not. Attach them only if the client confirms who is
+  in each.
+
+### Alt text
+
+Every gallery image has alt text, but it is **album-level and indexed** ("Halloween celebration at
+Future Scholars Montessori Academy, 2013 (7 of 16)") rather than describing that specific frame.
+That clears the schema's requirement and is honest about what the image shows, but a human or vision
+pass over the 107 would make it genuinely good. Worth doing before launch; noted in S10.

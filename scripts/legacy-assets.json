@@ -1,0 +1,1203 @@
+{
+ "pages": [
+  "1213graduationgallery.htm",
+  "about.htm",
+  "admissions.htm",
+  "bakinggallery.htm",
+  "casa-class.htm",
+  "casafacility.htm",
+  "christmas2013gallery.htm",
+  "contact.htm",
+  "easter2014gallery.htm",
+  "facilitygallery.htm",
+  "gardeninggallery.htm",
+  "halloween2013gallery.htm",
+  "index.html",
+  "infant-class.htm",
+  "infantfacility.htm",
+  "links.htm",
+  "maria.htm",
+  "outsidegallery.htm",
+  "parents.htm",
+  "pictures.htm",
+  "programs.htm",
+  "schoolfacility.htm",
+  "specoccgallery.htm",
+  "testamonials.htm",
+  "toddler-class.htm",
+  "toddlerfacility.htm",
+  "valentines2014gallery.htm"
+ ],
+ "paths": [
+  "images/FutureScholarsMayor.jpg",
+  "images/FutureScholarsPrgInf1.jpg",
+  "images/FutureScholarsPrgInf2.jpg",
+  "images/FutureScholarsPrgInf3.jpg",
+  "images/FutureScholarsPrgTdlr1.jpg",
+  "images/FutureScholarsPrgTdlr2.jpg",
+  "images/FutureScholarsPrgTdlr3.jpg",
+  "images/FutureScholarsTest3.jpg",
+  "images/FutureScholarsTest4.jpg",
+  "images/FutureScholarsTest5.jpg",
+  "images/a17.png",
+  "images/aa1.jpg",
+  "images/bkgrndimg.jpg",
+  "images/casaThumb.jpg",
+  "images/casagallery/casagallery1.jpg",
+  "images/casagallery/casagallery10.jpg",
+  "images/casagallery/casagallery11.jpg",
+  "images/casagallery/casagallery12.jpg",
+  "images/casagallery/casagallery13.jpg",
+  "images/casagallery/casagallery14.jpg",
+  "images/casagallery/casagallery15.jpg",
+  "images/casagallery/casagallery16.jpg",
+  "images/casagallery/casagallery2.jpg",
+  "images/casagallery/casagallery3.jpg",
+  "images/casagallery/casagallery5.jpg",
+  "images/casagallery/casagallery6.jpg",
+  "images/casagallery/casagallery7.jpg",
+  "images/casagallery/casagallery8.jpg",
+  "images/casagallery/casagallery9.jpg",
+  "images/casagallery/casathumb1.jpg",
+  "images/casagallery/casathumb10.jpg",
+  "images/casagallery/casathumb11.jpg",
+  "images/casagallery/casathumb12.jpg",
+  "images/casagallery/casathumb13.jpg",
+  "images/casagallery/casathumb14.jpg",
+  "images/casagallery/casathumb15.jpg",
+  "images/casagallery/casathumb16.jpg",
+  "images/casagallery/casathumb2.jpg",
+  "images/casagallery/casathumb3.jpg",
+  "images/casagallery/casathumb5.jpg",
+  "images/casagallery/casathumb6.jpg",
+  "images/casagallery/casathumb7.jpg",
+  "images/casagallery/casathumb8.jpg",
+  "images/casagallery/casathumb9.jpg",
+  "images/casagallery/facility/casafacility1.jpg",
+  "images/casagallery/facility/casafacility2.jpg",
+  "images/casagallery/facility/casafacility3.jpg",
+  "images/casagallery/facility/casafacility4.jpg",
+  "images/casagallery/facility/casafacility5.jpg",
+  "images/casagallery/facility/casafacility6.jpg",
+  "images/casagallery/facility/casafacility7.jpg",
+  "images/casagallery/facility/casafacilitythumb1.jpg",
+  "images/casagallery/facility/casafacilitythumb2.jpg",
+  "images/casagallery/facility/casafacilitythumb3.jpg",
+  "images/casagallery/facility/casafacilitythumb4.jpg",
+  "images/casagallery/facility/casafacilitythumb5.jpg",
+  "images/casagallery/facility/casafacilitythumb6.jpg",
+  "images/casagallery/facility/casafacilitythumb7.jpg",
+  "images/facilityThumb.jpg",
+  "images/homepage/hp1.png",
+  "images/homepage/hp2.png",
+  "images/homepage/hp3.png",
+  "images/infantThumb.jpg",
+  "images/infantgallery/facility/infantfacility1.jpg",
+  "images/infantgallery/facility/infantfacility2.jpg",
+  "images/infantgallery/facility/infantfacility3.jpg",
+  "images/infantgallery/facility/infantfacility4.jpg",
+  "images/infantgallery/facility/infantfacility5.jpg",
+  "images/infantgallery/facility/infantfacility6.jpg",
+  "images/infantgallery/facility/infantfacilitythumb1.jpg",
+  "images/infantgallery/facility/infantfacilitythumb2.jpg",
+  "images/infantgallery/facility/infantfacilitythumb3.jpg",
+  "images/infantgallery/facility/infantfacilitythumb4.jpg",
+  "images/infantgallery/facility/infantfacilitythumb6.jpg",
+  "images/loading.gif",
+  "images/logo600w_2_facebook_01.png",
+  "images/logo600w_2_facebook_02.png",
+  "images/logo600w_2_facebook_03.png",
+  "images/logo600w_2_facebook_04.png",
+  "images/logo600w_2_facebook_05.png",
+  "images/mapicon.jpg",
+  "images/maria.gif",
+  "images/outsideThumb.jpg",
+  "images/outsidegallery/outside1.jpg",
+  "images/outsidegallery/outside10.jpg",
+  "images/outsidegallery/outside11.jpg",
+  "images/outsidegallery/outside12.jpg",
+  "images/outsidegallery/outside2.jpg",
+  "images/outsidegallery/outside3.jpg",
+  "images/outsidegallery/outside4.jpg",
+  "images/outsidegallery/outside5.jpg",
+  "images/outsidegallery/outside6.jpg",
+  "images/outsidegallery/outside7.jpg",
+  "images/outsidegallery/outside8.jpg",
+  "images/outsidegallery/outside9.jpg",
+  "images/outsidegallery/outsidethumb1.jpg",
+  "images/outsidegallery/outsidethumb10.jpg",
+  "images/outsidegallery/outsidethumb11.jpg",
+  "images/outsidegallery/outsidethumb12.jpg",
+  "images/outsidegallery/outsidethumb2.jpg",
+  "images/outsidegallery/outsidethumb3.jpg",
+  "images/outsidegallery/outsidethumb4.jpg",
+  "images/outsidegallery/outsidethumb5.jpg",
+  "images/outsidegallery/outsidethumb6.jpg",
+  "images/outsidegallery/outsidethumb7.jpg",
+  "images/outsidegallery/outsidethumb8.jpg",
+  "images/outsidegallery/outsidethumb9.jpg",
+  "images/pa1.jpg",
+  "images/rosesthumb.jpg",
+  "images/schoolfacility/schoolfacility1.jpg",
+  "images/schoolfacility/schoolfacility2.jpg",
+  "images/schoolfacility/schoolfacility3.jpg",
+  "images/schoolfacility/schoolfacility4.jpg",
+  "images/schoolfacility/schoolfacility5.jpg",
+  "images/schoolfacility/schoolfacility6.jpg",
+  "images/schoolfacility/schoolfacility7.jpg",
+  "images/schoolfacility/schoolfacilitythumb1.jpg",
+  "images/schoolfacility/schoolfacilitythumb2.jpg",
+  "images/schoolfacility/schoolfacilitythumb3.jpg",
+  "images/schoolfacility/schoolfacilitythumb4.jpg",
+  "images/schoolfacility/schoolfacilitythumb5.jpg",
+  "images/schoolfacility/schoolfacilitythumb6.jpg",
+  "images/schoolfacility/schoolfacilitythumb7.jpg",
+  "images/schoolthumb.jpg",
+  "images/shamrocksthumb.jpg",
+  "images/specoccThumb.jpg",
+  "images/specoccgallery/1213grad/grad1.jpg",
+  "images/specoccgallery/1213grad/grad2.jpg",
+  "images/specoccgallery/1213grad/grad3.jpg",
+  "images/specoccgallery/1213grad/grad4.jpg",
+  "images/specoccgallery/1213grad/grad5.jpg",
+  "images/specoccgallery/1213grad/grad6.jpg",
+  "images/specoccgallery/1213grad/grad7.jpg",
+  "images/specoccgallery/1213grad/gradthumb.jpg",
+  "images/specoccgallery/1213grad/gradthumb1.jpg",
+  "images/specoccgallery/1213grad/gradthumb2.jpg",
+  "images/specoccgallery/1213grad/gradthumb3.jpg",
+  "images/specoccgallery/1213grad/gradthumb4.jpg",
+  "images/specoccgallery/1213grad/gradthumb5.jpg",
+  "images/specoccgallery/1213grad/gradthumb6.jpg",
+  "images/specoccgallery/1213grad/gradthumb7.jpg",
+  "images/specoccgallery/baking/baking1.jpg",
+  "images/specoccgallery/baking/baking2.jpg",
+  "images/specoccgallery/baking/baking3.jpg",
+  "images/specoccgallery/baking/baking4.jpg",
+  "images/specoccgallery/baking/baking5.jpg",
+  "images/specoccgallery/baking/baking6.jpg",
+  "images/specoccgallery/baking/baking7.jpg",
+  "images/specoccgallery/baking/bakingthumb.jpg",
+  "images/specoccgallery/baking/bakingthumb1.jpg",
+  "images/specoccgallery/baking/bakingthumb2.jpg",
+  "images/specoccgallery/baking/bakingthumb3.jpg",
+  "images/specoccgallery/baking/bakingthumb4.jpg",
+  "images/specoccgallery/baking/bakingthumb5.jpg",
+  "images/specoccgallery/baking/bakingthumb6.jpg",
+  "images/specoccgallery/baking/bakingthumb7.jpg",
+  "images/specoccgallery/christmas2013/christmas1.jpg",
+  "images/specoccgallery/christmas2013/christmas2.jpg",
+  "images/specoccgallery/christmas2013/christmas3.jpg",
+  "images/specoccgallery/christmas2013/christmas4.jpg",
+  "images/specoccgallery/christmas2013/christmas5.jpg",
+  "images/specoccgallery/christmas2013/christmas6.jpg",
+  "images/specoccgallery/christmas2013/christmas7.jpg",
+  "images/specoccgallery/christmas2013/christmas8.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb1.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb2.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb3.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb4.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb5.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb6.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb7.jpg",
+  "images/specoccgallery/christmas2013/christmasthumb8.jpg",
+  "images/specoccgallery/easter2014/easter1.jpg",
+  "images/specoccgallery/easter2014/easter10.jpg",
+  "images/specoccgallery/easter2014/easter2.jpg",
+  "images/specoccgallery/easter2014/easter3.jpg",
+  "images/specoccgallery/easter2014/easter4.jpg",
+  "images/specoccgallery/easter2014/easter5.jpg",
+  "images/specoccgallery/easter2014/easter6.jpg",
+  "images/specoccgallery/easter2014/easter7.jpg",
+  "images/specoccgallery/easter2014/easter8.jpg",
+  "images/specoccgallery/easter2014/easter9.jpg",
+  "images/specoccgallery/easter2014/easterthumb.jpg",
+  "images/specoccgallery/easter2014/easterthumb1.jpg",
+  "images/specoccgallery/easter2014/easterthumb10.jpg",
+  "images/specoccgallery/easter2014/easterthumb2.jpg",
+  "images/specoccgallery/easter2014/easterthumb3.jpg",
+  "images/specoccgallery/easter2014/easterthumb4.jpg",
+  "images/specoccgallery/easter2014/easterthumb5.jpg",
+  "images/specoccgallery/easter2014/easterthumb6.jpg",
+  "images/specoccgallery/easter2014/easterthumb7.jpg",
+  "images/specoccgallery/easter2014/easterthumb8.jpg",
+  "images/specoccgallery/easter2014/easterthumb9.jpg",
+  "images/specoccgallery/gardening/gardening1.jpg",
+  "images/specoccgallery/gardening/gardening2.jpg",
+  "images/specoccgallery/gardening/gardening3.jpg",
+  "images/specoccgallery/gardening/gardening4.jpg",
+  "images/specoccgallery/gardening/gardening5.jpg",
+  "images/specoccgallery/gardening/gardening6.jpg",
+  "images/specoccgallery/gardening/gardening7.jpg",
+  "images/specoccgallery/gardening/gardeningthumb.jpg",
+  "images/specoccgallery/gardening/gardeningthumb1.jpg",
+  "images/specoccgallery/gardening/gardeningthumb2.jpg",
+  "images/specoccgallery/gardening/gardeningthumb3.jpg",
+  "images/specoccgallery/gardening/gardeningthumb4.jpg",
+  "images/specoccgallery/gardening/gardeningthumb5.jpg",
+  "images/specoccgallery/gardening/gardeningthumb6.jpg",
+  "images/specoccgallery/gardening/gardeningthumb7.jpg",
+  "images/specoccgallery/halloween2013/halloween1.jpg",
+  "images/specoccgallery/halloween2013/halloween10.jpg",
+  "images/specoccgallery/halloween2013/halloween11.jpg",
+  "images/specoccgallery/halloween2013/halloween12.jpg",
+  "images/specoccgallery/halloween2013/halloween13.jpg",
+  "images/specoccgallery/halloween2013/halloween14.jpg",
+  "images/specoccgallery/halloween2013/halloween15.jpg",
+  "images/specoccgallery/halloween2013/halloween16.jpg",
+  "images/specoccgallery/halloween2013/halloween2.jpg",
+  "images/specoccgallery/halloween2013/halloween3.jpg",
+  "images/specoccgallery/halloween2013/halloween4.jpg",
+  "images/specoccgallery/halloween2013/halloween5.jpg",
+  "images/specoccgallery/halloween2013/halloween6.jpg",
+  "images/specoccgallery/halloween2013/halloween7.jpg",
+  "images/specoccgallery/halloween2013/halloween8.jpg",
+  "images/specoccgallery/halloween2013/halloween9.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb1.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb10.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb11.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb12.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb13.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb14.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb15.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb16.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb2.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb3.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb4.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb5.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb6.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb7.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb8.jpg",
+  "images/specoccgallery/halloween2013/halloweenthumb9.jpg",
+  "images/specoccgallery/valentines2014/valentines1.jpg",
+  "images/specoccgallery/valentines2014/valentines2.jpg",
+  "images/specoccgallery/valentines2014/valentines3.jpg",
+  "images/specoccgallery/valentines2014/valentines4.jpg",
+  "images/specoccgallery/valentines2014/valentines5.jpg",
+  "images/specoccgallery/valentines2014/valentines6.jpg",
+  "images/specoccgallery/valentines2014/valentines7.jpg",
+  "images/specoccgallery/valentines2014/valentines8.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb1.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb2.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb3.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb4.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb5.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb6.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb7.jpg",
+  "images/specoccgallery/valentines2014/valentinesthumb8.jpg",
+  "images/t01.png",
+  "images/toddlerThumb.jpg",
+  "images/toddlergallery/facility/toddlerfacility1.jpg",
+  "images/toddlergallery/facility/toddlerfacility2.jpg",
+  "images/toddlergallery/facility/toddlerfacility3.jpg",
+  "images/toddlergallery/facility/toddlerfacility4.jpg",
+  "images/toddlergallery/facility/toddlerfacilitythumb1.jpg",
+  "images/toddlergallery/facility/toddlerfacilitythumb2.jpg",
+  "images/toddlergallery/facility/toddlerfacilitythumb3.jpg",
+  "images/toddlergallery/facility/toddlerfacilitythumb4.jpg",
+  "images/violetsthumb.jpg"
+ ],
+ "assets": {
+  "images/FutureScholarsPrgInf1.jpg": {
+   "path": "images/FutureScholarsPrgInf1.jpg",
+   "assetId": "image-ece2a49ca56f0f222c2a9bc57dbfb54d708d5de7-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 56578
+  },
+  "images/FutureScholarsPrgInf2.jpg": {
+   "path": "images/FutureScholarsPrgInf2.jpg",
+   "assetId": "image-4298b4e869fc9f730822dd3b4994481acf0a3470-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 62668
+  },
+  "images/FutureScholarsPrgTdlr1.jpg": {
+   "path": "images/FutureScholarsPrgTdlr1.jpg",
+   "assetId": "image-ad41a80c24eb6df10a765096056aa563eb3c6c58-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 57656
+  },
+  "images/FutureScholarsPrgInf3.jpg": {
+   "path": "images/FutureScholarsPrgInf3.jpg",
+   "assetId": "image-873712992392dd90a7958e1c6620ad50c517e04b-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 63442
+  },
+  "images/FutureScholarsMayor.jpg": {
+   "path": "images/FutureScholarsMayor.jpg",
+   "assetId": "image-de4b09514ab2f072c8233f8fe8caa328adeb2a72-789x1024-jpg",
+   "width": 789,
+   "height": 1024,
+   "bytes": 293339
+  },
+  "images/FutureScholarsPrgTdlr3.jpg": {
+   "path": "images/FutureScholarsPrgTdlr3.jpg",
+   "assetId": "image-3cca6588d10f122dab39635f9e08533eb064240d-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 63826
+  },
+  "images/FutureScholarsTest3.jpg": {
+   "path": "images/FutureScholarsTest3.jpg",
+   "assetId": "image-6dc60795f23affc03b6c649380ca53b8363122fb-325x335-jpg",
+   "width": 325,
+   "height": 335,
+   "bytes": 120329
+  },
+  "images/FutureScholarsTest4.jpg": {
+   "path": "images/FutureScholarsTest4.jpg",
+   "assetId": "image-18ccc41e165dfae1266433e9383a2bdd29aa517a-325x357-jpg",
+   "width": 325,
+   "height": 357,
+   "bytes": 141038
+  },
+  "images/FutureScholarsTest5.jpg": {
+   "path": "images/FutureScholarsTest5.jpg",
+   "assetId": "image-e2d01c64a6b85452c9725f7238ed8bf6dc01ae73-325x335-jpg",
+   "width": 325,
+   "height": 335,
+   "bytes": 92953
+  },
+  "images/casagallery/casagallery1.jpg": {
+   "path": "images/casagallery/casagallery1.jpg",
+   "assetId": "image-2424804339b577cae89c7c087fc63730411bcab7-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 135645
+  },
+  "images/aa1.jpg": {
+   "path": "images/aa1.jpg",
+   "assetId": "image-63f322a0491d9e5b7294526656d702413f28b6eb-156x192-jpg",
+   "width": 156,
+   "height": 192,
+   "bytes": 32523
+  },
+  "images/casagallery/casagallery10.jpg": {
+   "path": "images/casagallery/casagallery10.jpg",
+   "assetId": "image-a2f3c719b2226627dcfedcdd96278e5a531edb90-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 102365
+  },
+  "images/FutureScholarsPrgTdlr2.jpg": {
+   "path": "images/FutureScholarsPrgTdlr2.jpg",
+   "assetId": "image-117c531481a1ac3a28d499539dfee92e5af9dc1a-200x200-jpg",
+   "width": 200,
+   "height": 200,
+   "bytes": 63390
+  },
+  "images/casagallery/casagallery2.jpg": {
+   "path": "images/casagallery/casagallery2.jpg",
+   "assetId": "image-100214c5ab275fd9f0fd2c57ac91e92fc44c52fe-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 126878
+  },
+  "images/casagallery/casagallery7.jpg": {
+   "path": "images/casagallery/casagallery7.jpg",
+   "assetId": "image-77e49a9b574717e935ef0fa79e612791a2dbfa83-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 113807
+  },
+  "images/casagallery/casagallery8.jpg": {
+   "path": "images/casagallery/casagallery8.jpg",
+   "assetId": "image-c5024e23cc83ec60a28ab6122e519db4e0b5142d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 122032
+  },
+  "images/casagallery/casagallery3.jpg": {
+   "path": "images/casagallery/casagallery3.jpg",
+   "assetId": "image-324503154a920ffea9dc8df5953a1032b0798478-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 108199
+  },
+  "images/casagallery/casagallery5.jpg": {
+   "path": "images/casagallery/casagallery5.jpg",
+   "assetId": "image-54410600d5f097d03c12a8a6d995807333b7dead-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 109182
+  },
+  "images/casagallery/casagallery6.jpg": {
+   "path": "images/casagallery/casagallery6.jpg",
+   "assetId": "image-72789430d970c0f003ebfb79bf67af78a19cdbe9-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 108655
+  },
+  "images/casagallery/casagallery9.jpg": {
+   "path": "images/casagallery/casagallery9.jpg",
+   "assetId": "image-2dec52aa08c752fcceca7214d61376f37b6799ad-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 110165
+  },
+  "images/casagallery/facility/casafacility1.jpg": {
+   "path": "images/casagallery/facility/casafacility1.jpg",
+   "assetId": "image-3e4fecf4cc775ac187ab3d9efec73e5c1fd65aa1-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 175769
+  },
+  "images/casagallery/facility/casafacility2.jpg": {
+   "path": "images/casagallery/facility/casafacility2.jpg",
+   "assetId": "image-4fe2ace35964604d17436b7c60f45809d4a8a1ac-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 196213
+  },
+  "images/casagallery/facility/casafacility4.jpg": {
+   "path": "images/casagallery/facility/casafacility4.jpg",
+   "assetId": "image-d43b9498f65c067ea41a6f34d2c420da3e687142-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 192398
+  },
+  "images/casagallery/facility/casafacility3.jpg": {
+   "path": "images/casagallery/facility/casafacility3.jpg",
+   "assetId": "image-916a4edd2a340415dfeece1592234efc6de8a1e5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 171297
+  },
+  "images/casagallery/facility/casafacility5.jpg": {
+   "path": "images/casagallery/facility/casafacility5.jpg",
+   "assetId": "image-cb04cf1e29fc1eb2a8002d2d40641de40ca01400-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 207547
+  },
+  "images/casagallery/facility/casafacility6.jpg": {
+   "path": "images/casagallery/facility/casafacility6.jpg",
+   "assetId": "image-e1ddd1839670685e3b79fd4261a2d70416a4f490-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 179381
+  },
+  "images/casagallery/facility/casafacility7.jpg": {
+   "path": "images/casagallery/facility/casafacility7.jpg",
+   "assetId": "image-9c4ccca37c5aa24676eee92b067fcb4c458318bb-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 162836
+  },
+  "images/homepage/hp2.png": {
+   "path": "images/homepage/hp2.png",
+   "assetId": "image-af160574b5caf9bee406a8f0c472aa9c7651103b-928x345-png",
+   "width": 928,
+   "height": 345,
+   "bytes": 594618
+  },
+  "images/homepage/hp3.png": {
+   "path": "images/homepage/hp3.png",
+   "assetId": "image-74f679517256f6258df0c64ea98c7cf10cc516bf-928x345-png",
+   "width": 928,
+   "height": 345,
+   "bytes": 620050
+  },
+  "images/homepage/hp1.png": {
+   "path": "images/homepage/hp1.png",
+   "assetId": "image-5de4e663172de73f16c7f9761f62f67da049ad79-928x345-png",
+   "width": 928,
+   "height": 345,
+   "bytes": 575476
+  },
+  "images/infantgallery/facility/infantfacility1.jpg": {
+   "path": "images/infantgallery/facility/infantfacility1.jpg",
+   "assetId": "image-774a2d754493341ef4ff126925f3b95c9b679d62-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 194319
+  },
+  "images/infantgallery/facility/infantfacility2.jpg": {
+   "path": "images/infantgallery/facility/infantfacility2.jpg",
+   "assetId": "image-e260753403c55070a806589cc930690304a7babd-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 182773
+  },
+  "images/infantgallery/facility/infantfacility3.jpg": {
+   "path": "images/infantgallery/facility/infantfacility3.jpg",
+   "assetId": "image-250e563b27f7a5ea183a1e82cf6498e9c6ef56e6-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 167470
+  },
+  "images/infantgallery/facility/infantfacility5.jpg": {
+   "path": "images/infantgallery/facility/infantfacility5.jpg",
+   "assetId": "image-62c9f2ffe864eded9600e6e7388854968d196942-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 149443
+  },
+  "images/infantgallery/facility/infantfacility6.jpg": {
+   "path": "images/infantgallery/facility/infantfacility6.jpg",
+   "assetId": "image-3d91bc8290d4de3f2a348a3a05f9e82d3faa5547-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 138849
+  },
+  "images/mapicon.jpg": {
+   "path": "images/mapicon.jpg",
+   "assetId": "image-ec85352d5d60a5cabf543d8a921d7fb2de4b9300-80x65-jpg",
+   "width": 80,
+   "height": 65,
+   "bytes": 14138
+  },
+  "images/infantgallery/facility/infantfacility4.jpg": {
+   "path": "images/infantgallery/facility/infantfacility4.jpg",
+   "assetId": "image-a2b7aa674251ad0c1df79003b90e78119e0e3e08-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 175487
+  },
+  "images/maria.gif": {
+   "path": "images/maria.gif",
+   "assetId": "image-995fce972b5d2e1a4b077e9f940357cea691de67-250x326-gif",
+   "width": 250,
+   "height": 326,
+   "bytes": 53986
+  },
+  "images/outsidegallery/outside1.jpg": {
+   "path": "images/outsidegallery/outside1.jpg",
+   "assetId": "image-929df91803e0894898fbc225129fccefd046a43a-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 218101
+  },
+  "images/outsidegallery/outside10.jpg": {
+   "path": "images/outsidegallery/outside10.jpg",
+   "assetId": "image-14c69ccbfa7d62fa3f8f3f1ec4767667df29c6a0-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 177696
+  },
+  "images/outsidegallery/outside12.jpg": {
+   "path": "images/outsidegallery/outside12.jpg",
+   "assetId": "image-710465ce0d59e8d9eb6c81c48de8d40683cfd242-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 225602
+  },
+  "images/outsidegallery/outside11.jpg": {
+   "path": "images/outsidegallery/outside11.jpg",
+   "assetId": "image-d84a67e4a3370c300e0556bf16b218f88fe93253-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 199957
+  },
+  "images/outsidegallery/outside2.jpg": {
+   "path": "images/outsidegallery/outside2.jpg",
+   "assetId": "image-4b1a3ae4f859660be53d37b5cbdf67ecbca2ae06-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 187898
+  },
+  "images/outsidegallery/outside3.jpg": {
+   "path": "images/outsidegallery/outside3.jpg",
+   "assetId": "image-2955b7f6a27e89a663aa0f0b14c05b9d0a042fda-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 182982
+  },
+  "images/outsidegallery/outside4.jpg": {
+   "path": "images/outsidegallery/outside4.jpg",
+   "assetId": "image-93cfc3551063e74088cf56690ac44dd6009de5ff-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 172987
+  },
+  "images/outsidegallery/outside5.jpg": {
+   "path": "images/outsidegallery/outside5.jpg",
+   "assetId": "image-acb1802aff2e332d00a878a30bc716a01b264132-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 199320
+  },
+  "images/outsidegallery/outside6.jpg": {
+   "path": "images/outsidegallery/outside6.jpg",
+   "assetId": "image-1abd778b4dd924e143019dc11192d3b4dc125012-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 193380
+  },
+  "images/outsidegallery/outside7.jpg": {
+   "path": "images/outsidegallery/outside7.jpg",
+   "assetId": "image-b355a79c64c36bd79fc3d2a75eae9236cce1a261-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 179251
+  },
+  "images/outsidegallery/outside8.jpg": {
+   "path": "images/outsidegallery/outside8.jpg",
+   "assetId": "image-1f44b17f407aae2e9066b81c43e112668b258961-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 212006
+  },
+  "images/outsidegallery/outside9.jpg": {
+   "path": "images/outsidegallery/outside9.jpg",
+   "assetId": "image-e27e147b89d67e7b1520dfd85d1fa5b2ffd132b8-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 187950
+  },
+  "images/schoolfacility/schoolfacility1.jpg": {
+   "path": "images/schoolfacility/schoolfacility1.jpg",
+   "assetId": "image-7c999f662aaa481e5603b691cd25aec87a1c7720-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 157452
+  },
+  "images/pa1.jpg": {
+   "path": "images/pa1.jpg",
+   "assetId": "image-be22317ee989f815d5bb9c5cdb6ceb90f9c134b4-156x192-jpg",
+   "width": 156,
+   "height": 192,
+   "bytes": 35807
+  },
+  "images/schoolfacility/schoolfacility3.jpg": {
+   "path": "images/schoolfacility/schoolfacility3.jpg",
+   "assetId": "image-cbcc0ea204c15bdddfae25b72f687e413288e1b7-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 143836
+  },
+  "images/schoolfacility/schoolfacility2.jpg": {
+   "path": "images/schoolfacility/schoolfacility2.jpg",
+   "assetId": "image-e7734994d77d2ddd7b76f54537cbe3a142db2f7f-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 146782
+  },
+  "images/schoolfacility/schoolfacility4.jpg": {
+   "path": "images/schoolfacility/schoolfacility4.jpg",
+   "assetId": "image-7ed7476c9545304081ac259582376e25d4aef5c3-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 149493
+  },
+  "images/schoolfacility/schoolfacility6.jpg": {
+   "path": "images/schoolfacility/schoolfacility6.jpg",
+   "assetId": "image-17fa19ccdfaadc6fe2f03fb8a81c06231c4ac5ef-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 95735
+  },
+  "images/schoolfacility/schoolfacility5.jpg": {
+   "path": "images/schoolfacility/schoolfacility5.jpg",
+   "assetId": "image-6905de07efcc393c25226f69c3bcf19dbf9bc7e3-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 97919
+  },
+  "images/schoolfacility/schoolfacility7.jpg": {
+   "path": "images/schoolfacility/schoolfacility7.jpg",
+   "assetId": "image-8ab88b2f207fc7064325ff48ed1e3462369121fb-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 168907
+  },
+  "images/specoccgallery/1213grad/grad1.jpg": {
+   "path": "images/specoccgallery/1213grad/grad1.jpg",
+   "assetId": "image-7468f2660e0fbb6950d2735990c7433d9e0b12ff-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 158734
+  },
+  "images/specoccgallery/1213grad/grad2.jpg": {
+   "path": "images/specoccgallery/1213grad/grad2.jpg",
+   "assetId": "image-b49d68650f179b802de9cddf7d44a5de1759b7e3-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 175271
+  },
+  "images/specoccgallery/1213grad/grad3.jpg": {
+   "path": "images/specoccgallery/1213grad/grad3.jpg",
+   "assetId": "image-4e030bf59bdaa73de972deebcea268c789fc2e5a-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 163372
+  },
+  "images/specoccgallery/1213grad/grad4.jpg": {
+   "path": "images/specoccgallery/1213grad/grad4.jpg",
+   "assetId": "image-dff63d909b7f43f2ad278eebb5cef369ba39e945-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 155303
+  },
+  "images/specoccgallery/1213grad/grad5.jpg": {
+   "path": "images/specoccgallery/1213grad/grad5.jpg",
+   "assetId": "image-6394e2f7986138ef87e3428d38dd6227ca9a508a-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 166400
+  },
+  "images/specoccgallery/baking/baking1.jpg": {
+   "path": "images/specoccgallery/baking/baking1.jpg",
+   "assetId": "image-783b72deab4127570888a31c83bfffebf7678334-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 205525
+  },
+  "images/specoccgallery/1213grad/grad7.jpg": {
+   "path": "images/specoccgallery/1213grad/grad7.jpg",
+   "assetId": "image-f16b580faa61186cb39e91ae35041960bcb34bb5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 147134
+  },
+  "images/specoccgallery/baking/baking2.jpg": {
+   "path": "images/specoccgallery/baking/baking2.jpg",
+   "assetId": "image-09cdcc9fc653662d0a1bf6a3f46d50136cef80ff-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 172004
+  },
+  "images/specoccgallery/baking/baking3.jpg": {
+   "path": "images/specoccgallery/baking/baking3.jpg",
+   "assetId": "image-020ff23e77570f26509a5cd0904fdc72d7ccdf28-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 205615
+  },
+  "images/specoccgallery/baking/baking4.jpg": {
+   "path": "images/specoccgallery/baking/baking4.jpg",
+   "assetId": "image-b9014bd60d7f72b1b89d37430569aca6408ca2ad-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 183969
+  },
+  "images/specoccgallery/baking/baking5.jpg": {
+   "path": "images/specoccgallery/baking/baking5.jpg",
+   "assetId": "image-9d7f4df4ec46354a17ed134962c83242156d5b49-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 145266
+  },
+  "images/specoccgallery/baking/baking7.jpg": {
+   "path": "images/specoccgallery/baking/baking7.jpg",
+   "assetId": "image-6a81b3cd9876d405d9ed9a6d354ef7a66540a060-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 153175
+  },
+  "images/specoccgallery/baking/baking6.jpg": {
+   "path": "images/specoccgallery/baking/baking6.jpg",
+   "assetId": "image-429eb1f21101ebf0832fa6c693cda3751bc0d4fa-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 184872
+  },
+  "images/specoccgallery/christmas2013/christmas1.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas1.jpg",
+   "assetId": "image-a10539406eefbb5809689f52b96f65b3da08f627-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 227649
+  },
+  "images/specoccgallery/christmas2013/christmas3.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas3.jpg",
+   "assetId": "image-2c1cff8fbc5ae8713bab270fef4ab7be182448e3-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 162849
+  },
+  "images/specoccgallery/christmas2013/christmas2.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas2.jpg",
+   "assetId": "image-8c8d20b7c0c2a062914faa8502248ee747c0bc4d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 209367
+  },
+  "images/specoccgallery/christmas2013/christmas4.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas4.jpg",
+   "assetId": "image-35b206a35caa2c206bec81ffd77c2cb5d7402c54-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 212506
+  },
+  "images/specoccgallery/christmas2013/christmas5.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas5.jpg",
+   "assetId": "image-6d5e5c9fb0cf767c978e79a7cd8d671904d309bf-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 162430
+  },
+  "images/specoccgallery/christmas2013/christmas6.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas6.jpg",
+   "assetId": "image-64b6db628a282742bf2aa30e870799a268c381ba-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 210615
+  },
+  "images/specoccgallery/christmas2013/christmas8.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas8.jpg",
+   "assetId": "image-b1936bb5e07001ff1f246509731ac9ae2b10192d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 188602
+  },
+  "images/specoccgallery/easter2014/easter1.jpg": {
+   "path": "images/specoccgallery/easter2014/easter1.jpg",
+   "assetId": "image-ea58557f7d2931c35f1cae8e71fbcf355674c52e-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 184424
+  },
+  "images/specoccgallery/christmas2013/christmas7.jpg": {
+   "path": "images/specoccgallery/christmas2013/christmas7.jpg",
+   "assetId": "image-135ad3820ff33d0a96e0f52e73b271d11ecc1065-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 208066
+  },
+  "images/specoccgallery/easter2014/easter10.jpg": {
+   "path": "images/specoccgallery/easter2014/easter10.jpg",
+   "assetId": "image-d179843e6897316203a61892b83c023205bb29c2-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 174377
+  },
+  "images/specoccgallery/easter2014/easter3.jpg": {
+   "path": "images/specoccgallery/easter2014/easter3.jpg",
+   "assetId": "image-3a64e62db87a0ce2afb4a9a21f0f773c52c2ac1e-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 183249
+  },
+  "images/specoccgallery/easter2014/easter2.jpg": {
+   "path": "images/specoccgallery/easter2014/easter2.jpg",
+   "assetId": "image-ec10c35d306fe4c927886ea1a83a674d1cd9a0c5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 189940
+  },
+  "images/specoccgallery/easter2014/easter4.jpg": {
+   "path": "images/specoccgallery/easter2014/easter4.jpg",
+   "assetId": "image-95971269001693214ba6debfc6d418beb972771c-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 189372
+  },
+  "images/specoccgallery/easter2014/easter5.jpg": {
+   "path": "images/specoccgallery/easter2014/easter5.jpg",
+   "assetId": "image-1a44de8def06d43ab9ee2454179a9c5acca52ee1-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 225194
+  },
+  "images/specoccgallery/easter2014/easter6.jpg": {
+   "path": "images/specoccgallery/easter2014/easter6.jpg",
+   "assetId": "image-d540a3933ec7a42a2e30ba4ef2d7e67a55288041-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 155464
+  },
+  "images/specoccgallery/easter2014/easter7.jpg": {
+   "path": "images/specoccgallery/easter2014/easter7.jpg",
+   "assetId": "image-05f332da78c4de00215632a05d571448eab771fe-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 184689
+  },
+  "images/specoccgallery/easter2014/easter8.jpg": {
+   "path": "images/specoccgallery/easter2014/easter8.jpg",
+   "assetId": "image-34ff0b11e5144799fa774d48d78d44c0b302fa65-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 186182
+  },
+  "images/specoccgallery/gardening/gardening2.jpg": {
+   "path": "images/specoccgallery/gardening/gardening2.jpg",
+   "assetId": "image-d5736b9b19c846d32b6385b0ca1618fa3e5f8ec0-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 186163
+  },
+  "images/specoccgallery/gardening/gardening1.jpg": {
+   "path": "images/specoccgallery/gardening/gardening1.jpg",
+   "assetId": "image-3715ef4cf7fd011141175310b6fe0b646514690f-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 160125
+  },
+  "images/specoccgallery/easter2014/easter9.jpg": {
+   "path": "images/specoccgallery/easter2014/easter9.jpg",
+   "assetId": "image-f779e1f9e6fc4c0ade3943b8a4db70214346b8f1-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 214862
+  },
+  "images/specoccgallery/gardening/gardening5.jpg": {
+   "path": "images/specoccgallery/gardening/gardening5.jpg",
+   "assetId": "image-da70f3ec7fff31e5f9e3958f758d6052771dfa16-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 212332
+  },
+  "images/specoccgallery/gardening/gardening4.jpg": {
+   "path": "images/specoccgallery/gardening/gardening4.jpg",
+   "assetId": "image-0bb9ce542fba79230a0fb8b0ca4bb3ad9db0f18b-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 186877
+  },
+  "images/specoccgallery/gardening/gardening3.jpg": {
+   "path": "images/specoccgallery/gardening/gardening3.jpg",
+   "assetId": "image-f113d3332706004be911d01f80f8c8311f32bac0-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 164987
+  },
+  "images/specoccgallery/gardening/gardening6.jpg": {
+   "path": "images/specoccgallery/gardening/gardening6.jpg",
+   "assetId": "image-35e8360a1b1e50062eb74c0a88ec93120e11220e-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 198346
+  },
+  "images/specoccgallery/gardening/gardening7.jpg": {
+   "path": "images/specoccgallery/gardening/gardening7.jpg",
+   "assetId": "image-0918b186688b9798d9ede6652bfdc1847134ed29-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 203197
+  },
+  "images/specoccgallery/halloween2013/halloween11.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween11.jpg",
+   "assetId": "image-c08b3a761f52eb2584f94ea14b886d0b4fcde2f5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 173308
+  },
+  "images/specoccgallery/halloween2013/halloween10.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween10.jpg",
+   "assetId": "image-a6882632249a4b49311e63d3bff1a2ce262edfa6-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 168742
+  },
+  "images/specoccgallery/halloween2013/halloween12.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween12.jpg",
+   "assetId": "image-65462964ee2536a9a80665bc3264f7c3d1fcac02-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 170718
+  },
+  "images/specoccgallery/halloween2013/halloween1.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween1.jpg",
+   "assetId": "image-19a43ae2959256cd7a90280f1454b7d298e49e9c-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 205792
+  },
+  "images/specoccgallery/halloween2013/halloween13.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween13.jpg",
+   "assetId": "image-2fad3613ce75d77df41d4fc4edbda41f0c7e6fbf-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 209730
+  },
+  "images/specoccgallery/halloween2013/halloween14.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween14.jpg",
+   "assetId": "image-be1373144ef53da4976cbb18cc1966981c4b113d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 157902
+  },
+  "images/specoccgallery/halloween2013/halloween15.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween15.jpg",
+   "assetId": "image-0a01f9d56981711bb0459e96de1d67f9492d664d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 182041
+  },
+  "images/specoccgallery/halloween2013/halloween16.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween16.jpg",
+   "assetId": "image-83594f645092b3e93988beac1bce0225607df30c-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 183134
+  },
+  "images/specoccgallery/halloween2013/halloween2.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween2.jpg",
+   "assetId": "image-8211447213c1dd368274fd18b276213aeb2485a8-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 219396
+  },
+  "images/specoccgallery/halloween2013/halloween3.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween3.jpg",
+   "assetId": "image-de9a460c195b1fe22a39981c5494d95efa7ba999-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 164327
+  },
+  "images/specoccgallery/halloween2013/halloween5.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween5.jpg",
+   "assetId": "image-5e05a4caa7daf223fd164d3f20be0b838abdb0b1-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 178337
+  },
+  "images/specoccgallery/halloween2013/halloween4.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween4.jpg",
+   "assetId": "image-477af6ba163d5d5e9998975503fa0fcc58b0b9fc-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 196562
+  },
+  "images/specoccgallery/halloween2013/halloween7.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween7.jpg",
+   "assetId": "image-f4782a6d28b3023c3727b0f370c47424d8c2ca7e-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 164565
+  },
+  "images/specoccgallery/halloween2013/halloween8.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween8.jpg",
+   "assetId": "image-d02808aae5e5ff7415e158f5cde1b1a2fdf2cb81-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 189631
+  },
+  "images/specoccgallery/halloween2013/halloween6.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween6.jpg",
+   "assetId": "image-350e1e7f7aac016a037183f9ee7227115b4e19a6-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 183782
+  },
+  "images/specoccgallery/valentines2014/valentines1.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines1.jpg",
+   "assetId": "image-081d918a15f309d6139dcc838bddafb54f1ef443-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 110505
+  },
+  "images/specoccgallery/halloween2013/halloween9.jpg": {
+   "path": "images/specoccgallery/halloween2013/halloween9.jpg",
+   "assetId": "image-4ff42f6aa9278d92cfa5c9b7824fb75b055c7655-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 175153
+  },
+  "images/specoccgallery/valentines2014/valentines4.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines4.jpg",
+   "assetId": "image-60a78219dcf83e60dd4b1a01a18238ba0cc7eefe-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 151279
+  },
+  "images/specoccgallery/valentines2014/valentines3.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines3.jpg",
+   "assetId": "image-47e13f07939549466ddbff957d2dc1fab40ef1b6-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 186457
+  },
+  "images/specoccgallery/valentines2014/valentines6.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines6.jpg",
+   "assetId": "image-a3814731854659db7b0fabd53bd4504b4cdbf8b5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 256667
+  },
+  "images/specoccgallery/valentines2014/valentines2.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines2.jpg",
+   "assetId": "image-3156a4ea198ac43d82b1515953234f41aed9c5bf-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 187831
+  },
+  "images/specoccgallery/valentines2014/valentines5.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines5.jpg",
+   "assetId": "image-aaff41c2381535411e582fbab59f3cc7487943b4-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 156403
+  },
+  "images/specoccgallery/valentines2014/valentines7.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines7.jpg",
+   "assetId": "image-8a322e7272440f3f1e94202146cf62a57767860f-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 184616
+  },
+  "images/specoccgallery/valentines2014/valentines8.jpg": {
+   "path": "images/specoccgallery/valentines2014/valentines8.jpg",
+   "assetId": "image-f0226793cc72db13745924512639bd1e40cbe77d-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 157206
+  },
+  "images/toddlergallery/facility/toddlerfacility2.jpg": {
+   "path": "images/toddlergallery/facility/toddlerfacility2.jpg",
+   "assetId": "image-d68a5864b180c0f452518400a00af81dc34dfcd5-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 173565
+  },
+  "images/toddlergallery/facility/toddlerfacility1.jpg": {
+   "path": "images/toddlergallery/facility/toddlerfacility1.jpg",
+   "assetId": "image-da75fec30a04aa3c86217e71044944352adfd585-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 179139
+  },
+  "images/toddlergallery/facility/toddlerfacility3.jpg": {
+   "path": "images/toddlergallery/facility/toddlerfacility3.jpg",
+   "assetId": "image-d6456ebe022c214eaa2db73c039cd7ad24074ddb-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 168611
+  },
+  "images/toddlergallery/facility/toddlerfacility4.jpg": {
+   "path": "images/toddlergallery/facility/toddlerfacility4.jpg",
+   "assetId": "image-d46918e20d89968b43618267f4148cfe1f1629e7-720x480-jpg",
+   "width": 720,
+   "height": 480,
+   "bytes": 163076
+  }
+ },
+ "failed": [
+  {
+   "path": "images/casagallery/casagallery11.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/casagallery/casagallery12.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/casagallery/casagallery13.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/casagallery/casagallery14.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/casagallery/casagallery15.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/casagallery/casagallery16.jpg",
+   "error": "fetch 404"
+  },
+  {
+   "path": "images/specoccgallery/1213grad/grad6.jpg",
+   "error": "upload 502 {\"message\":\"An invalid response was received from the upstream server\"}"
+  }
+ ]
+}
