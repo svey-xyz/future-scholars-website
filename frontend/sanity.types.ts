@@ -344,7 +344,8 @@ export type Social = {
 
 export type Masthead = {
   _type: 'masthead'
-  image: {
+  variant: 'brand' | 'image'
+  image?: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -352,6 +353,7 @@ export type Masthead = {
     alt?: string
     _type: 'image'
   }
+  tone?: 'primary' | 'ink' | 'secondary'
   eyebrow?: string
   showLogo?: boolean
   logoPlacement?: 'center' | 'bottomLeft'

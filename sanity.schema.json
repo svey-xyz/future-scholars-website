@@ -2162,6 +2162,23 @@
             "value": "masthead"
           }
         },
+        "variant": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "brand"
+              },
+              {
+                "type": "string",
+                "value": "image"
+              }
+            ]
+          },
+          "optional": false
+        },
         "image": {
           "type": "objectAttribute",
           "value": {
@@ -2214,7 +2231,28 @@
               }
             }
           },
-          "optional": false
+          "optional": true
+        },
+        "tone": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "primary"
+              },
+              {
+                "type": "string",
+                "value": "ink"
+              },
+              {
+                "type": "string",
+                "value": "secondary"
+              }
+            ]
+          },
+          "optional": true
         },
         "eyebrow": {
           "type": "objectAttribute",
