@@ -9,7 +9,7 @@ Last updated: 2026-09-13 (after S0, S1, S2).
 
 ## Blocking — do these first
 
-- [ ] **1. Push the four local branches.** No agent session can push (no SSH, no PAT in the sandbox).
+- [x] **1. Push the four local branches.** No agent session can push (no SSH, no PAT in the sandbox).
       `main` also needs a one-time force-push because its history was regrafted onto the template
       (plan §12) — nothing is lost, the old tip is kept as `backup/pre-graft-main`.
       ```
@@ -19,7 +19,7 @@ Last updated: 2026-09-13 (after S0, S1, S2).
       The three feature branches are stacked (S0 → S2 → S1), not siblings off `main` — merge them in
       that order, or squash-merge S0 first and rebase the other two.
 
-- [ ] **2. Open `*.sanity.io` on the egress allowlist** — or accept that every rendered-page check is
+- [x] **2. Open `*.sanity.io` on the egress allowlist** — or accept that every rendered-page check is
       yours. (Plan Q11.) Right now the proxy returns `403 blocked-by-allowlist` for
       `wzs9gcps.api.sanity.io` and `wzs9gcps.apicdn.sanity.io` from both the Cowork VM and the cloud
       container, so the frontend boots but every data-fetching route 500s. Needs
@@ -27,25 +27,25 @@ Last updated: 2026-09-13 (after S0, S1, S2).
       Consequence if you skip it: S5–S12 verification (rendered pages, Lighthouse, Presentation,
       image uploads) all move to you, and agent sessions stay limited to schema, components and config.
 
-- [ ] **3. `npx sanity login`** on your dev machine (plan Q10) — needed for `schema deploy` and
+- [x] **3. `npx sanity login`** on your dev machine (plan Q10) — needed for `schema deploy` and
       `sanity deploy`.
 
 ---
 
 ## Deploys and hosting (S0b)
 
-- [ ] **4. Deploy the S2 schema.** From the repo root, after checking out the merged branch:
+- [x] **4. Deploy the S2 schema.** From the repo root, after checking out the merged branch:
       ```
       cd studio && npx sanity schema deploy
       ```
       Never use the Sanity MCP `deploy_schema` tool for this project — it creates a competing
       MCP-managed schema record alongside the Studio one (plan §2).
 
-- [ ] **5. Deploy the Studio.** `cd studio && SANITY_STUDIO_STUDIO_HOST=fsma npx sanity deploy`
+- [x] **5. Deploy the Studio.** `cd studio && SANITY_STUDIO_STUDIO_HOST=fsma npx sanity deploy`
       (fall back to `future-scholars` if `fsma` is taken). Then set `NEXT_PUBLIC_SANITY_STUDIO_URL`
       and `SANITY_STUDIO_PREVIEW_URL` to the deployed host, locally and in Vercel.
 
-- [ ] **6. Create and link the Vercel project** (plan Q9) and mirror all five env vars into both
+- [x] **6. Create and link the Vercel project** (plan Q9) and mirror all five env vars into both
       Preview and Production:
       `NEXT_PUBLIC_SANITY_PROJECT_ID`, `NEXT_PUBLIC_SANITY_DATASET`, `NEXT_PUBLIC_SANITY_API_VERSION`,
       `NEXT_PUBLIC_SANITY_STUDIO_URL`, `SANITY_API_READ_TOKEN`, `SANITY_REVALIDATE_TAGS_SECRET`.

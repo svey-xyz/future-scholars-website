@@ -28,9 +28,6 @@
     "type-check": "tsc -p tsconfig.json && npm run type-check --workspaces"
   },
   "prettier": "@sanity/prettier-config",
-  "overrides": {
-    "@sanity/cli": "7.5.0"
-  },
   "dependencies": {
     "@sanity/blueprints": "^0.21.0",
     "@sanity/functions": "^1.4.0",
