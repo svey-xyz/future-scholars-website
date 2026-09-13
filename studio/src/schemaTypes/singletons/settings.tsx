@@ -15,6 +15,15 @@ export const settings = defineType({
   title: 'Settings',
   type: 'document',
   icon: CogIcon,
+  fieldsets: [
+    {
+      name: 'schoolInfo',
+      title: 'School identity (structured data)',
+      description:
+        'Facts about the organisation itself. These feed the JSON-LD emitted site-wide — they are not rendered as page copy.',
+      options: {collapsible: true, collapsed: true},
+    },
+  ],
   fields: [
     defineField({
       name: 'title',
@@ -212,6 +221,54 @@ export const settings = defineType({
       title: 'Contact',
       name: 'contact',
       type: 'contact',
+    }),
+    defineField({
+      title: 'Founded',
+      name: 'foundingDate',
+      type: 'date',
+      description: 'Year the school opened. Used in the Organization JSON-LD (`foundingDate`).',
+      options: {dateFormat: 'YYYY-MM-DD'},
+      fieldset: 'schoolInfo',
+    }),
+    defineField({
+      title: 'Area served',
+      name: 'areaServed',
+      type: 'array',
+      description:
+        'Neighbourhoods / municipalities the school draws from, e.g. "Ottawa", "Barrhaven". Used in JSON-LD (`areaServed`).',
+      of: [defineArrayMember({type: 'string'})],
+      options: {layout: 'tags'},
+      fieldset: 'schoolInfo',
+    }),
+    defineField({
+      title: 'Price range',
+      name: 'priceRange',
+      type: 'string',
+      description:
+        'Coarse price indicator for JSON-LD (`priceRange`), e.g. "$$". Not a published fee schedule.',
+      fieldset: 'schoolInfo',
+    }),
+    defineField({
+      title: 'Coordinates',
+      name: 'geo',
+      type: 'object',
+      description: 'Latitude / longitude of the school, used in JSON-LD (`geo`).',
+      options: {columns: 2},
+      fields: [
+        defineField({
+          name: 'lat',
+          title: 'Latitude',
+          type: 'number',
+          validation: (Rule) => Rule.min(-90).max(90),
+        }),
+        defineField({
+          name: 'lng',
+          title: 'Longitude',
+          type: 'number',
+          validation: (Rule) => Rule.min(-180).max(180),
+        }),
+      ],
+      fieldset: 'schoolInfo',
     }),
     defineField({
       title: 'Navigation',

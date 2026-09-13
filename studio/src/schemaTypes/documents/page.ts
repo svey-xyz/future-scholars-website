@@ -58,7 +58,18 @@ export const page = defineType({
         direction: 'horizontal',
       },
     }),
-    archiveField,
+    defineField({
+      name: 'masthead',
+      title: 'Masthead',
+      type: 'masthead',
+      description:
+        'Full-bleed image + logo lockup at the top of the page. Every FSMA page opens with one (build plan D12); vary the image, height and overlay so no two pages look alike.',
+    }),
+    // FSMA fork: the archive blocks are not offered on this site (build plan
+    // D13/S2), so the designation field has nothing to point at. Hidden rather
+    // than removed, and spread rather than edited in `shared.ts`, so the
+    // template's definition stays the single source of truth on merge.
+    {...archiveField, hidden: true},
     backgroundField,
     defineField({
       name: 'pageBuilder',
@@ -75,6 +86,12 @@ export const page = defineType({
         {type: 'gallery'},
         {type: 'faq'},
         {type: 'note'},
+        // FSMA fork: the archive blocks stay in this union deliberately. Removing
+        // them here cascades into `frontend/sanity/lib/types.ts` and the three
+        // template archive components (they derive their props from the page
+        // query's block union), which is exactly the divergence D13 avoids.
+        // They are rejected by the validation below instead, and the `archive`
+        // designation field is hidden.
         {type: 'postsArchive'},
         {type: 'projectsArchive'},
         {type: 'authorsArchive'},
@@ -86,10 +103,23 @@ export const page = defineType({
       // insert-menu options per-document.
       validation: (Rule) =>
         Rule.custom((blocks, context) => {
+          const items = (blocks as {_type: string; _key: string}[] | undefined) ?? []
+
+          // FSMA fork: this site has no blog or portfolio, so no page may carry
+          // an archive block. Delete this guard (and unhide `archive`) to
+          // restore the template's archive behaviour.
+          const unused = items.filter((b) => isArchiveBlockType(b._type))
+          if (unused.length > 0) {
+            return {
+              message:
+                'Archive blocks (Posts, Projects, Authors) are not used on this site — remove this block.',
+              paths: unused.map((b) => [{_key: b._key}]),
+            }
+          }
+
           const archive = (context.document as {archive?: string} | undefined)?.archive
           if (!archive) return true
 
-          const items = (blocks as {_type: string; _key: string}[] | undefined) ?? []
           const archiveBlocks = items.filter((b) => isArchiveBlockType(b._type))
           const matching = archiveBlocks.filter((b) => b._type === archive)
           const others = archiveBlocks.filter((b) => b._type !== archive)

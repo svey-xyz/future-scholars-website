@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S0 in progress · **Last updated:** 2026-09-13 (rev 4) · **Owner:** Hayden Soule (svey)
+**Status:** S2 done · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 5) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -161,9 +161,11 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q5 | New photography — will the client supply a shoot? | Client | TBD |
 | Q6 | Tuition/fee information — publish on About/Admissions or "contact us for rates"? | Client | TBD |
 | Q7 | Legacy "Recognition From The Mayor" item — keep, and where? | Client | TBD |
-| Q8 | **Sanity viewer token** for `SANITY_API_READ_TOKEN`. Blocks running the frontend at all (see §2). Create at manage.sanity.io → `wzs9gcps` → API → Tokens, role Viewer | svey | **BLOCKER, opened 2026-09-13** |
+| Q8 | ~~Sanity viewer token for `SANITY_API_READ_TOKEN`~~ | svey | ✅ **Resolved 2026-09-13** — token present in `frontend/.env.local`; the app no longer throws at module evaluation |
 | Q9 | Vercel project creation + linking, and mirroring env vars into Preview/Production | svey | Deferred to S0b (2026-09-13) |
 | Q10 | Sanity CLI login on the dev machine (`npx sanity login`) — needed for `schema deploy` (S2) and `sanity deploy` | svey | Owner runs CLI deploys manually (2026-09-13) |
+| Q11 | **`*.sanity.io` is blocked by the egress allowlist** in both the Cowork device VM and the cloud container (`403 blocked-by-allowlist`; Node sees `EAI_AGAIN`). The frontend dev server boots but every data-fetching route 500s, so **no agent session can render a page against Sanity or verify Presentation**. Owner must run `npm run dev` outside the Cowork VM, or add `*.sanity.io` (+ `*.apicdn.sanity.io`) to the allowlist | svey | **BLOCKER, opened 2026-09-13** |
+| Q12 | Logo source JPG is not in the repo, and binary downloads from the legacy site are blocked by the same allowlist. S1's logo trace needs the file dropped into `frontend/public/brand/_source/` (or attached) | svey | **TBD, opened 2026-09-13** — blocks S1's logo deliverables only |
 
 ---
 
@@ -239,6 +241,19 @@ don't "fix" the template for them.
   Studio still starts.
 - **Deleting files needs explicit permission** in the mounted folder. A stale `.git/index.lock` will wedge
   git until that is granted.
+- **`*.sanity.io` is not on the egress allowlist** (`403 blocked-by-allowlist` through the proxy; Node,
+  which ignores `HTTPS_PROXY`, reports `EAI_AGAIN`). The frontend compiles and serves, but every route
+  that fetches content 500s, so an agent session **cannot** render a page against the dataset, verify
+  Presentation, or download legacy imagery. `WebFetch` still works for reading legacy pages as text
+  (S6's copy capture is therefore possible; the image download is not). See Q11.
+- **`.next` must not be renamed in place.** Turbopack refuses to start when its persistence directory is
+  stale (`Failed to open database … Operation not permitted`), and any `.next-*` sibling left in the tree
+  is **not** gitignored, so Tailwind v4 scans it for class candidates and pulls mangled bytes out of the
+  binary build artefacts — producing a bogus selector and a hard `Parsing CSS source code failed` on
+  `globals.css`. Delete `.next` (and `studio/node_modules/.sanity/vite`, which Studio hits with the same
+  `EPERM … unlink` on a stale cache) rather than moving it aside.
+- **Deleting files needs an explicit grant** in the mounted folder — ask for it up front, since both cache
+  problems above are only fixable with `rm -rf`.
 - **The sandbox ships npm 10.9.8; the lockfile was written by a newer npm.** Running `npm install` strips
   the `libc` fields from `package-lock.json` (36 deletions). Harmless to the install, but **never commit
   that churn** — `git checkout -- package-lock.json` after installing.
@@ -396,25 +411,25 @@ Each session is one agent run, one branch, one PR. **Milestone A (client draft) 
 - [x] Create the `staging` dataset — created 2026-09-13, ACL `private`
 - [x] Write `frontend/.env.local` and `studio/.env.local` (values in §2 — project ID is known)
 - [x] Generate `SANITY_REVALIDATE_TAGS_SECRET` (written to `frontend/.env.local`)
-- [ ] Create viewer token → `SANITY_API_READ_TOKEN` — **blocked on Q8, owner action**
+- [x] Create viewer token → `SANITY_API_READ_TOKEN` — done out of session (Q8 closed 2026-09-13)
 - [x] `npm run sanity:typegen -w frontend` clean (generated files unchanged vs committed); `npm run type-check` clean;
       `npm run lint` clean (0 errors, 3 pre-existing template warnings — backport candidates, see §12)
 - [x] Studio dev server boots on :3333 against the FSMA `production` dataset
-- [ ] Frontend dev server boots — **blocked on Q8**; every route 500s with `Missing SANITY_API_READ_TOKEN`
-- [ ] Confirm draft mode + Presentation visual editing round-trips — blocked on Q8
+- [x] Frontend dev server boots — confirmed; it no longer throws on the token. Routes still 500 on **Q11** (egress), not on the token
+- [ ] Confirm draft mode + Presentation visual editing round-trips — **blocked on Q11**, owner action (cannot be done from a Cowork session at all)
 - [x] This plan doc is committed at `docs/FSMA-BUILD-PLAN.md`
 
 **Acceptance:** ~~preview URL renders~~ *(moved to S0b — Vercel is owner-created)*; Studio opens ✅;
-visual editing works ⬜ (blocked on Q8).
+visual editing works ⬜ (blocked on Q11, owner-side).
 
 ---
 
 ### S0b — Credentials, Vercel & Studio deploy
 **Goal:** close out the S0 items that need owner credentials. Small session; can be folded into S1.
 
-- [ ] Owner: create the Sanity viewer token, put it in `frontend/.env.local` (Q8)
+- [x] Owner: create the Sanity viewer token, put it in `frontend/.env.local` (Q8) — done 2026-09-13
 - [ ] Owner: `npx sanity login` on the dev machine (Q10)
-- [ ] Verify `npm run dev` boots both servers and `/` renders against `production`
+- [ ] Verify `npm run dev` boots both servers and `/` renders against `production` — **owner must run this outside the Cowork VM** (Q11). Note `predev` runs typegen, which exits 134 after succeeding (§5.1); `npx next dev` / `npx sanity dev` bypass it
 - [ ] Owner: create + link the Vercel project; mirror all five env vars into Preview and Production (Q9)
 - [ ] `cd studio && npx sanity deploy` with `SANITY_STUDIO_STUDIO_HOST=fsma`; set
       `NEXT_PUBLIC_SANITY_STUDIO_URL` and `SANITY_STUDIO_PREVIEW_URL` to the deployed host
@@ -455,20 +470,29 @@ in §11, and stop — do not half-apply the palette.
 **Goal:** the CMS shape for chrome and page tops.
 **Read first:** `studio/src/schemaTypes/`, §7.5–7.7.
 
-- [ ] Extend `objects/contact.ts`: `address` (street, city, region, postalCode), `hours` (array of
-      day-range + time strings), `mapUrl`. Additive — log in FORK-SYNC registry
-- [ ] Add `objects/masthead.ts`: `image` (hotspot, required, `altField` required), `showLogo` (bool,
+- [x] Extend `objects/contact.ts`: `address` (street, city, region, postalCode, **country**), `hours` (array of
+      day-range + time + optional schema.org string), `mapUrl`. Additive — logged in FORK-SYNC registry
+- [x] Add `objects/masthead.ts`: `image` (hotspot, required, `altField` required), `showLogo` (bool,
       default true), `logoPlacement` (center | bottom-left), `height` (tall | standard | compact),
       `overlay` (none | light | medium | strong), optional `eyebrow`, optional `focalNote`
-- [ ] Add `masthead` as a field on `documents/page.ts` (above `pageBuilder`), not a block (D12)
-- [ ] Add school identity fields to `settings` for JSON-LD: `foundingDate`, `areaServed`, `priceRange`,
-      `geo` (lat/lng)
-- [ ] Studio structure: hide `post`, `project`, `technology`, `category` via `DISABLED_TYPES`; keep
-      `person` (faculty). Do **not** delete the schema files (D13)
-- [ ] Remove `postsArchive`/`projectsArchive`/`authorsArchive` from `page.pageBuilder.of` — log divergence
-- [ ] `npm run sanity:typegen`; commit `sanity.schema.json` + `frontend/sanity.types.ts`
+- [x] Add `masthead` as a field on `documents/page.ts` (above `pageBuilder`), not a block (D12)
+- [x] Add school identity fields to `settings` for JSON-LD: `foundingDate`, `areaServed`, `priceRange`,
+      `geo` (lat/lng) — grouped in a collapsed `schoolInfo` fieldset. `geo` is a plain `{lat, lng}` object,
+      not Sanity's `geopoint` (that needs the Google Maps input plugin, which isn't installed)
+- [x] Studio structure: hide `post`, `project`, `technology`, `category` via `DISABLED_TYPES`; keep
+      `person` (faculty). Do **not** delete the schema files (D13). Also filtered out of the global
+      "New document" menu — the structure list alone still leaves them creatable there
+- [x] ~~Remove `postsArchive`/`projectsArchive`/`authorsArchive` from `page.pageBuilder.of`~~ — **not done.**
+      Removing them from the union breaks `frontend/sanity/lib/types.ts` and the three template archive
+      components, which derive their props from it (19 TS errors) — the exact divergence D13 exists to
+      prevent. Replaced with a fork-local `pageBuilder` validation that rejects archive blocks, plus
+      `archive` hidden on `page`. See §12
+- [x] `npm run sanity:typegen`; commit `sanity.schema.json` + `frontend/sanity.types.ts` (run as two steps, §5.1)
 
-**Acceptance:** Studio shows only FSMA-relevant types; a page document can define a masthead; typegen clean.
+**Acceptance:** Studio shows only FSMA-relevant types ✅; a page document can define a masthead ✅;
+typegen clean ✅; `type-check` clean ✅; `lint` clean ✅ (3 pre-existing template warnings); Studio dev
+server boots against the new schema ✅. Not verifiable here: the Studio's rendered form and the
+frontend's use of these fields (Q11).
 
 ---
 
@@ -677,6 +701,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | Plan rev 2 | planning | — | Sanity project IDs recorded; photo-consent gate removed | — |
 | 2026-09-13 | Plan rev 3 | planning | — | Repo re-verified against the plan; Sanity connector confirmed working | `production` exists (public ACL), no `staging`, no schema deployed; `person` doc is thinner than assumed |
 | 2026-09-13 | S0 | cowork/opus | `feat/fsma-s0-setup` (local, unpushed) | **Partial — blocked on Q8.** Upstream remote added; fork history regrafted onto `upstream/main` (was unrelated histories); deps installed; `staging` dataset created; env files written; typegen/type-check/lint clean; Studio boots | Frontend cannot boot without `SANITY_API_READ_TOKEN` (Q8). Vercel + Studio deploy carried to **S0b**. `main` needs a force-push by the owner. Sandbox quirks documented in §5.1 |
+| 2026-09-13 | S2 | cowork/opus | `feat/fsma-s2-schema` (local, unpushed, branched off the S0 branch since S0 isn't merged) | **Done.** contact address/hours/mapUrl; new `masthead` object + page-level field; `schoolInfo` fieldset on settings; blog/portfolio types hidden from the Studio list *and* the New-document menu; archive blocks kept in the union behind a validation guard (see §12); typegen/type-check/lint clean; Studio boots | Q8 closed. **New blocker Q11**: `*.sanity.io` is off the egress allowlist, so no agent session can render the frontend against Sanity or verify Presentation. New Q12: logo source JPG missing for S1. Two more sandbox quirks in §5.1 (`.next` must be deleted, not renamed) |
 
 ---
 
@@ -696,3 +721,8 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-13 | Vercel password protection dropped | Pro-plan feature, not on this account. Preview URLs stay unlisted instead; don't share them beyond the client thread | §2 preview-protection row |
 | 2026-09-13 | `staging` dataset created with **private** ACL | Only `production` needs public reads; a public staging dataset leaks unreviewed content | — |
 | 2026-09-13 | 3 template lint warnings left in place | `ProjectsList.tsx`, `ShaderBackground.tsx`, `Onboarding.tsx` unused vars — all upstream code, none FSMA-specific. **Backport candidates**, not fork changes (§0 rule 6) | — |
+| 2026-09-13 | Archive blocks **stay** in `page.pageBuilder.of`, gated by validation instead of removal | S2 called for deleting them from the union. Doing so removes them from `GetPageQueryResult`, which is what `frontend/sanity/lib/types.ts` (`PageBuilderSection`, `ExtractPageBuilderType`, `ProjectsArchiveBlock`) and the three template archive components derive their props from — 19 TypeScript errors across template files that only a hand-written duplicate of the resolved query types would fix. That is precisely the divergence D13 exists to avoid, and Sanity's `insertMenu` has no per-member hide. A fork-local `pageBuilder` validation now rejects any archive block with an editor-facing message, and `page.archive` is spread with `hidden: true` (rather than edited in `shared.ts`). Cost: three unused entries in the insert menu. | S2's "Remove …Archive from `page.pageBuilder.of`" task |
+| 2026-09-13 | `settings.geo` is a plain `{lat, lng}` object, not Sanity's `geopoint` | `geopoint` has no usable input component without `@sanity/google-maps-input`, which isn't installed and isn't worth a dependency for two numbers | — |
+| 2026-09-13 | School identity fields grouped in a collapsed `schoolInfo` fieldset | They are structured-data inputs, never page copy; collapsing keeps the client-facing Settings form short | — |
+| 2026-09-13 | **`*.sanity.io` blocked by egress in agent sessions (Q11)** | Confirmed from both the Cowork device VM and the cloud container: proxy returns `403 blocked-by-allowlist`. Consequence for planning: **every session that needs to see a rendered page (S5–S10 verification, Lighthouse, Presentation) is owner-side or needs the allowlist widened.** Schema, component and config work is unaffected | §5.1's earlier egress notes |
+| 2026-09-13 | Stale `.next` must be deleted, never renamed aside | A `.next-*` sibling is not gitignored, so Tailwind v4 scans the binary build artefacts for class candidates and emits a malformed selector — `globals.css` then fails to parse and every route 500s with a misleading CSS error | — |

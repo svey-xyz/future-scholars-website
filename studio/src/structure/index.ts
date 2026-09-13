@@ -10,7 +10,12 @@ import pluralize from 'pluralize-esm'
  * Learn more: https://www.sanity.io/docs/structure-builder-introduction
  */
 
-const DISABLED_TYPES = ['settings', 'assist.instruction.context']
+// FSMA fork (build plan D13/S2): the template's blog/portfolio document types
+// are hidden from the Studio rather than deleted, so merges from
+// `sanity-next-clean` stay clean. Restore by removing them from this list.
+const FSMA_HIDDEN_TYPES = ['post', 'project', 'technology', 'category']
+
+const DISABLED_TYPES = ['settings', 'assist.instruction.context', ...FSMA_HIDDEN_TYPES]
 
 // Define the actions that should be available for singleton documents
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
@@ -42,8 +47,13 @@ export const structure = (S: StructureBuilder, context: StructureResolverContext
 export const schemaOptions = {
   // types: types,
   // Filter out singleton types from the global “New document” menu options
+  // Also keep the FSMA-hidden types out of the global "New document" menu —
+  // filtering the structure list alone still leaves them creatable there.
   templates: (templates: Template<any, any>[]) =>
-    templates.filter(({schemaType}: {schemaType: string}) => !singletonTypes.has(schemaType)),
+    templates.filter(
+      ({schemaType}: {schemaType: string}) =>
+        !singletonTypes.has(schemaType) && !FSMA_HIDDEN_TYPES.includes(schemaType),
+    ),
 }
 export const documentOptions = {
   // For singleton types, filter out actions that are not explicitly included

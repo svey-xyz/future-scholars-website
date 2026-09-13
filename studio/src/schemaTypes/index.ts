@@ -12,6 +12,7 @@ import {blockContent} from './objects/blockContent'
 import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {contact} from './objects/contact'
+import {masthead} from './objects/masthead'
 import {social} from './objects/social'
 import {navLink} from './objects/navLink'
 import {navDropdown} from './objects/navDropdown'
@@ -49,6 +50,7 @@ export const schemaTypes = [
   callToAction,
   link,
   contact,
+  masthead,
   social,
   navLink,
   navDropdown,
