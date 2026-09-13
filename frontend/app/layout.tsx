@@ -12,7 +12,7 @@ import {getThemeScript} from '@teispace/next-themes/server'
 import {Suspense} from 'react'
 
 import {Toaster} from '@/components/ui/sonner'
-import {BackToTop, Footer, Header} from '@/app/components/layout'
+import {BackToTop, Footer, SideNav} from '@/app/components/layout'
 import {SiteJsonLd} from '@/app/components/seo'
 import {PageTransition, RevealObserver} from '@/app/components/motion'
 import {DraftModeToast} from '@/app/components/visual-editing'
@@ -146,7 +146,16 @@ export default async function RootLayout({children}: {children: React.ReactNode}
             disableTransitionOnChange
             noScript
           >
-            <section className="min-h-screen flex flex-col grow max-w-full pt-24">
+            {/* Skip link — first focusable element in the document, ahead of
+                the rail (docs/A11Y.md → Keyboard, focus). Visible only when
+                focused; `z-50` keeps it above the rail and top bar. */}
+            <a
+              href="#main"
+              className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-50 focus:rounded-lg focus:bg-primary focus:px-4 focus:py-2.5 focus:text-sm focus:font-medium focus:text-primary-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2"
+            >
+              Skip to content
+            </a>
+            <section className="min-h-screen flex flex-col grow max-w-full">
               {/* The <Toaster> component is responsible for rendering toast notifications used in /app/client-utils.ts and /app/components/DraftModeToast.tsx */}
               <Toaster />
               {isDraftMode && (
@@ -180,23 +189,39 @@ export default async function RootLayout({children}: {children: React.ReactNode}
                   docs/CACHING.md): statically cached on the published perspective;
                   in draft mode a dynamic wrapper resolves perspective/stega from
                   the request inside a Suspense boundary. */}
+              {/* S4: the side rail replaces the template header. Fixed rail
+                  from `lg` up, fixed top bar + drawer below (D11, §7.5). */}
               {isDraftMode ? (
-                <Suspense fallback={<HeaderFallback />}>
-                  <DynamicHeader />
+                <Suspense fallback={<SideNavFallback />}>
+                  <DynamicSideNav />
                 </Suspense>
               ) : (
-                <Header perspective="published" stega={false} />
+                <SideNav perspective="published" stega={false} />
               )}
-              <main className="relative flex flex-col grow max-w-full items-center justify-center overflow-x-clip">
-                <PageTransition>{children}</PageTransition>
-              </main>
-              {isDraftMode ? (
-                <Suspense>
-                  <DynamicFooter />
-                </Suspense>
-              ) : (
-                <Footer perspective="published" stega={false} />
-              )}
+              {/* Content column. The rail is fixed, so the column is offset by
+                  its width from `lg`; below that the fixed top bar is cleared
+                  with `pt-16`. Both offsets live here, once — blocks stay
+                  layout-agnostic. */}
+              <div className="flex min-h-screen flex-col grow max-w-full pt-16 lg:pl-68 lg:pt-0">
+                {/* `tabIndex={-1}` so the skip link actually moves focus here
+                    (Safari won't focus a non-focusable target). No
+                    `items-center`: children stretch, which is what the
+                    full-bleed masthead (S5) needs. */}
+                <main
+                  id="main"
+                  tabIndex={-1}
+                  className="relative flex flex-col grow max-w-full overflow-x-clip focus:outline-none"
+                >
+                  <PageTransition>{children}</PageTransition>
+                </main>
+                {isDraftMode ? (
+                  <Suspense>
+                    <DynamicFooter />
+                  </Suspense>
+                ) : (
+                  <Footer perspective="published" stega={false} />
+                )}
+              </div>
               {/* Back-to-top affordance — fixed island, outside <main>, inside the theme provider. */}
               <BackToTop />
             </section>
@@ -211,9 +236,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
 }
 
 /** Draft-mode-only dynamic wrappers (layer 2): resolve request state, pass plain props. */
-async function DynamicHeader() {
+async function DynamicSideNav() {
   const {perspective, stega} = await getDynamicFetchOptions()
-  return <Header perspective={perspective} stega={stega} />
+  return <SideNav perspective={perspective} stega={stega} />
 }
 
 async function DynamicFooter() {
@@ -222,16 +247,21 @@ async function DynamicFooter() {
 }
 
 /**
- * Draft-mode Suspense fallback: the same fixed, height-reserved header shell
- * (layout already reserves `pt-24`), so streaming in the real header causes no
- * layout shift.
+ * Draft-mode Suspense fallback. The rail and top bar are fixed and out of flow,
+ * and the content column reserves their space unconditionally, so this only has
+ * to hold the painted area — streaming in the real nav shifts nothing.
  */
-function HeaderFallback() {
+function SideNavFallback() {
   return (
-    <header
-      aria-hidden="true"
-      className="app-header fixed inset-x-0 top-0 z-40 h-24 flex items-center bg-background/80 backdrop-blur-lg"
-      style={{viewTransitionName: 'site-header'}}
-    />
+    <div aria-hidden="true">
+      <div
+        className="fixed inset-y-0 left-0 z-40 hidden w-68 border-r border-border bg-card lg:block"
+        style={{viewTransitionName: 'site-rail'}}
+      />
+      <div
+        className="fixed inset-x-0 top-0 z-40 h-16 border-b border-border bg-background/90 backdrop-blur-lg lg:hidden"
+        style={{viewTransitionName: 'site-topbar'}}
+      />
+    </div>
   )
 }
