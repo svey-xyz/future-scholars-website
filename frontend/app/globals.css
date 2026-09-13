@@ -6,57 +6,74 @@
 @custom-variant dark (&:where(.dark, .dark *));
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 0 0% 3.9%;
+  /* FSMA palette — see docs/FSMA-BUILD-PLAN.md §7.2 and the contrast table in §12.
+     Channel triplets (not colour functions): every consumer reads hsl(var(--x)). */
+  --background: 38 40% 97%; /* warm paper */
+  --foreground: 226 30% 14%; /* ink navy-black */
   --card: 0 0% 100%;
-  --card-foreground: 0 0% 3.9%;
+  --card-foreground: 226 30% 14%;
   --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 3.9%;
-  --primary: 0 0% 9%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 0 0% 96.1%;
-  --secondary-foreground: 0 0% 9%;
-  --muted: 0 0% 96.1%;
-  --muted-foreground: 0 0% 34%;
-  --accent: 0 0% 96.1%;
-  --accent-foreground: 0 0% 9%;
-  --destructive: 0 84.2% 60.2%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 89.8%;
-  --input: 0 0% 89.8%;
-  --ring: 0 0% 3.9%;
-  --radius: 0.5rem;
-  /* Shader accent (HSL channels) — read by ShaderBackground's readThemeRgb(). */
-  --primary-accent: 20 100% 50%;
+  --popover-foreground: 226 30% 14%;
+  --primary: 232 52% 32%; /* academy blue */
+  --primary-foreground: 0 0% 100%;
+  --secondary: 214 38% 92%; /* soft sky */
+  --secondary-foreground: 232 52% 24%;
+  --muted: 36 25% 93%;
+  --muted-foreground: 226 16% 34%; /* 7.64:1 on --background (plan's 12%/36% missed AAA) */
+  /* `--accent` is shadcn's subtle hover/active SURFACE (hover:bg-accent), not the
+     brand colour. It stays a quiet warm neutral — see §12. The sunflower lives in
+     --brand-accent below. */
+  --accent: 36 30% 92%;
+  --accent-foreground: 232 52% 24%;
+  /* Brand sunflower. Bright tint is for fills on dark/primary surfaces only —
+     it is 1.62:1 on paper, so it must never carry meaning on a light background.
+     Use --brand-accent-strong (3.58:1) for rules, underlines and focus flourishes
+     that a sighted user has to perceive. Never a text colour on light. */
+  --brand-accent: 44 96% 52%;
+  --brand-accent-foreground: 226 40% 12%;
+  --brand-accent-strong: 40 92% 36%;
+  --destructive: 0 72% 42%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 36 20% 86%; /* decorative dividers only — 1.28:1 by design */
+  --input: 36 14% 50%; /* control boundaries must clear 3:1 (WCAG 1.4.11) — 3.49:1 */
+  --ring: 232 52% 32%;
+  --radius: 0.75rem;
+  /* Shader accent (HSL channels) — read by ShaderBackground's readThemeRgb().
+     The shader is not wired on this site (D15); the token stays defined. */
+  --primary-accent: 44 96% 52%;
 }
 
+/* Defined but unused: the app is forced light (D14). Kept so the token contract
+   stays complete and a future dark mode is a provider change, not a re-palette. */
 .dark {
-  --background: 0 0% 3.9%;
-  --foreground: 0 0% 98%;
-  --card: 0 0% 3.9%;
-  --card-foreground: 0 0% 98%;
-  --popover: 0 0% 3.9%;
-  --popover-foreground: 0 0% 98%;
-  --primary: 0 0% 98%;
-  --primary-foreground: 0 0% 9%;
-  --secondary: 0 0% 14.9%;
-  --secondary-foreground: 0 0% 98%;
-  --muted: 0 0% 14.9%;
-  --muted-foreground: 0 0% 63.9%;
-  --accent: 0 0% 14.9%;
-  --accent-foreground: 0 0% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 0 0% 98%;
-  --border: 0 0% 14.9%;
-  --input: 0 0% 14.9%;
-  --ring: 0 0% 83.1%;
-  /* Brighter accent on dark — blobs now blend toward the page black, so they
-     need more lightness to keep the layer steps legible. */
-  --primary-accent: 20 100% 62%;
+  --background: 226 30% 10%;
+  --foreground: 38 30% 96%;
+  --card: 226 28% 14%;
+  --card-foreground: 38 30% 96%;
+  --popover: 226 28% 14%;
+  --popover-foreground: 38 30% 96%;
+  --primary: 228 72% 72%;
+  --primary-foreground: 226 40% 12%;
+  --secondary: 226 24% 22%;
+  --secondary-foreground: 38 30% 96%;
+  --muted: 226 22% 18%;
+  --muted-foreground: 226 14% 72%;
+  --accent: 226 24% 22%;
+  --accent-foreground: 38 30% 96%;
+  --brand-accent: 44 96% 60%;
+  --brand-accent-foreground: 226 40% 12%;
+  --brand-accent-strong: 44 90% 66%;
+  --destructive: 0 62% 46%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 226 20% 24%;
+  --input: 226 16% 44%;
+  --ring: 228 72% 72%;
+  --primary-accent: 44 96% 60%;
 }
 
 @theme inline {
   --font-sans: var(--font-inter);
+  --font-display: var(--font-outfit);
   --font-mono: var(--font-ibm-plex-mono);
 
   --color-background: hsl(var(--background));
@@ -78,6 +95,9 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+  --color-brand-accent: hsl(var(--brand-accent));
+  --color-brand-accent-foreground: hsl(var(--brand-accent-foreground));
+  --color-brand-accent-strong: hsl(var(--brand-accent-strong));
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);
@@ -90,6 +110,13 @@
 @layer base {
   * {
     border-color: hsl(var(--border));
+  }
+  /* Headings use the display face (§7.3); body/UI stays on --font-sans. */
+  h1,
+  h2,
+  h3,
+  h4 {
+    font-family: var(--font-display), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
   }
   body {
     background-color: hsl(var(--background));
@@ -599,11 +626,17 @@
   transform-origin: center;
 }
 .logo-z--r {
-  transform: translate(calc((var(--fan-scroll) + var(--fan-hover)) * -3.5px), calc((var(--fan-scroll) + var(--fan-hover)) * -2.5px))
+  transform: translate(
+      calc((var(--fan-scroll) + var(--fan-hover)) * -3.5px),
+      calc((var(--fan-scroll) + var(--fan-hover)) * -2.5px)
+    )
     rotate(calc((var(--fan-scroll) + var(--fan-hover)) * -9deg));
 }
 .logo-z--b {
-  transform: translate(calc((var(--fan-scroll) + var(--fan-hover)) * 3.5px), calc((var(--fan-scroll) + var(--fan-hover)) * 2.5px))
+  transform: translate(
+      calc((var(--fan-scroll) + var(--fan-hover)) * 3.5px),
+      calc((var(--fan-scroll) + var(--fan-hover)) * 2.5px)
+    )
     rotate(calc((var(--fan-scroll) + var(--fan-hover)) * 9deg));
 }
 

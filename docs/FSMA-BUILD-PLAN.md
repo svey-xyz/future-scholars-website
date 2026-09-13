@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S2 done · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 5) · **Owner:** Hayden Soule (svey)
+**Status:** S1 + S2 done · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 6) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -157,15 +157,16 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q1 | Social accounts: which platforms, and the exact URLs? Floating social rail needs real targets. | Client | **TBD** — build the rail data-driven off `settings.contact.socials`; renders nothing if empty |
 | Q2 | Confirmed street address, phone, general email, office hours (needed for About, `mailto:`/`tel:`, JSON-LD) | Client | **TBD** — pull from legacy `contact.htm` in S7 and send to client to verify |
 | Q3 | ~~Photo consent for existing images of children~~ | Client | ✅ **Resolved 2026-09-13** — releases cover web use (D17) |
-| Q4 | Vector logo / brand fonts | Client | ❌ none available — recreate per D8 |
+| Q4 | Vector logo / brand fonts | Client | ✅ **Done 2026-09-13** — recreated per D8; wordmark set in Orbitron (SIL OFL) and converted to outlines, so no font dependency ships with the SVGs |
 | Q5 | New photography — will the client supply a shoot? | Client | TBD |
+| Q13 | `settings.logo` (the editor-facing SVG upload) and the Studio's other content seeding need Sanity write access, which no agent session has (Q11). Owner uploads `frontend/public/brand/logo-full.svg` in Studio | svey | **TBD, opened 2026-09-13** |
 | Q6 | Tuition/fee information — publish on About/Admissions or "contact us for rates"? | Client | TBD |
 | Q7 | Legacy "Recognition From The Mayor" item — keep, and where? | Client | TBD |
 | Q8 | ~~Sanity viewer token for `SANITY_API_READ_TOKEN`~~ | svey | ✅ **Resolved 2026-09-13** — token present in `frontend/.env.local`; the app no longer throws at module evaluation |
 | Q9 | Vercel project creation + linking, and mirroring env vars into Preview/Production | svey | Deferred to S0b (2026-09-13) |
 | Q10 | Sanity CLI login on the dev machine (`npx sanity login`) — needed for `schema deploy` (S2) and `sanity deploy` | svey | Owner runs CLI deploys manually (2026-09-13) |
 | Q11 | **`*.sanity.io` is blocked by the egress allowlist** in both the Cowork device VM and the cloud container (`403 blocked-by-allowlist`; Node sees `EAI_AGAIN`). The frontend dev server boots but every data-fetching route 500s, so **no agent session can render a page against Sanity or verify Presentation**. Owner must run `npm run dev` outside the Cowork VM, or add `*.sanity.io` (+ `*.apicdn.sanity.io`) to the allowlist | svey | **BLOCKER, opened 2026-09-13** |
-| Q12 | Logo source JPG is not in the repo, and binary downloads from the legacy site are blocked by the same allowlist. S1's logo trace needs the file dropped into `frontend/public/brand/_source/` (or attached) | svey | **TBD, opened 2026-09-13** — blocks S1's logo deliverables only |
+| Q12 | ~~Logo source JPG~~ | svey | ✅ **Resolved 2026-09-13** — supplied in chat, archived at `docs/brand/logo-source.jpg` (not under `public/`, per §7.4) |
 
 ---
 
@@ -445,21 +446,37 @@ host; visual editing round-trips.
 **Goal:** the visual system exists as code and assets. No page work.
 **Read first:** §7, `docs/A11Y.md` (Color & contrast).
 
-- [ ] Recreate the logo as SVG per §7.4 (full, reversed, mark) → `frontend/public/brand/`. The rail and
-      masthead read these from `public/`, not from Sanity, so they cost no fetch. `settings.logo` is a
-      **`file`** field (not `image`) — upload `logo-full.svg` there for editor-facing use
-- [ ] Regenerate `favicon.svg`, `app/icon.svg`, `apple-icon.png`, PWA icons in `public/icons/`
-- [ ] Apply the §7.2 palette to `:root` in `globals.css`; keep `.dark` defined but unused (D14)
-- [ ] Force light theme: remove `ThemeToggle` from UI, set `<ThemeProvider>` in `app/layout.tsx` to
-      forced light (keep the dependency and component file — D13/D14 hygiene). **Gotcha:** the inline
-      pre-paint script constant near the top of `layout.tsx` mirrors the provider options — change both or
-      the first paint disagrees with the provider.
-- [ ] Pick and wire the heading typeface via `next/font`; expose `--font-display`
-- [ ] Contrast-audit every token pair; record the table in §12
-- [ ] Update `app/manifest.ts` (name, short_name, theme_color, background_color)
+- [x] Recreate the logo as SVG per §7.4 (full, reversed, mark) → `frontend/public/brand/`:
+      `logo-full.svg`, `logo-reversed.svg`, `logo-mark.svg`, `logo-mark-reversed.svg` (~10KB / ~2KB).
+      Wordmark set in **Orbitron** (SIL OFL) and **converted to outlines** — the SVGs carry no font
+      dependency. Cap redrawn as flat shapes; 2010 gradients/bevel dropped (D8). Source JPG archived at
+      `docs/brand/logo-source.jpg`, deliberately **not** under `public/`
+- [ ] Upload `logo-full.svg` to `settings.logo` (a **`file`** field, not `image`) — **owner action, Q13**:
+      needs Sanity write access, which no agent session has (Q11)
+- [x] Regenerate `app/icon.svg`, `app/favicon.ico` (16/32/48), `app/apple-icon.png` (180), and the PWA set
+      in `public/icons/` (icon-192/512, maskable-192/512 inside the 80% safe zone). The favicon tile is the
+      **cap alone** on `--primary` — "FSMA" is illegible below ~48px, so the lettered mark is rail-only
+      (deviation from §7.4, logged in §12)
+- [x] Apply the §7.2 palette to `:root` in `globals.css`; `.dark` kept defined but unused (D14) and given
+      a coherent FSMA-flavoured set rather than leftover template greys. Three corrections to the proposed
+      palette — `--accent` stays a neutral surface, the sunflower moves to `--brand-accent`, and `--input`
+      is darkened to clear 3:1. All three in §12
+- [x] Force light theme: `ThemeToggle` removed from `Footer.tsx` (component file kept — D13/D14 hygiene);
+      `<ThemeProvider forcedTheme="light" enableSystem={false}>` **and** the `getThemeScript` pre-paint
+      constant both updated, as the gotcha warned. `viewport.themeColor` collapsed to the single light value
+- [x] Heading typeface: **Outfit**, wired via `next/font` (self-hosted, no runtime Google request),
+      exposed as `--font-display` in `@theme inline` and applied to `h1`–`h4` in `@layer base`.
+      Chosen over Poppins for the wider weight range and tighter fit beside Orbitron in the lockup —
+      **show the client both in context before locking** (§7.3)
+- [x] Contrast-audit every token pair; table in §12. Every text pair is **AAA**; every meaningful UI
+      boundary clears 3:1
+- [x] Update `app/manifest.ts` — `short_name: 'Future Scholars'` (the full name is 34 chars and gets
+      truncated on a home screen), `theme_color` `#27327C`, `background_color` `#FAF8F4`
 
-**Acceptance:** template pages render in FSMA colours/type with no contrast failures; brand SVGs are crisp
-at 32px and 1200px; Lighthouse a11y ≥95.
+**Acceptance:** palette + type compile into the served stylesheet ✅ (tokens and the `h1`–`h4` rule verified
+in the built CSS); no contrast failures ✅ (§12); brand SVGs crisp at 32px and 1200px ✅ (rendered and
+inspected at both). **Not verifiable here:** pages rendering in the new colours, and Lighthouse — both need
+a route that returns 200, which is blocked by Q11. Carry to the first owner-run preview.
 
 **If the session overruns:** the logo trace is the unpredictable part. Ship the SVGs, log the rest as S1b
 in §11, and stop — do not half-apply the palette.
@@ -702,6 +719,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | Plan rev 3 | planning | — | Repo re-verified against the plan; Sanity connector confirmed working | `production` exists (public ACL), no `staging`, no schema deployed; `person` doc is thinner than assumed |
 | 2026-09-13 | S0 | cowork/opus | `feat/fsma-s0-setup` (local, unpushed) | **Partial — blocked on Q8.** Upstream remote added; fork history regrafted onto `upstream/main` (was unrelated histories); deps installed; `staging` dataset created; env files written; typegen/type-check/lint clean; Studio boots | Frontend cannot boot without `SANITY_API_READ_TOKEN` (Q8). Vercel + Studio deploy carried to **S0b**. `main` needs a force-push by the owner. Sandbox quirks documented in §5.1 |
 | 2026-09-13 | S2 | cowork/opus | `feat/fsma-s2-schema` (local, unpushed, branched off the S0 branch since S0 isn't merged) | **Done.** contact address/hours/mapUrl; new `masthead` object + page-level field; `schoolInfo` fieldset on settings; blog/portfolio types hidden from the Studio list *and* the New-document menu; archive blocks kept in the union behind a validation guard (see §12); typegen/type-check/lint clean; Studio boots | Q8 closed. **New blocker Q11**: `*.sanity.io` is off the egress allowlist, so no agent session can render the frontend against Sanity or verify Presentation. New Q12: logo source JPG missing for S1. Two more sandbox quirks in §5.1 (`.next` must be deleted, not renamed) |
+| 2026-09-13 | S1 | cowork/opus | `feat/fsma-s1-brand` (local, unpushed) | **Done.** Logo recreated as outlined SVG (full/reversed/mark/mark-reversed) + full icon set; FSMA palette applied with three a11y corrections; light theme forced; Outfit wired as `--font-display`; manifest rebranded; contrast table in §12 | Q4 and Q12 closed. **New Q13**: `settings.logo` upload is owner-side. Type-check/lint/format clean; served CSS verified. Q11 still blocks any rendered-page or Lighthouse check |
 
 ---
 
@@ -726,3 +744,44 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-13 | School identity fields grouped in a collapsed `schoolInfo` fieldset | They are structured-data inputs, never page copy; collapsing keeps the client-facing Settings form short | — |
 | 2026-09-13 | **`*.sanity.io` blocked by egress in agent sessions (Q11)** | Confirmed from both the Cowork device VM and the cloud container: proxy returns `403 blocked-by-allowlist`. Consequence for planning: **every session that needs to see a rendered page (S5–S10 verification, Lighthouse, Presentation) is owner-side or needs the allowlist widened.** Schema, component and config work is unaffected | §5.1's earlier egress notes |
 | 2026-09-13 | Stale `.next` must be deleted, never renamed aside | A `.next-*` sibling is not gitignored, so Tailwind v4 scans the binary build artefacts for class candidates and emits a malformed selector — `globals.css` then fails to parse and every route 500s with a misleading CSS error | — |
+| 2026-09-13 | **`--accent` stays a neutral surface; the sunflower becomes `--brand-accent`** | §7.2 assigned the yellow to `--accent`, but in shadcn `--accent` is the subtle hover/active *surface* (`hover:bg-accent`, `focus:bg-accent` on menu items, command palette rows, etc.). Setting it to `44 96% 52%` would have turned every hover state in the UI bright yellow. `--accent` is now a quiet warm neutral (`36 30% 92%`) and the brand yellow lives in `--brand-accent` / `--brand-accent-foreground`, exposed to Tailwind as `bg-brand-accent` etc. | §7.2's `--accent` row |
+| 2026-09-13 | Added `--brand-accent-strong` (`40 92% 36%`) | The bright sunflower is **1.62:1** on warm paper. §7.2 already forbade it as a text colour, but WCAG 2.2 SC 1.4.11 also covers non-text UI that carries meaning — a focus flourish or an underline that a user must perceive. The bright tint is now for fills on dark/primary surfaces only; anything meaningful on light uses the strong tint (3.58:1 on `--background`) | §7.2's accent guidance |
+| 2026-09-13 | `--input` split from `--border` (`36 14% 50%`, 3.49:1) | §7.2 gave both the same soft value (1.28:1). That is correct for decorative dividers, which are exempt, but a control boundary must clear 3:1 under SC 1.4.11. `--border` keeps the soft value; `--input` is darkened. (No forms ship — D6 — but shadcn inputs/selects still appear in the Studio-adjacent UI and the token should not be a trap.) | §7.2's `--input` row |
+| 2026-09-13 | `--muted-foreground` `226 16% 34%` instead of `226 12% 36%` | The proposed value is 6.91:1 on `--background` — just under the AAA 7:1 the section demands of body text. The corrected value is 7.64:1 | §7.2 |
+| 2026-09-13 | Logo wordmark set in **Orbitron** (SIL OFL), converted to outlines | Closest open face to the original's squared techno lettering; Michroma is too light for the heavy `MONTESSORI`. Outlining means the SVGs render identically everywhere with no font dependency, and §7.3's "display face only inside the lockup" is enforced structurally — there is no way to accidentally set body copy in it | — |
+| 2026-09-13 | Brand blue in the logo is `#2B2FD4`, not the raw `#3300FF` of the JPG | The source blue is near-maximally saturated and vibrates against black at large sizes; `#2B2FD4` is the value §7.4 already named and keeps the blue/black/yellow relationship. The UI's `--primary` is darker still (`#27327C`) for contrast — the logo keeps its own blue, the interface does not borrow it | — |
+| 2026-09-13 | Favicon tile is the **cap alone**, not cap + "FSMA" | "FSMA" is unreadable below ~48px (verified at 16px and 32px). The lettered `logo-mark.svg` is for the nav rail; the icon tile is the mortarboard reversed out of `--primary` | §7.4's "cap + FSMA for the rail/favicon" |
+| 2026-09-13 | Heading face: **Outfit** (provisional) | Wider weight range than Poppins and a tighter fit beside Orbitron. §7.3 asks for both to be shown to the client in context — **not yet done**, so treat this as reversible until they have seen it | — |
+
+### S1 contrast audit (light theme, 2026-09-13)
+
+Computed from the shipped `:root` values; WCAG 2.x relative luminance. Text pairs are graded against the
+AAA 7:1 bar §7.2 sets; non-text pairs against SC 1.4.11's 3:1.
+
+| Pair | Hex | Ratio | Result |
+|---|---|---|---|
+| `foreground` on `background` | #191E2E / #FAF8F4 | 15.66:1 | AAA |
+| `foreground` on `card` | #191E2E / #FFFFFF | 16.57:1 | AAA |
+| `foreground` on `muted` | #191E2E / #F2EEE9 | 14.34:1 | AAA |
+| `muted-foreground` on `background` | #494F65 / #FAF8F4 | 7.64:1 | AAA |
+| `muted-foreground` on `card` | #494F65 / #FFFFFF | 8.09:1 | AAA |
+| `muted-foreground` on `muted` | #494F65 / #F2EEE9 | 7.00:1 | AAA |
+| `primary` on `background` | #27327C / #FAF8F4 | 10.77:1 | AAA |
+| `primary` on `card` | #27327C / #FFFFFF | 11.40:1 | AAA |
+| `primary-foreground` on `primary` | #FFFFFF / #27327C | 11.40:1 | AAA |
+| `secondary-foreground` on `secondary` | #1D265D / #E3EAF2 | 11.61:1 | AAA |
+| `accent-foreground` on `accent` | #1D265D / #F1ECE4 | 11.99:1 | AAA |
+| `brand-accent-foreground` on `brand-accent` | #12182B / #FABB0F | 10.25:1 | AAA |
+| `brand-accent-strong` on `background` | #B07807 / #FAF8F4 | 3.58:1 | UI — pass |
+| `brand-accent-strong` on `card` | #B07807 / #FFFFFF | 3.79:1 | UI — pass |
+| `input` on `background` | #91836E / #FAF8F4 | 3.49:1 | UI — pass |
+| `input` on `card` | #91836E / #FFFFFF | 3.69:1 | UI — pass |
+| `destructive-foreground` on `destructive` | #FFFFFF / #B81E1E | 6.47:1 | AA |
+| `destructive` on `background` | #B81E1E / #FAF8F4 | 6.11:1 | UI — pass |
+| `ring` on `background` | #27327C / #FAF8F4 | 10.77:1 | UI — pass |
+| `border` on `background` | #E2DDD4 / #FAF8F4 | 1.28:1 | decorative — exempt |
+| `border` on `card` | #E2DDD4 / #FFFFFF | 1.35:1 | decorative — exempt |
+
+`--brand-accent` (#FABB0F) is **1.62:1** on `--background` and is deliberately absent from this table as a
+light-background colour: it is only ever a fill on dark or `--primary` surfaces. Anything meaningful on
+light uses `--brand-accent-strong`.
