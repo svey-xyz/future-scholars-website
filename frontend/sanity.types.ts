@@ -15,6 +15,14 @@
 export declare const internalGroqTypeReferenceTo: unique symbol
 
 // Source: ../sanity.schema.json
+export type Address = {
+  street?: string
+  city?: string
+  region?: string
+  postalCode?: string
+  country?: string
+}
+
 export type SanityImageAssetReference = {
   _ref: string
   _type: 'reference'
@@ -311,10 +319,37 @@ export type Social = {
   url: string
 }
 
+export type Masthead = {
+  _type: 'masthead'
+  image: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  eyebrow?: string
+  showLogo?: boolean
+  logoPlacement?: 'center' | 'bottomLeft'
+  height?: 'tall' | 'standard' | 'compact'
+  overlay?: 'none' | 'light' | 'medium' | 'strong'
+  focalNote?: string
+}
+
 export type Contact = {
   _type: 'contact'
   email?: string
   phone?: string
+  address?: Address
+  hours?: Array<{
+    days: string
+    time: string
+    schemaOrg?: string
+    _type: 'hoursRow'
+    _key: string
+  }>
+  mapUrl?: string
   socials?: Array<
     {
       _key: string
@@ -578,6 +613,13 @@ export type Settings = {
   }
   blurb?: string
   contact?: Contact
+  foundingDate?: string
+  areaServed?: Array<string>
+  priceRange?: string
+  geo?: {
+    lat?: number
+    lng?: number
+  }
   navigation?: Array<
     | ({
         _key: string
@@ -611,6 +653,7 @@ export type Page = {
   heading: string
   subheading?: string
   titleDisplay?: 'plain' | 'highlighted' | 'none'
+  masthead?: Masthead
   archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
   background?: Background
   pageBuilder?: Array<
@@ -945,6 +988,7 @@ export type Geopoint = {
 }
 
 export type AllSanitySchemaTypes =
+  | Address
   | SanityImageAssetReference
   | AuthorImage
   | Note
@@ -967,6 +1011,7 @@ export type AllSanitySchemaTypes =
   | NavDropdown
   | NavLink
   | Social
+  | Masthead
   | Contact
   | PageReference
   | Link
@@ -1066,6 +1111,13 @@ export type SettingsQueryResult = {
   }
   blurb?: string
   contact: Contact | null
+  foundingDate?: string
+  areaServed?: Array<string>
+  priceRange?: string
+  geo?: {
+    lat?: number
+    lng?: number
+  }
   navigation: Array<
     | {
         _key: string
@@ -1121,6 +1173,7 @@ export type SettingsQueryResult = {
     heading: string
     subheading?: string
     titleDisplay?: 'highlighted' | 'none' | 'plain'
+    masthead?: Masthead
     archive?: 'authorsArchive' | 'postsArchive' | 'projectsArchive'
     background?: Background
     pageBuilder?: Array<

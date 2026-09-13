@@ -2,7 +2,6 @@ import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
 
 import FooterContent from './FooterContent'
 import Reveal from '@/app/components/motion/Reveal'
-import ThemeToggle from './ThemeToggle'
 import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import type {BuiltWithItem} from '@/sanity/lib/types'
 import {getSettings} from './getSettings'
@@ -55,7 +54,6 @@ export default async function Footer({perspective, stega}: DynamicFetchOptions) 
             single light↔dark theme toggle, pinned to the end. */}
         <div className="flex flex-col gap-4 border-t border-border pb-12 pt-8 sm:flex-row sm:items-center">
           <FooterContent contact={contact} legal={legal} className="sm:flex-1" />
-          <ThemeToggle className="self-end sm:ml-auto sm:self-auto" />
         </div>
       </div>
     </footer>

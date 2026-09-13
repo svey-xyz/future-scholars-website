@@ -3,7 +3,7 @@ import './globals.css'
 import {SerwistProvider} from '@serwist/next/react'
 import {SpeedInsights} from '@vercel/speed-insights/next'
 import type {Metadata, Viewport} from 'next'
-import {Inter, IBM_Plex_Mono} from 'next/font/google'
+import {Inter, IBM_Plex_Mono, Outfit} from 'next/font/google'
 import {draftMode} from 'next/headers'
 import {toPlainText} from 'next-sanity'
 import {VisualEditing} from 'next-sanity/visual-editing'
@@ -63,16 +63,21 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
+// Light-only site (D14): one theme colour, mirroring --primary in app/globals.css.
 export const viewport: Viewport = {
-  themeColor: [
-    // Mirrors --primary-accent (light / dark) in app/globals.css.
-    {media: '(prefers-color-scheme: light)', color: '#ff5500'},
-    {media: '(prefers-color-scheme: dark)', color: '#ff7e3d'},
-  ],
+  themeColor: '#27327C',
 }
 
 const inter = Inter({
   variable: '--font-inter',
+  subsets: ['latin'],
+  display: 'swap',
+})
+
+// Headings (§7.3). Loaded with next/font so it is self-hosted and preloaded —
+// no Google Fonts request at runtime.
+const outfit = Outfit({
+  variable: '--font-outfit',
   subsets: ['latin'],
   display: 'swap',
 })
@@ -89,10 +94,14 @@ const ibmPlexMono = IBM_Plex_Mono({
 // theme cookie via `getTheme()` would make the whole shell dynamic under
 // Cache Components — the script resolves the stored/system theme client-side
 // pre-paint instead. Options must mirror the <ThemeProvider> below.
+// FSMA: the site is light-only (D14). `forcedTheme` makes the provider a no-op,
+// and the pre-paint script must be given the SAME options or the first paint
+// disagrees with it. The dark tokens stay defined in globals.css.
 const themeScript = getThemeScript({
   attribute: 'class',
-  defaultTheme: 'system',
-  enableSystem: true,
+  defaultTheme: 'light',
+  forcedTheme: 'light',
+  enableSystem: false,
 })
 
 export default async function RootLayout({children}: {children: React.ReactNode}) {
@@ -103,7 +112,7 @@ export default async function RootLayout({children}: {children: React.ReactNode}
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${ibmPlexMono.variable}`}
+      className={`${inter.variable} ${outfit.variable} ${ibmPlexMono.variable}`}
       suppressHydrationWarning
     >
       <head>
@@ -131,8 +140,9 @@ export default async function RootLayout({children}: {children: React.ReactNode}
         >
           <ThemeProvider
             attribute="class"
-            defaultTheme="system"
-            enableSystem
+            defaultTheme="light"
+            forcedTheme="light"
+            enableSystem={false}
             disableTransitionOnChange
             noScript
           >

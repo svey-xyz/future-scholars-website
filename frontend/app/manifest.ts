@@ -5,8 +5,12 @@ import * as demo from '@/sanity/lib/demo'
 import {sanityFetchMetadata} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 
-// Mirrors --primary-accent (hsl(20 100% 50%)) declared in app/globals.css.
-const THEME_COLOR = '#ff5500'
+// Mirrors --primary (hsl(232 52% 32%)) in app/globals.css and the `themeColor`
+// in app/layout.tsx — keep the three in step.
+const THEME_COLOR = '#27327C'
+// --background (hsl(38 40% 97%)), so the splash screen matches the page.
+const BACKGROUND_COLOR = '#FAF8F4'
+const SHORT_NAME = 'Future Scholars'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
   // Metadata-route fetch ('use cache' lives in the helper): the installed-PWA
@@ -25,11 +29,11 @@ export default async function manifest(): Promise<MetadataRoute.Manifest> {
     id: '/',
     scope: '/',
     name,
-    short_name: name,
+    short_name: SHORT_NAME,
     description,
     start_url: '/',
     display: 'standalone',
-    background_color: '#ffffff',
+    background_color: BACKGROUND_COLOR,
     theme_color: THEME_COLOR,
     icons: [
       {src: '/icons/icon-192.png', sizes: '192x192', type: 'image/png', purpose: 'any'},
