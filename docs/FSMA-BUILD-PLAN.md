@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S3 done · content + images seeded · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 9) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S5 done · content + images seeded · production build passing (Q20 fixed) · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 11) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -173,6 +173,7 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q18 | The mounted repo cannot `unlink`, so `git merge`/`checkout`/`reset --hard` and `next dev` all fail in place. Workarounds are recorded in §5.1 and §12 — is a standing delete grant for this folder acceptable, or do we keep working around it? | svey | **Opened 2026-09-13 (S4)** |
 | Q19 | `fonts.googleapis.com` is off the egress allowlist, so `next build` fails at compile time and no agent session can produce a production build or run Lighthouse. Allowlist it, or self-host Inter + Outfit with `next/font/local` (probably the better answer — see §12) | svey | **Opened 2026-09-13 (S4)** |
 | Q12 | ~~Logo source JPG~~ | svey | ✅ **Resolved 2026-09-13** — supplied in chat, archived at `docs/brand/logo-source.jpg` (not under `public/`, per §7.4) |
+| Q20 | ~~`next build` fails under Cache Components when a hidden content type has zero documents~~ | svey | ✅ **Resolved 2026-09-13 (S5)** — both routes now return a `__placeholder__` slug when the list is empty (the docs-sanctioned pattern; the pages already `notFound()` unmatched slugs, so the placeholder prerenders the 404). First full production build passes: 23 pages, all six routes static/PPR. **Backport candidate** — any template consumer with an empty dataset hits this. Two pre-existing build warnings logged in §11: `Unknown block type "undefined"` from PortableText during static generation (audit in S12's content proof), and a `next/dynamic` CSR bailout (template behaviour, pages still prerender) |
 
 ---
 
@@ -609,17 +610,34 @@ drawer interaction carried to the preview.
 ### S5 — Masthead + floating socials components
 **Goal:** the two things the client explicitly asked for from the reference sites.
 
-- [ ] `app/components/layout/Masthead.tsx` per §7.6 — hotspot crop, scrim tiers, reversed logo, `priority`
-- [ ] Wire `page.masthead` into `app/[slug]/page.tsx` and the homepage; interplay with `titleDisplay` so
-      headings never duplicate or vanish
-- [ ] `app/components/layout/SocialRail.tsx` per §7.7, driven by `settings.contact.socials`; extend
-      `SocialIcon` with any missing platforms
-- [ ] Ensure the rail sits below `Dialog`/lightbox z-index and hides under 768px (drawer carries it)
-- [ ] `prefers-reduced-motion` respected for any masthead entrance animation
-- [ ] Measure: masthead image ≤250KB at 1x desktop, LCP <2.5s on throttled 4G
+- [x] `app/components/layout/Masthead.tsx` per §7.6 — hotspot crop, scrim tiers, reversed logo, `priority`.
+      Both variants implemented: `image` (hotspot-aware 1600×600 CDN crop, eager + `fetchPriority="high"`,
+      tiered scrims) and `brand` (flat tone panel; the light `secondary` tone takes the *standard* lockup,
+      the dark tones the reversed one — reversed white on soft sky would be ~1.3:1). See §12
+- [x] Wire `page.masthead` into `app/[slug]/page.tsx` and the homepage — both route through `CachedPage`,
+      so one wiring covers both; `masthead` added to `getPageQuery` + typegen regenerated. Interplay: the
+      masthead **owns the visual `<h1>`** whenever present (`PageTitle` is skipped — no duplication);
+      `titleDisplay: 'none'` keeps the h1 sr-only inside the masthead (§7.6's decorative case). Verified
+      against the seeded data: home (`none`) renders logo + sr-only h1, the other five render a visible
+      heading in the masthead. Draft-mode fallbacks on both routes reshaped to the standard masthead (no CLS)
+- [x] `app/components/layout/SocialRail.tsx` per §7.7, driven by `settings.contact.socials`. ~~extend
+      `SocialIcon` with any missing platforms~~ — **not needed**: all 7 schema platforms already mapped
+- [x] Rail at `z-30` — below rail/top bar (`z-40`) and dialogs/lightbox (`z-50`); hidden below 768px
+      (`hidden md:block`), drawer carries socials there. Duplication resolved (§12): rail footer keeps
+      `tel:`/`mailto:` only ≥768px. Rail renders nothing when `socials` is empty (Q1)
+- [x] `prefers-reduced-motion` respected — the only masthead motion is the existing `.enter` cascade on
+      the overlaid copy, globally gated in `globals.css`; the LCP image itself is never animated
+- [ ] Measure: masthead image ≤250KB at 1x desktop, LCP <2.5s on throttled 4G — **carried**: every page
+      currently ships the brand-panel variant (zero masthead image bytes; the ~10KB logo SVG is the only
+      asset), and no agent/session build exists to measure against — `next build` fails on the empty
+      hidden-type routes (**new Q20**). Revisit when photography lands (Q5) and Q20 is fixed
 
-**Acceptance:** a page with a masthead renders logo-over-image with legible contrast at every breakpoint;
-socials appear/disappear correctly and are keyboard reachable.
+**Acceptance:** a page with a masthead renders logo-over-image with legible contrast at every breakpoint ✅
+(brand variant: all six routes render logo-over-panel, AAA token pairs, distinct height/tone/placement per
+page — verified in the rendered HTML on the owner's Mac; image variant is code-reviewed but unverifiable
+until photography exists); socials appear/disappear correctly and are keyboard reachable ✅ (fixed stack
+≥768px, plain anchors with visible focus rings and full accessible names; landmark `nav[aria-label="Social
+media"]`; nothing below 768px, drawer covers it).
 
 ---
 
@@ -787,6 +805,8 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | Image migration + brand masthead | cowork/opus | `main` (local, unpushed) | Full recursive crawl of the legacy site (27 pages, 270 image paths — 14 gallery pages the index never links to). `scripts/migrate-legacy-images.mjs` written and dry-run clean: 131 uploads. Masthead gained a `brand` variant; all 6 pages and 3 programs seeded with one and published | Q14 closed (apex allowlisted). **New Q15**: upload needs a token with `create`; owner runs the script. Wiring assets into gallery/program/testimonial/person documents follows once it has run |
 | 2026-09-13 | Gallery wiring | cowork/opus | `main` (local, unpushed) | Owner ran the migration (124 assets). Built 13 gallery blocks / 107 images on `/gallery`, a 6-image home teaser, 3 program card images and both director portraits. Verified: 0 missing alt, 0 broken asset refs | Q15 closed. **New Q16** (testimonial photos have no attribution — left unattached) and **Q17** (maria.gif provenance). Alt text is album-level; flagged in S10 for a per-image pass |
 | 2026-09-13 | S4 | cowork/opus | `feat/fsma-s4-sidenav` (local, unpushed) | **Done, with one item carried.** Side rail + mobile top bar/drawer replace the template header; skip link, offset content column, view-transition anchors, rail contact block. Two nav-resolution bugs fixed in `navHelpers.ts`. **First session to render the site**: all six routes 200 against `production`, geometry verified headlessly at 360/768/1024/1440 | **Q11 is closed** — `NODE_USE_ENV_PROXY=1` makes Node use the egress proxy (§5.1). **New Q18**: git cannot merge or check out in the mounted repo (no `unlink`). **New Q19**: `fonts.googleapis.com` is off the allowlist, so `next build` fails outright. Drawer keyboard test carried to the owner's preview |
+| 2026-09-13 | S5 | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done, one item carried.** Masthead (both variants) + floating social rail built and wired through `CachedPage`; masthead owns the visual h1; rail-footer socials deduped (§12); `masthead` added to `getPageQuery`, typegen regenerated; type-check/lint/format clean. **First session run on the owner's Mac** (OpenCode), not the Cowork VM — §5.1's sandbox quirks didn't apply: typegen ran as one script, the owner's dev server rendered all six routes 200, mastheads verified in HTML (per-page height/tone/placement, exactly one h1 per route). Image-weight/LCP measurement carried (no photography; Q20 blocked builds at the time) | **Q20 found and then fixed in-session** (see next row). Q18/Q19 are Cowork-VM-only and did not reproduce on the Mac |
+| 2026-09-13 | Q20 fix | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done.** `__placeholder__` guard in both hidden-type detail routes; **first full production build passes** (23 pages; `/`, `/[slug]` + all six routes static/PPR with 1y tags; placeholder paths prerender the 404). type-check/lint/format clean | **Q20 closed; backport candidate for the template.** Two pre-existing build warnings to audit later: `[@portabletext/react] Unknown block type "undefined"` during static generation (add to S12's content proof) and `Bail out to client-side rendering: next/dynamic` (template behaviour, pages still prerender) |
 
 ---
 
@@ -875,3 +895,11 @@ light uses `--brand-accent-strong`.
 | 2026-09-13 | Turbopack's persistent cache and webpack's dev logging both need `unlink` | `next dev` (Turbopack) fails with "Failed to open database — Loading persistence directory failed"; `next dev --webpack` fails unlinking `.next/dev/logs/…`. Neither is fixable from the repo. Running from a copy outside the mount is the only route that works, and Turbopack additionally refuses a `node_modules` symlink that points out of the project root — so the copy must use `--webpack` | §5.1's `.next` note |
 | 2026-09-13 | Rail-footer socials duplicate S5's floating rail | §6.2 puts socials in the rail footer and §7.7 adds a floating right-edge rail. On a desktop viewport that is the same one Facebook link twice. Implemented as specified, but **S5 should decide**: the floating rail is the client's explicit ask, so the rail footer probably keeps `tel:`/`mailto:` and drops the socials | — |
 | 2026-09-13 | Mobile bar shows the compact mark plus live text, not the lockup | `logo-full.svg` is a 920×300 horizontal lockup; at the ~110px a 64px bar allows, "FUTURE SCHOLARS" renders at roughly 5px. The cap mark plus a real `Future Scholars` text node (the same short name `manifest.ts` already uses) is legible at 360px and is selectable and translatable. The rail, at 224px of usable width, carries the full lockup | §7.4's "mark for the rail" |
+| 2026-09-13 | **The masthead owns the visual `<h1>` whenever a page has one** | `PageTitle` and the masthead rendering two visible headings would double-headline every page, and §7.1 wants the page heading to differentiate the mastheads. `PageTitle` is skipped when `page.masthead` is set; `titleDisplay: 'none'` still applies (h1 goes sr-only *inside* the masthead — §7.6's decorative case), while `plain`/`highlighted` collapse to "visible in the masthead" — those two treatments only exist for masthead-less pages. Verified against the seed: home is `none` (logo-only masthead), the rest are `plain` | §7.6's "interplay with `titleDisplay`" |
+| 2026-09-13 | Light `secondary` brand panel takes the **standard** lockup, not the reversed one | The reversed logo is white-on-transparent; on soft sky (`#E3EAF2`) it would be ~1.3:1. Dark tones (`primary`, `ink`) and photographs take the reversed lockup; the light panel takes the blue/black/yellow original with `secondary-foreground` copy (11.61:1, AAA) | §7.6's "reversed logo lockup", which assumed a dark ground |
+| 2026-09-13 | Rail footer drops socials ≥768px; the floating `SocialRail` is the sole desktop carrier | Resolves the open question S4 logged: §6.2's rail-footer socials and §7.7's floating rail are the same one Facebook link twice on a desktop screen. The rail footer keeps `tel:`/`mailto:`; below 768px the floating rail hides and the drawer keeps the socials (§7.7). `NavContact` grew a `showSocials` prop rather than a second component | §6.2's "Rail footer: phone, email, socials" — now phone/email only on desktop |
+| 2026-09-13 | `SocialRail` is rendered by `SideNav`, not the root layout | `SideNav` already holds the shared `getSettings` cache entry, so the rail costs zero extra fetches and needs no second draft-mode wrapper in `layout.tsx`. It is `z-30` (under rail/top bar `z-40`, dialogs/lightbox `z-50`), `hidden md:block`, and carries a `social-rail` view-transition anchor like the rest of the fixed chrome | — |
+| 2026-09-13 | Masthead scales shipped: heights tall 60/42vh, standard 48/34vh, compact 34/26vh (desktop/mobile, with min-heights); scrims light 40/60%, medium 55/75%, strong 70/85% black (flat wash for centre placement / bottom gradient for bottom-left) | The schema's height descriptions set the vh numbers. Scrim tiers are gradient-or-wash pairs chosen so white copy clears 4.5:1 on typical photography; the field description already tells editors to raise the tier on bright images — a scrim cannot guarantee 4.5:1 against a near-white photograph at any reasonable strength, so the contract stays editor-assisted | §7.6's "~60vh/~42vh" (extended to three heights the schema already defined) |
+| 2026-09-13 | Masthead photograph is never animated; only the overlaid copy rides `.enter` | The photograph is the LCP element — animating it delays perceived load and risks LCP-measurement noise. Copy cascade (eyebrow → logo → heading → subheading) reuses the hero block's `--enter-d` pattern, which is already `prefers-reduced-motion`-gated globally | — |
+| 2026-09-13 | Masthead image pipeline: 1600×600 CDN focal crop, `sizes="(min-width: 64rem) calc(100vw - 17rem), 100vw"`, eager + `fetchPriority="high"` | The crop happens at the CDN (`fit=cover` + hotspot), not with CSS `object-cover` alone, so srcset candidates are masthead-shaped at every width and the 1x desktop candidate stays well inside the 250KB budget. `sizes` subtracts the 17rem rail from `lg` up so browsers don't over-fetch | — |
+| 2026-09-13 | Empty `generateStaticParams` guarded with a `__placeholder__` slug in `/posts/[slug]` and `/projects/[slug]` | Cache Components makes an empty array a build error (`empty-generate-static-params`), and D13's hidden types mean the FSMA dataset legitimately has zero posts/projects. The Next.js docs sanction the placeholder pattern; both pages already `notFound()` unmatched slugs, so the placeholder prerenders the 404 page and no real route changes behaviour. Underscores can't collide with Sanity-slugified values. **Backport candidate** — the template itself builds fine only because its sample dataset is non-empty; any consumer who empties it hits the same error | — |

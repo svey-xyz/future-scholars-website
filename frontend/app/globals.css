@@ -247,6 +247,18 @@
   animation: none;
 }
 
+/* FSMA (S5): the floating social rail is fixed chrome too — same anchoring. */
+::view-transition-group(social-rail) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(social-rail) {
+  display: none;
+}
+::view-transition-new(social-rail) {
+  animation: none;
+}
+
 @keyframes vt-fade {
   from {
     opacity: 0;

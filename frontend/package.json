@@ -3,13 +3,13 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "prebuild": "sanity typegen generate",
+    "prebuild": "npm run sanity:typegen",
     "build": "next build && serwist build",
-    "predev": "npm run sanity:typegen",
     "dev": "next dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "sanity:typegen": "cd ../studio && sanity schema extract --enforce-required-fields --path ../sanity.schema.json && cd ../frontend && sanity typegen generate",
+    "typegen": "sanity typegen generate",
+    "sanity:typegen": "cd ../studio && sanity schema extract --enforce-required-fields --path ../sanity.schema.json --force && cd ../frontend && sanity typegen generate",
     "start": "next start",
     "type-check": "tsc --noEmit"
   },

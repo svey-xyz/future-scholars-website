@@ -37,16 +37,20 @@ Monorepo (npm workspaces) of a Next.js frontend + Sanity Studio. Real-time Visua
 
 Run from repo root unless noted:
 
-- `npm run dev` — runs Next (`:3000`) and Studio (`:3333`) in parallel.
+- `npm run dev` — runs TypeGen once (root `predev`), then Next (`:3000`) and Studio (`:3333`) in parallel.
 - `npm run lint` — ESLint on frontend.
 - `npm run type-check` — `tsc --noEmit` in both workspaces.
 - `npm run format` — Prettier (`@sanity/prettier-config`).
 - `npm run import-sample-data` — imports `studio/sample-data.tar.gz` into the `production` dataset.
-- Frontend build: `npm run build --workspace=frontend` (runs `sanity typegen generate` first via `prebuild`).
+- Frontend build: `npm run build --workspace=frontend` (extracts the schema and runs TypeGen first via `prebuild`).
 - Studio deploy: `npm --workspace=studio run deploy`.
 - Functions deploy: `npx sanity blueprints deploy` from repo root (logs: `npx sanity functions logs invalidate-tags`; local playground: `npx sanity functions dev`). One-time setup in [docs/CACHING.md](docs/CACHING.md).
 
-**TypeGen** runs automatically on `predev`/`prebuild`. If `sanity.types.ts` or `sanity.schema.json` drift, regenerate with `npm run sanity:typegen --workspace=frontend` (extracts schema from `studio/`, writes types into `frontend/`).
+**TypeGen is a root-level concern** — both workspaces read the single `sanity.schema.json` at the repo root, so it is owned by the root `package.json`, never by a workspace `predev`. Root `npm run dev` runs `predev` → `npm run typegen`, which extracts the schema once (from `studio/`) and then generates `frontend/sanity.types.ts` and `studio/sanity.types.ts` in parallel, before either dev server starts.
+
+- `npm run typegen` (root) — extract + generate for both workspaces. Use this when `sanity.types.ts` or `sanity.schema.json` drift.
+- `npm run schema:extract` (root) — extract only. Always passes `--force`; `sanity schema extract` prompts to overwrite without it, which deadlocks a parallel dev run.
+- Do **not** add `predev`/`prebuild` TypeGen hooks to `frontend/` or `studio/`. Two workspaces racing to write the same `sanity.schema.json` produces torn reads and duplicated prompts.
 
 ## Sanity content model
 

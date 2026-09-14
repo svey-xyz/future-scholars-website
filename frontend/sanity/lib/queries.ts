@@ -105,6 +105,7 @@ export const getPageQuery = defineQuery(`
     subheading,
     titleDisplay,
     archive,
+    masthead,
     ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,

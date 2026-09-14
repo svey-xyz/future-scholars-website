@@ -1,7 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import PageBuilder from './PageBuilder'
-import {PageTitle} from '@/app/components/layout'
+import {Masthead, PageTitle} from '@/app/components/layout'
 import {ShaderBackground} from '@/app/components/shader'
 import {OnboardingShell} from '@/app/components/starter'
 import {sanityFetch, type DynamicFetchOptions} from '@/sanity/lib/live'
@@ -46,7 +46,19 @@ export default async function CachedPage({
   const pageHasShader = stegaClean(page.background?.type) === 'shader'
 
   return (
-    <div className="my-12 lg:my-24">
+    <div className={page.masthead ? 'mb-12 lg:mb-24' : 'my-12 lg:my-24'}>
+      {/* S5: when the page defines a masthead (D12) it opens the page flush to
+          the shell chrome and owns the visual <h1> — PageTitle is skipped so
+          the heading never duplicates. `titleDisplay: 'none'` still applies:
+          the masthead keeps the h1 sr-only. */}
+      {page.masthead ? (
+        <Masthead
+          masthead={page.masthead}
+          heading={page.heading}
+          subheading={page.subheading}
+          titleDisplay={page.titleDisplay}
+        />
+      ) : null}
       {pageHasShader ? (
         // Page-level background: anchor the canvas to the viewport via a
         // `fixed inset-0` layer so it spans the whole viewport (not just the
@@ -68,12 +80,14 @@ export default async function CachedPage({
       ) : null}
       {/* `_type` is safe raw (underscore-prefixed — stega never encodes it);
           PageTitle stega-cleans the display mode itself. */}
-      <PageTitle
-        heading={page.heading}
-        subheading={page.subheading}
-        display={page.titleDisplay}
-        heroLeads={page.pageBuilder?.[0]?._type === 'hero'}
-      />
+      {!page.masthead ? (
+        <PageTitle
+          heading={page.heading}
+          subheading={page.subheading}
+          display={page.titleDisplay}
+          heroLeads={page.pageBuilder?.[0]?._type === 'hero'}
+        />
+      ) : null}
       <PageBuilder page={page as GetPageQueryResult} />
     </div>
   )

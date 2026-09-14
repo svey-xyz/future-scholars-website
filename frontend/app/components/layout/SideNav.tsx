@@ -5,6 +5,7 @@ import BrandMark from './BrandMark'
 import NavContact from './NavContact'
 import SideNavLinks from './SideNavLinks'
 import SideNavMobile from './SideNavMobile'
+import SocialRail from './SocialRail'
 import {getSettings} from './getSettings'
 
 /**
@@ -57,7 +58,9 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
         </nav>
 
         <div className="shrink-0 border-t border-border px-3 py-4">
-          <NavContact contact={contact} />
+          {/* Socials live in the floating rail at ≥768px (S5) — repeating them
+              here would show the same links twice on desktop (§12). */}
+          <NavContact contact={contact} showSocials={false} />
         </div>
       </div>
 
@@ -68,6 +71,9 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
         homepageSlug={homepageSlug}
         siteTitle={siteTitle}
       />
+
+      {/* ---- Floating social rail (≥768px, §7.7) ---- */}
+      <SocialRail socials={contact?.socials} />
     </>
   )
 }

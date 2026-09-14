@@ -7,6 +7,13 @@ import type {SettingsContact} from '@/sanity/lib/types'
 type NavContactProps = {
   contact: SettingsContact
   className?: string
+  /**
+   * Desktop rail passes false (S5): the floating `SocialRail` already carries
+   * socials at ≥768px, and rendering them in the rail footer too would show
+   * the same links twice on one screen (§12). The mobile drawer keeps them —
+   * below 768px the floating rail is hidden and the drawer is the only carrier.
+   */
+  showSocials?: boolean
 }
 
 /**
@@ -18,10 +25,10 @@ type NavContactProps = {
  *
  * Targets are ≥44px tall (AAA, SC 2.5.5) as §7.5 requires for the rail.
  */
-export default function NavContact({contact, className}: NavContactProps) {
+export default function NavContact({contact, className, showSocials = true}: NavContactProps) {
   const phone = contact?.phone
   const email = contact?.email
-  const socials = contact?.socials ?? []
+  const socials = showSocials ? (contact?.socials ?? []) : []
 
   if (!phone && !email && socials.length === 0) return null
 
@@ -62,8 +69,8 @@ export default function NavContact({contact, className}: NavContactProps) {
                     generic external mark for unknown values. */}
                 <SocialIcon platform={social.platform} className="h-5 w-5 shrink-0" />
                 <span className="sr-only">
-                  Future Scholars on {socialLabel(social.platform) ?? social.title}
-                  {' '}(opens in new tab)
+                  Future Scholars on {socialLabel(social.platform) ?? social.title} (opens in new
+                  tab)
                 </span>
               </a>
             </li>

@@ -89,18 +89,8 @@ async function CachedHome({perspective, stega}: DynamicFetchOptions) {
   return <CachedPage slug={slug} perspective={perspective} stega={stega} />
 }
 
-/** Draft-mode streaming fallback — mirrors the page header block, no CLS. */
+/** Draft-mode streaming fallback — mirrors the standard-height masthead every
+    seeded page opens with (S5), so streaming it in doesn't shift layout. */
 function HomeFallback() {
-  return (
-    <div className="my-12 lg:my-24">
-      <div className="container">
-        <div className="border-b border-border pb-6">
-          <div className="max-w-3xl space-y-4">
-            <Skeleton className="h-14 w-2/3" />
-            <Skeleton className="h-6 w-1/2" />
-          </div>
-        </div>
-      </div>
-    </div>
-  )
+  return <Skeleton className="h-[34vh] min-h-60 w-full rounded-none lg:h-[48vh] lg:min-h-80" />
 }
