@@ -15,6 +15,7 @@ import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {contact} from './objects/contact'
 import {masthead} from './objects/masthead'
+import {seo} from './objects/seo'
 import {programsGrid} from './objects/programsGrid'
 import {social} from './objects/social'
 import {navLink} from './objects/navLink'
@@ -56,6 +57,7 @@ export const schemaTypes = [
   link,
   contact,
   masthead,
+  seo,
   social,
   navLink,
   navDropdown,

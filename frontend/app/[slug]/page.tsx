@@ -3,6 +3,7 @@ import {draftMode} from 'next/headers'
 import {Suspense} from 'react'
 
 import {CachedPage} from '@/app/components/blocks'
+import {pageMetadata} from '@/app/components/seo'
 import {Skeleton} from '@/components/ui/skeleton'
 import {
   getDynamicFetchOptions,
@@ -32,10 +33,7 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   const [params, {perspective}] = await Promise.all([props.params, getDynamicFetchOptions()])
   const {data: page} = await sanityFetchMetadata({query: getPageQuery, params, perspective})
 
-  return {
-    title: page?.name,
-    description: page?.heading,
-  } satisfies Metadata
+  return pageMetadata(page)
 }
 
 /**

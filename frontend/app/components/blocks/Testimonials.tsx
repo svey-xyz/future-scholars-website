@@ -1,4 +1,5 @@
 import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
+import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
@@ -20,10 +21,53 @@ const colClass: Record<number, string> = {
   3: 'sm:grid-cols-2 lg:grid-cols-3',
 }
 
+/**
+ * The shape the card renders, whichever source the block draws from. Derived
+ * from the inline member rather than hand-written so the image sub-type (asset
+ * ref, hotspot, crop) stays whatever typegen says it is.
+ */
+type InlineTestimonial = NonNullable<ExtractPageBuilderType<'testimonials'>['testimonials']>[number]
+
+type Quote = {
+  key: string
+  quote: string | null
+  authorName: string | null
+  authorRole?: string | null
+  sourceUrl?: string | null
+  authorImage?: InlineTestimonial['authorImage'] | null
+}
+
 export default function Testimonials({block}: Props) {
-  const {heading, subheading, testimonials, columns} = block
+  const {heading, subheading, testimonials, documentTestimonials, columns, limit} = block
   const cols = columns ?? 3
-  const items = testimonials ?? []
+
+  // FSMA fork (build plan S3/S6): `source` picks between the template's inline
+  // array and the `testimonial` documents, so the same quote can appear here
+  // and on /testimonials without being retyped. GROQ resolves the documents
+  // (ordered, featured-filtered); the `limit` is applied here rather than as a
+  // GROQ slice, which cannot take a runtime value from the enclosing block.
+  // `stegaClean`: enum values carry stega characters in draft mode, so a raw
+  // comparison would always fall through to the inline array.
+  const fromDocuments = stegaClean(block.source) === 'documents'
+
+  const items: Quote[] = fromDocuments
+    ? (documentTestimonials ?? []).slice(0, limit ?? 3).map((t) => ({
+        key: t._id,
+        quote: t.quote,
+        authorName: t.authorName,
+        authorRole: t.authorRole,
+        authorImage: t.authorImage,
+      }))
+    : (testimonials ?? []).map((t) => ({
+        key: t._key,
+        quote: t.quote,
+        authorName: t.authorName,
+        authorRole: t.authorRole,
+        sourceUrl: t.sourceUrl,
+        authorImage: t.authorImage,
+      }))
+
+  if (items.length === 0) return null
 
   return (
     <section className="container my-12 lg:my-16">
@@ -51,7 +95,7 @@ export default function Testimonials({block}: Props) {
               .join('')
               .toUpperCase() || '?'
           return (
-            <Reveal as="li" key={t._key} i={i} variant="scale">
+            <Reveal as="li" key={t.key} i={i} variant="scale">
               <Card className="group/quote relative h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg">
                 {/* Decorative oversized quote mark, gently floating. */}
                 <span
@@ -69,7 +113,7 @@ export default function Testimonials({block}: Props) {
                       {ref ? (
                         <Image
                           id={ref}
-                          alt={t.authorImage?.alt || t.authorName}
+                          alt={t.authorImage?.alt || t.authorName || ''}
                           width={40}
                           height={40}
                           hotspot={t.authorImage?.hotspot}

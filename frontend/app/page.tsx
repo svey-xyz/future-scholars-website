@@ -4,6 +4,7 @@ import {Suspense} from 'react'
 
 import {CachedPage} from '@/app/components/blocks'
 import {getSettings} from '@/app/components/layout'
+import {pageMetadata} from '@/app/components/seo'
 import {OnboardingShell} from '@/app/components/starter'
 import {Skeleton} from '@/components/ui/skeleton'
 import {
@@ -32,10 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
     perspective,
   })
 
-  return {
-    title: page?.name,
-    description: page?.heading,
-  } satisfies Metadata
+  return pageMetadata(page, {siteTitle: settings?.title})
 }
 
 /**

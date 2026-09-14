@@ -6,3 +6,4 @@ export {
   siteUrl,
 } from './JsonLd'
 export {default as SiteJsonLd} from './SiteJsonLd'
+export {pageMetadata} from './pageMetadata'

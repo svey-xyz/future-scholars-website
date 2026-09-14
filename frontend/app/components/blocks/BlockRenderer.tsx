@@ -8,6 +8,7 @@ import FeaturesGrid from './FeaturesGrid'
 import Stats from './Stats'
 import Scores from './Scores'
 import Testimonials from './Testimonials'
+import ProgramsGrid from './ProgramsGrid'
 import Gallery from '@/app/components/blocks/gallery/Gallery'
 import Faq from './Faq'
 import Note from './Note'
@@ -38,6 +39,7 @@ const Blocks = {
   stats: Stats,
   scores: Scores,
   testimonials: Testimonials,
+  programsGrid: ProgramsGrid,
   gallery: Gallery,
   faq: Faq,
   note: Note,

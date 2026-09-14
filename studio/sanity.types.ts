@@ -342,6 +342,21 @@ export type Social = {
   url: string
 }
 
+export type Seo = {
+  _type: 'seo'
+  metaTitle?: string
+  metaDescription?: string
+  ogImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  noIndex?: boolean
+}
+
 export type Masthead = {
   _type: 'masthead'
   variant: 'brand' | 'image'
@@ -726,6 +741,7 @@ export type Page = {
   subheading?: string
   titleDisplay?: 'plain' | 'highlighted' | 'none'
   masthead?: Masthead
+  seo?: Seo
   archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
   background?: Background
   pageBuilder?: Array<
@@ -1092,6 +1108,7 @@ export type AllSanitySchemaTypes =
   | NavDropdown
   | NavLink
   | Social
+  | Seo
   | Masthead
   | Contact
   | PageReference

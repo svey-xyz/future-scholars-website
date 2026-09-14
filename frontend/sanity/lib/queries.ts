@@ -68,6 +68,30 @@ const projectFields = /* groq */ `
   "tech": tech[]->{_id, title, "slug": slug.current},
 `
 
+// FSMA fork (build plan S6): card-sized projection of a `program` document,
+// used by the programs grid. Deliberately excludes `body` and `masthead` —
+// those belong to the detail route (S8), not to a card.
+const programCardFields = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  ageRange,
+  ratio,
+  classroomName,
+  summary,
+  image,
+  "order": coalesce(order, 99)
+`
+
+// FSMA fork (build plan S6): card-sized projection of a `testimonial` document.
+const testimonialCardFields = /* groq */ `
+  _id,
+  quote,
+  authorName,
+  authorRole,
+  authorImage
+`
+
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->slug.current,
@@ -106,6 +130,7 @@ export const getPageQuery = defineQuery(`
     titleDisplay,
     archive,
     masthead,
+    seo,
     ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,
@@ -154,6 +179,26 @@ export const getPageQuery = defineQuery(`
             }
           }
         }
+      },
+      _type == "programsGrid" => {
+        ...,
+        "programs": select(
+          mode == "selected" => programs[]->{ ${programCardFields} },
+          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){
+            ${programCardFields}
+          }
+        )
+      },
+      _type == "testimonials" => {
+        ...,
+        "documentTestimonials": select(
+          source == "documents" => *[
+            _type == "testimonial" && (^.featuredOnly != true || featured == true)
+          ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{
+            ${testimonialCardFields}
+          },
+          []
+        )
       },
       _type == "faq" => {
         ...,
