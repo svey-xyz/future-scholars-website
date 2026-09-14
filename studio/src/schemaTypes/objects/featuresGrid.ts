@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 
-import {columnsField} from './shared'
+import {anchorField, columnsField} from './shared'
 
 /**
  * Features Grid — icon / heading / text cards, optional per-feature link.
@@ -73,6 +73,7 @@ export const featuresGrid = defineType({
       ],
     }),
     columnsField,
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', count: 'features'},

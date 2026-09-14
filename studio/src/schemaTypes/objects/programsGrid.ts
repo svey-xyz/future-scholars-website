@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {ThLargeIcon} from '@sanity/icons/ThLarge'
 
-import {columnsField} from './shared'
+import {anchorField, columnsField} from './shared'
 
 /**
  * Programs grid — cards for the FSMA programs, either all of them in age order
@@ -45,6 +45,7 @@ export const programsGrid = defineType({
         }),
     }),
     columnsField,
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', mode: 'mode'},

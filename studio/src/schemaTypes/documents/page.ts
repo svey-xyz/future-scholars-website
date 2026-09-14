@@ -91,6 +91,8 @@ export const page = defineType({
         {type: 'scores'},
         {type: 'testimonials'},
         {type: 'programsGrid'},
+        {type: 'facultyGrid'},
+        {type: 'contactDetails'},
         {type: 'gallery'},
         {type: 'faq'},
         {type: 'note'},

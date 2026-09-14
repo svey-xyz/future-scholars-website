@@ -92,6 +92,20 @@ const testimonialCardFields = /* groq */ `
   authorImage
 `
 
+// FSMA fork (build plan S7): card-sized projection of a `person` document for
+// the faculty grid. `bio` is `blockContentTextOnly`, which carries no link
+// annotations, so it needs no markDefs resolution.
+const personCardFields = /* groq */ `
+  _id,
+  firstName,
+  lastName,
+  role,
+  credentials,
+  bio,
+  picture,
+  "order": coalesce(order, 99)
+`
+
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->slug.current,
@@ -199,6 +213,19 @@ export const getPageQuery = defineQuery(`
           },
           []
         )
+      },
+      _type == "facultyGrid" => {
+        ...,
+        "people": select(
+          mode == "selected" => people[]->{ ${personCardFields} },
+          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){
+            ${personCardFields}
+          }
+        )
+      },
+      _type == "contactDetails" => {
+        ...,
+        "contact": *[_type == "settings"][0].contact
       },
       _type == "faq" => {
         ...,
