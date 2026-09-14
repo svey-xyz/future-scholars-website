@@ -29,7 +29,12 @@ type Props = {
  */
 export async function generateStaticParams() {
   const {data} = await sanityFetchStaticParams({query: postPagesSlugs})
-  return data
+  // Cache Components requires ≥1 param (`empty-generate-static-params`). When
+  // the dataset has zero posts the param space is genuinely empty, so
+  // prerender a placeholder slug instead — `CachedPost` 404s any slug with no
+  // matching document, which turns this into a build-time render of the
+  // not-found page. (Next.js docs-sanctioned pattern; backport candidate.)
+  return data.length > 0 ? data : [{slug: '__placeholder__'}]
 }
 
 /**
