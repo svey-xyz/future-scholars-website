@@ -229,6 +229,24 @@
   animation: none;
 }
 
+/* FSMA (S4): the same anchoring for the persistent app shell. The side rail and
+   the mobile top bar frame the content — they must not slide or fade with the
+   page they frame. Only one of the two is ever rendered (the other is
+   `display: none` at that breakpoint), so their names never collide. */
+::view-transition-group(site-rail),
+::view-transition-group(site-topbar) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-rail),
+::view-transition-old(site-topbar) {
+  display: none;
+}
+::view-transition-new(site-rail),
+::view-transition-new(site-topbar) {
+  animation: none;
+}
+
 @keyframes vt-fade {
   from {
     opacity: 0;

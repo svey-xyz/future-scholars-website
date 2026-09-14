@@ -3,7 +3,7 @@
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
 Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
 
-Last updated: 2026-09-13 (after S0–S3, the content seed and the image migration).
+Last updated: 2026-09-13 (after S4 — the side-nav shell).
 
 ---
 
@@ -19,7 +19,11 @@ Last updated: 2026-09-13 (after S0–S3, the content seed and the image migratio
       The three feature branches are stacked (S0 → S2 → S1), not siblings off `main` — merge them in
       that order, or squash-merge S0 first and rebase the other two.
 
-- [x] **2. Open `*.sanity.io` on the egress allowlist** — or accept that every rendered-page check is
+- [x] **2. Open `*.sanity.io` on the egress allowlist** — done, and **it works now**: the missing half
+      was that Node ignores `HTTPS_PROXY`. With `NODE_USE_ENV_PROXY=1` the dev server renders every route
+      against `production`. Original note kept below.
+
+      Original: — or accept that every rendered-page check is
       yours. (Plan Q11.) Right now the proxy returns `403 blocked-by-allowlist` for
       `wzs9gcps.api.sanity.io` and `wzs9gcps.apicdn.sanity.io` from both the Cowork VM and the cloud
       container, so the frontend boots but every data-fetching route 500s. Needs
@@ -29,6 +33,32 @@ Last updated: 2026-09-13 (after S0–S3, the content seed and the image migratio
 
 - [x] **3. `npx sanity login`** on your dev machine (plan Q10) — needed for `schema deploy` and
       `sanity deploy`.
+
+---
+
+## New from S4 — do these before the next session
+
+- [ ] **A. Allowlist `fonts.googleapis.com` and `fonts.gstatic.com`** (plan Q19), or say the word and I'll
+      self-host Inter + Outfit with `next/font/local` instead. Right now `next build` **fails outright**
+      with three `next/font` errors, so no agent session can produce a production build or run Lighthouse.
+      Self-hosting is arguably the better fix regardless: one less build-time dependency, and it removes a
+      third-party request from every page load.
+
+- [ ] **B. Decide on file deletion in the repo folder** (plan Q18). The Cowork mount refuses `unlink`, and
+      git updates working-tree files by unlinking and recreating them — so `git merge`, `git checkout -- .`
+      and `reset --hard` all fail in place, as does `next dev`. I worked around both this session (merge in
+      a scratch clone, dev server from a copy outside the mount; §5.1 has the recipes), but a standing
+      delete grant would remove an hour of overhead per session. Your call — the workarounds do hold.
+
+- [ ] **C. Check the drawer on the preview.** Everything else in S4 is verified, including all six routes
+      rendering against `production` and the shell geometry at 360/768/1024/1440. The one thing I could not
+      exercise is the mobile drawer's keyboard behaviour — open it, Tab through it (focus should stay
+      inside), press Esc (should close and put focus back on the hamburger). It is stock Radix modal
+      Dialog, so it should be right; I just can't claim it.
+
+- [ ] **D. Heads-up: the homepage shows a red "Unknown block" box.** S3 added the `programsGrid` schema and
+      the homepage uses it, but the React renderer for it lands in S6/S8. Don't show the client the
+      homepage until then — `/about`, `/gallery` and `/testimonials` are clean.
 
 ---
 
@@ -101,9 +131,19 @@ Last updated: 2026-09-13 (after S0–S3, the content seed and the image migratio
 
 ## Notes
 
+- **A lockfile bump slipped through again.** Commit `0cd10bc` ("gallery wiring results", a docs commit)
+  also carries a 5,800-line `package-lock.json` rewrite and adds `react-dom: ^19.3.0` to the **root**
+  package.json, where it doesn't belong and disagrees with the `^19.2.7` both workspaces pin. Type-check
+  and lint pass on what's installed (`next` 16.2.10, `sanity` 6.13.2, `next-sanity` 13.1.1), so I left it
+  alone rather than reverting a lockfile that matches `node_modules` mid-session — but it wants a clean-up
+  commit of its own, and it is the second time in two sessions. Pinning those three exactly in the template
+  is still the fix.
 - **Watch the lockfile.** The template pins `next`, `sanity` and `next-sanity` with caret ranges, so any
   `npm install` can float them to a new minor. That happened this session and broke `main` (Next 16.3
   dropped `experimental.viewTransition`; newer `next-sanity` brands results as `StegaString<T>`). Reverted
   — but worth pinning those three exactly in the template so it can't recur.
 - File deletion in the repo folder needs a per-session grant. Both Next.js and Sanity Studio wedge on a
   stale cache that can only be cleared with `rm -rf`, so grant it early in a session.
+
+- **Disk:** `frontend/node_modules/.stale/` holds ~140 MB of caches and scratch I had to move aside rather
+  than delete (see Q18). Safe to `rm -rf` whenever you like; it is gitignored.

@@ -1,3 +1,10 @@
+export {default as SideNav} from './SideNav'
+export {default as SideNavLinks} from './SideNavLinks'
+export {default as SideNavMobile} from './SideNavMobile'
+export {default as BrandMark} from './BrandMark'
+export {default as NavContact} from './NavContact'
+// Template header/nav — retained but unmounted (D13: hide, don't delete, so the
+// fork keeps merging cleanly from sanity-next-clean). Nothing imports these.
 export {default as Header} from './Header'
 export {default as HeaderNav} from './HeaderNav'
 export {default as DesktopNav} from './DesktopNav'

@@ -5,9 +5,11 @@ import JsonLd, {siteJsonLd} from './JsonLd'
 /**
  * Site-wide `WebSite`/`Organization` JSON-LD, rendered once from the root
  * layout. Always the **published** perspective: structured data is metadata
- * for crawlers — previewing drafts in it serves no one, and pinning the
- * perspective keeps this component in the static shell in both draft and
- * published renders (`sanityFetchMetadata` is `'use cache'` and never stega).
+ * for crawlers — previewing drafts in it serves no one — and
+ * `sanityFetchMetadata` is `'use cache'` and never stega, so published
+ * renders serve this from the static shell. Draft mode bypasses `'use cache'`
+ * entirely, though: under Presentation this becomes an uncached request-time
+ * fetch, which is why the root layout renders it inside `<Suspense>`.
  */
 export default async function SiteJsonLd() {
   const {data: settings} = await sanityFetchMetadata({
