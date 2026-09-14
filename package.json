@@ -19,12 +19,17 @@
   ],
   "scripts": {
     "clean": "rm -rf node_modules */node_modules package-lock.json */package-lock.json **/dist **/.next **/.vercel **/.turbo **/.cache **/.temp **/tmp",
-    "dev": "npx run-p --print-label dev:*",
+    "predev": "npm run typegen",
+    "dev": "run-p --print-label dev:*",
     "dev:next": "npm run dev --workspace=frontend",
     "dev:studio": "npm run dev --workspace=studio",
     "format": "prettier --cache --write .",
     "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --dataset production --replace",
     "lint": "npm run lint --workspace=frontend",
+    "schema:extract": "npm run schema:extract --workspace=studio",
+    "typegen": "npm run schema:extract && run-p typegen:frontend typegen:studio",
+    "typegen:frontend": "npm run typegen --workspace=frontend",
+    "typegen:studio": "npm run typegen --workspace=studio",
     "type-check": "tsc -p tsconfig.json && npm run type-check --workspaces"
   },
   "prettier": "@sanity/prettier-config",
