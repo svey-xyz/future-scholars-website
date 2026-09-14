@@ -3,7 +3,7 @@
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
 Items 1–3 and 4–6 are done. What remains is mostly client answers, plus two environment fixes (A, E).
 
-Last updated: 2026-09-14 (after S6 — the home page).
+Last updated: 2026-09-14 (after S7 — the About page).
 
 ---
 
@@ -81,6 +81,22 @@ Last updated: 2026-09-14 (after S6 — the home page).
       block, so any screenshot I produce shows the wrong typeface. Since item 9 below is literally
       "show the client the heading typeface", sending them a screenshot in the wrong font would be
       worse than sending none. Once the preview is up, three widths (360 / 768 / 1440) is all it needs.
+
+## New from S7 — three client questions
+
+- [ ] **G. The About page now publishes an accessibility statement** (plan Q23). It commits FSMA to
+      WCAG 2.2 Level AA and to providing information in accessible formats on request, and points
+      accessibility feedback at the office. The *website* half of that I have built and can evidence;
+      the organisational half is the school's to agree to. Please get a yes before launch — there is a
+      `TODO(client)` paragraph on the page saying so, and S12 greps for it.
+
+- [ ] **H. There is no admissions FAQ, on purpose** (plan Q25). S7 called for one, but the old site has
+      none, so writing the answers would have meant inventing things parents act on — deposit amounts,
+      waiting lists, that sort of thing. If you can get five real questions and answers out of the
+      client, the `faq` block already exists and it is a short follow-up.
+
+- [ ] **I. I added the fax number back** rather than quietly dropping it. It is on the old site, so it
+      is a contact method they currently advertise; worth asking whether they still want it published.
 
 ## Deploys and hosting (S0b)
 

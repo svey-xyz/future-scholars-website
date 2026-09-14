@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S6 done · content + images seeded · production build passing · S0b outstanding (owner) · **Last updated:** 2026-09-14 (rev 12) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S7 done · content + images seeded · production build passing · S0b outstanding (owner) · **Last updated:** 2026-09-14 (rev 13) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -176,6 +176,9 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q20 | ~~`next build` fails under Cache Components when a hidden content type has zero documents~~ | svey | ✅ **Resolved 2026-09-13 (S5)** — both routes now return a `__placeholder__` slug when the list is empty (the docs-sanctioned pattern; the pages already `notFound()` unmatched slugs, so the placeholder prerenders the 404). First full production build passes: 23 pages, all six routes static/PPR. **Backport candidate** — any template consumer with an empty dataset hits this. Two pre-existing build warnings logged in §11: `Unknown block type "undefined"` from PortableText during static generation (audit in S12's content proof), and a `next/dynamic` CSR bailout (template behaviour, pages still prerender) |
 | Q21 | `npm run format` reflows ~50 untouched files (repo is committed at `printWidth` 80; `@sanity/prettier-config@3.0.0` resolves to 100). Reverted in S6. Do we run one deliberate repo-wide reformat and commit it, or pin `printWidth: 80` in a local `.prettierrc` to match what is already on disk? Until it's settled, **never run `npm run format` repo-wide on a feature branch** | svey | **Opened 2026-09-14 (S6)** |
 | Q22 | ~~Sanity CLI cannot load its config in the Cowork VM~~ | svey | ✅ **Resolved 2026-09-14 (S6)** — `node_modules` is macOS-built and needs two linux-arm64 natives beyond the three §5.1 lists: `@esbuild/linux-arm64` and `@rolldown/binding-linux-arm64-gnu`. Documented in §5.1 |
+| Q23 | The About page now publishes an accessibility statement committing FSMA to WCAG 2.2 AA and to providing information in accessible formats on request. The website half is built and verifiable; the *organisational* half is the school's to make. Confirm they are happy to publish it, and that the office is the right contact route for accessibility feedback | Client | **Opened 2026-09-14 (S7)** |
+| Q24 | The template's `featuresGrid` icon list is developer-flavoured — rocket, chip, beaker, code, cursor — and none of it belongs on a Montessori school's admissions steps, which therefore ship iconless. Either re-theme the list for FSMA (fork divergence) or leave the steps as numbered text, which reads fine. Cosmetic, not blocking | svey | **Opened 2026-09-14 (S7)** |
+| Q25 | An admissions FAQ was specified for S7 but not built: the legacy site has no FAQ, so writing the answers would be inventing client facts (§0 rule 8). If the client supplies real questions and answers the `faq` block already exists and it is a short follow-up session | Client | **Opened 2026-09-14 (S7)** |
 
 ---
 
@@ -702,17 +705,39 @@ owner-side (Q19 blocks a local production build, and therefore a local Lighthous
 ### S7 — About Us (merged About + Admissions + Contact)
 **Goal:** the highest-information page, and the one holding client-verified facts.
 
-- [ ] Build `/about` with anchored sections `#about`, `#admissions`, `#contact`
-- [ ] Faculty section from `person` documents (or defer if the client has supplied no bios — note in §4)
-- [ ] Admissions: FAQ block, process steps (featuresGrid or infoSection), "Book a tour" `mailto:` CTA
-- [ ] Contact: address, phone (`tel:`), email (`mailto:`), hours, static map link (no embedded iframe —
-      it's a third-party tracker and a CLS/perf liability for one link's worth of value)
-- [ ] Extract verified contact facts from legacy `contact.htm`; send to client for confirmation (Q2)
-- [ ] Accessibility statement (AODA-aware): commitment, standard targeted, contact route for issues
-- [ ] Anchor offsets account for the fixed top bar on mobile (`scroll-margin-top`)
+- [x] Build `/about` with anchored sections `#about`, `#admissions`, `#contact` — plus `#book-a-tour` and
+      `#accessibility`. New optional `anchor` field (`shared.ts`) on the blocks this page uses; rendered
+      as the wrapper `id` in `BlockRenderer`, one place for every block. **Backport candidate** — upstream
+      it belongs on all blocks, not the five this fork needed first
+- [x] Faculty section from `person` documents — new `facultyGrid` block rendering the two directors
+      (portrait, role, credentials, bio). The existing "Directors" prose block introduces them and the
+      grid follows it, so the grid ships with **no heading of its own**: "Directors" followed by "Meet the
+      directors" was two `h2`s saying the same thing
+- [x] Admissions: ~~FAQ block~~, process steps (featuresGrid), "Book a tour" `mailto:` CTA.
+      **The FAQ is deliberately not built.** The legacy site has no FAQ, so there is no source content,
+      and writing parent-facing answers about a school's admissions would be inventing client facts —
+      §0 rule 8. Ask the client for real questions and it becomes a 20-minute follow-up. The four process
+      steps are labelled by me ("1. Book a tour") but every *fact* in them traces to `admissions.md`
+- [x] Contact: address, phone (`tel:`), email (`mailto:`), hours, static map link (no embedded iframe —
+      it's a third-party tracker and a CLS/perf liability for one link's worth of value). Built as a
+      `contactDetails` block that **holds no details of its own** — it renders Settings → Contact, so this
+      page and S11's JSON-LD read the same fields and cannot drift. Real `<address>`, hours as a `<dl>`,
+      map as a link. Added `contact.fax` (§12) and fixed the rail's country-code-less `tel:` (§12)
+- [x] Extract verified contact facts from legacy `contact.htm`; send to client for confirmation (Q2) —
+      extracted and seeded in S3/S6; the confirmation list is OWNER-TODO item 10 and the on-page
+      `TODO(client)` notice
+- [x] Accessibility statement (AODA-aware): commitment, standard targeted, contact route for issues.
+      **It makes a public commitment on the client's behalf**, so the `TODO(client)` notice on the page
+      gained a paragraph asking them to confirm it before launch
+- [x] Anchor offsets account for the fixed top bar on mobile (`scroll-margin-top`) — `scroll-mt-20`
+      below `lg`, `lg:scroll-mt-8` above it, applied only to blocks that actually have an anchor
 
-**Acceptance:** every claim on the page traces to legacy content or client confirmation; no invented facts;
-anchors land correctly from the redirect map.
+**Acceptance:** every claim on the page traces to legacy content or client confirmation ✅ — no invented
+facts; the four step *labels* are mine and are flagged above. No invented FAQ. Anchors land correctly from
+the redirect map ⬜ — **the five anchor targets exist and were verified in the rendered HTML**, but the
+redirect table itself is not written until S11, so the end-to-end `admissions.htm` → `/about#admissions`
+hop cannot be tested yet. Rendered-HTML verification: one `h1`, valid `h2`/`h3` sequence, `tel:`/`mailto:`/
+maps links correct, one `<address>`, zero missing `alt`, zero unknown blocks; production build passes.
 
 ---
 
@@ -844,6 +869,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | S5 | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done, one item carried.** Masthead (both variants) + floating social rail built and wired through `CachedPage`; masthead owns the visual h1; rail-footer socials deduped (§12); `masthead` added to `getPageQuery`, typegen regenerated; type-check/lint/format clean. **First session run on the owner's Mac** (OpenCode), not the Cowork VM — §5.1's sandbox quirks didn't apply: typegen ran as one script, the owner's dev server rendered all six routes 200, mastheads verified in HTML (per-page height/tone/placement, exactly one h1 per route). Image-weight/LCP measurement carried (no photography; Q20 blocked builds at the time) | **Q20 found and then fixed in-session** (see next row). Q18/Q19 are Cowork-VM-only and did not reproduce on the Mac |
 | 2026-09-13 | Q20 fix | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done.** `__placeholder__` guard in both hidden-type detail routes; **first full production build passes** (23 pages; `/`, `/[slug]` + all six routes static/PPR with 1y tags; placeholder paths prerender the 404). type-check/lint/format clean | **Q20 closed; backport candidate for the template.** Two pre-existing build warnings to audit later: `[@portabletext/react] Unknown block type "undefined"` during static generation (add to S12's content proof) and `Bail out to client-side rendering: next/dynamic` (template behaviour, pages still prerender) |
 | 2026-09-14 | S6 | cowork/opus | `feat/fsma-s6-home` (local, unpushed) | **Done, screenshots carried.** The homepage's content was already seeded (S3); this session built the code under it: `ProgramsGrid` renderer + GROQ resolution, document-sourced testimonials, and an optional page-level `seo` object wired through a shared `pageMetadata()`. Fixed two real bugs the wiring exposed — a seeded `callToAction.body` stored as a string instead of Portable Text on `/` and `/programs` (this was S5's `Unknown block type \"undefined\"` build warning, now closed), and a bare `<title>Home</title>` on the homepage. All six routes 200 against `production`, zero unknown blocks, one h1 each, zero missing alt; production build passes (23 pages) | **New Q21**: `npm run format` rewrites ~50 untouched files in the Cowork VM — reverted, needs a deliberate clean-up commit. **New Q22**: `node_modules` needs two *more* linux-arm64 natives than §5.1 lists (`@esbuild`, `@rolldown/binding`) or the Sanity CLI cannot even load its config. Q19 unchanged and now blocks screenshots too |
+| 2026-09-14 | S7 | cowork/opus | `feat/fsma-s6-home` (local, unpushed — same branch as S6) | **Done, one item deliberately not built.** `/about` now carries five anchors, a faculty grid from the `person` documents, a four-step admissions process, a Book-a-tour CTA, a settings-driven contact block and an AODA-aware accessibility statement. New: `anchorField` (+ `id`/`scroll-mt` in `BlockRenderer`), `contactDetails` and `facultyGrid` blocks, `contact.fax`, shared `telHref()`. **The admissions FAQ was not built** — no source content exists and inventing it breaks §0 rule 8 (see §8 S7). Verified in the rendered HTML against `production`; build passes (23 pages) | **New Q23**: the accessibility statement commits FSMA publicly — client must confirm. **New Q24**: the `featuresGrid` icon set is developer-flavoured (rocket, chip, beaker) and unusable on a school site, so the process steps ship without icons. Anchors cannot be tested end-to-end until S11 writes the redirect table |
 
 ---
 
@@ -886,6 +912,15 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-14 | **Q22: the Sanity CLI needs two more linux-arm64 natives than §5.1 lists** | §5.1 names `@next/swc`, `lightningcss` and `@tailwindcss/oxide`. It is missing two, and without them `sanity schema extract` dies before it starts, with the useless message `CLI config cannot be loaded — Class extends value undefined`: the CLI loads `sanity.cli.ts` through jiti → Vite → **rolldown**, and both `esbuild` and `@rolldown/binding` are darwin-only in the mounted tree. Adding `@esbuild/linux-arm64` and `@rolldown/binding-linux-arm64-gnu` at the lockfile's versions fixes it. Note the version numbers are *not* the ones in §5.1 — read them from each package's own `package.json` rather than assuming | §5.1's three-package list |
 | 2026-09-14 | `next dev` now runs **in the mount**, given a delete grant — but only with `--webpack` | With deletion granted for the folder (Q18), `rm -rf .next` works and the dev server starts in place; the copy-to-`$HOME`-with-symlinked-`node_modules` dance from S4 was not needed. Turbopack still cannot be used, but for a *new* reason: it treats the blocked `fonts.gstatic.com` as a hard module-resolution error (`Can't resolve '@vercel/turbopack-next/internal/font/google/font'`) and every route 500s, where webpack only warns and falls back to system fonts. So: grant deletion early, then `NODE_USE_ENV_PROXY=1 npx next dev --webpack` | §5.1's "dev server must run from a copy outside the mount" |
 | 2026-09-14 | Q19 verified again, and worked around **only** for a throwaway build | `next build` still fails outright on all three `next/font/google` faces. To prove the session's changes actually build, the three font calls in `layout.tsx` were temporarily replaced with `{variable, className}` stubs, the build run (23 pages, every route prerendered, **no PortableText warning any more**), and `layout.tsx` restored from a copy — verified with `git diff`. The stub is a verification technique, **not** a fix and never committed; self-hosting the faces (OWNER-TODO item A) remains the real answer, and cannot be done from an agent session because the `.woff2` files are themselves unreachable | — |
+
+| 2026-09-14 | **Anchors are a block field rendered by `BlockRenderer`, not per-component markup** | Five sections on `/about` needed `id`s, and the redirect map depends on two of them. Putting `id` + `scroll-mt` on the wrapper `BlockRenderer` already renders means one change covers every block type, existing and future, with no component touched. `scroll-mt` is applied only when an anchor is set, so unanchored blocks keep their exact current layout. **Backport candidate** — upstream the field belongs on all blocks; here it is on the five `/about` uses to keep the fork diff small | — |
+| 2026-09-14 | **`contactDetails` stores nothing; it renders Settings → Contact** | The obvious design is a block with address/phone/email fields. That guarantees the day comes when the footer, the contact section and the JSON-LD disagree about the phone number. The block holds only presentation switches (`showHours`, `showMapLink`, `secondaryEmail`) and reads the singleton, so S11's structured data and this page are the same data by construction | — |
+| 2026-09-14 | Map is a link, not an iframe — and the URL is **derived** when unset | §7/D6 already ruled out the embed. The remaining question was whether an editor must paste a maps URL; the component falls back to a maps *search* built from the address already in Settings, which is derived from a client fact rather than an invented one. `settings.contact.mapUrl` still overrides it | — |
+| 2026-09-14 | Added `contact.fax` rather than dropping the legacy fax number | A fax number is near-useless in 2026 and the temptation was to quietly not migrate it. But it is a contact method the school currently advertises, and D4 says port the old copy verbatim and let the client edit later — silently deleting a published contact route is a content decision that is not mine to make. One optional field, shown only when set | — |
+| 2026-09-14 | **`telHref()` shared, and the rail's phone link fixed** | `/about` and the nav rail both render the phone, and they disagreed: the rail emitted `tel:6132443762` with no country code. A bare NANP number is ambiguous to a roaming caller or a carrier that does not assume local, and on a site with **no forms** (D6) the phone link is not a convenience, it is the contact mechanism. Helper lifted to `lib/utils` and used in both places. **Backport candidate** — the template's `NavContact` has the same bug | — |
+| 2026-09-14 | **No admissions FAQ** | S7 specified one. The legacy site has no FAQ anywhere, so there is no source material, and an FAQ is precisely the format where invented answers look most authoritative — "What is the deposit?", "Is there a waiting list?" are questions a parent acts on. §0 rule 8 forbids guessing them. Logged as Q25 with the `faq` block already available, so it is a short session once the client answers | S7's "Admissions: FAQ block" task |
+| 2026-09-14 | The faculty grid ships with **no heading** | Rendered, "Directors" (the existing prose block) followed immediately by "Meet the directors" (the grid) was two `h2`s saying the same thing — a heading-hierarchy smell and a reading annoyance. The grid now reads as the continuation of the Directors section it follows. Caught only by looking at the rendered `h2` sequence, which is worth doing on every content assembly | — |
+| 2026-09-14 | Admissions steps are labelled by me; every fact in them is the legacy site's | "1. Book a tour", "2. Tour and observe", "3. Apply", "4. Placement" are my labels for prose the legacy page runs together as four paragraphs. The distinction that matters under §0 rule 8: a *label* is presentation, an assertion about deposits or sibling preference is a client fact — and every one of those is `admissions.md` verbatim or near-verbatim | — |
 
 ### S1 contrast audit (light theme, 2026-09-13)
 
