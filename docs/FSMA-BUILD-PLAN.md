@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S5 done · content + images seeded · production build passing (Q20 fixed) · S0b outstanding (owner) · **Last updated:** 2026-09-13 (rev 11) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S6 done · content + images seeded · production build passing · S0b outstanding (owner) · **Last updated:** 2026-09-14 (rev 12) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -174,6 +174,8 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q19 | `fonts.googleapis.com` is off the egress allowlist, so `next build` fails at compile time and no agent session can produce a production build or run Lighthouse. Allowlist it, or self-host Inter + Outfit with `next/font/local` (probably the better answer — see §12) | svey | **Opened 2026-09-13 (S4)** |
 | Q12 | ~~Logo source JPG~~ | svey | ✅ **Resolved 2026-09-13** — supplied in chat, archived at `docs/brand/logo-source.jpg` (not under `public/`, per §7.4) |
 | Q20 | ~~`next build` fails under Cache Components when a hidden content type has zero documents~~ | svey | ✅ **Resolved 2026-09-13 (S5)** — both routes now return a `__placeholder__` slug when the list is empty (the docs-sanctioned pattern; the pages already `notFound()` unmatched slugs, so the placeholder prerenders the 404). First full production build passes: 23 pages, all six routes static/PPR. **Backport candidate** — any template consumer with an empty dataset hits this. Two pre-existing build warnings logged in §11: `Unknown block type "undefined"` from PortableText during static generation (audit in S12's content proof), and a `next/dynamic` CSR bailout (template behaviour, pages still prerender) |
+| Q21 | `npm run format` reflows ~50 untouched files (repo is committed at `printWidth` 80; `@sanity/prettier-config@3.0.0` resolves to 100). Reverted in S6. Do we run one deliberate repo-wide reformat and commit it, or pin `printWidth: 80` in a local `.prettierrc` to match what is already on disk? Until it's settled, **never run `npm run format` repo-wide on a feature branch** | svey | **Opened 2026-09-14 (S6)** |
+| Q22 | ~~Sanity CLI cannot load its config in the Cowork VM~~ | svey | ✅ **Resolved 2026-09-14 (S6)** — `node_modules` is macOS-built and needs two linux-arm64 natives beyond the three §5.1 lists: `@esbuild/linux-arm64` and `@rolldown/binding-linux-arm64-gnu`. Documented in §5.1 |
 
 ---
 
@@ -237,11 +239,11 @@ don't "fix" the template for them.
   ~180s cap, so `nohup … &` is killed the moment the call returns. Start a server and assert against it
   **inside one call**. `pgrep`/`pkill` only see that call's own processes — and `pkill -f "npm install"`
   will match the wrapper and kill your own shell.
-- **`sanity schema extract` exits 134 (SIGABRT) *after* succeeding.** It writes a valid
-  `sanity.schema.json`, then aborts during teardown. This breaks the `&&` chain in the `sanity:typegen`
-  script, so the script always "fails" here. Run the two steps separately and check the output file:
-  `(cd studio && sanity schema extract --enforce-required-fields --path ../sanity.schema.json)` then
-  `(cd frontend && sanity typegen generate)`. Don't rewrite the template script over this.
+- **Typegen is `npm run typegen` from the root** (a root-owned pipeline landed with S5 — `schema:extract`
+  then `typegen:frontend` + `typegen:studio` in parallel). There is no `sanity:typegen` script any more,
+  in any workspace; earlier sections of this document that name one are stale. The `--force` flag the new
+  pipeline passes also settles the old SIGABRT-on-teardown problem, so the two-step workaround previously
+  documented here is no longer needed.
 - **Google Fonts is blocked** (`fonts.googleapis.com` → proxy refusal), so `next/font/google` falls back
   to system fonts locally. Type will look wrong in local dev; it is fine on Vercel. Relevant to S1 — judge
   typography from a deployed preview, not from localhost.
@@ -277,11 +279,21 @@ don't "fix" the template for them.
     `node_modules` symlink that points outside the project root. In the mount itself, Turbopack fails on
     its persistence directory and webpack fails unlinking its dev log.
 - **`node_modules` is installed for macOS, not for this VM.** The native binaries are `*-darwin-arm64`, so
-  `next dev` tries to download `@next/swc-linux-arm64-gnu` at startup — through Node, which can't reach the
-  registry. Fetch the three linux-arm64 binaries with `npm pack` (which does use the proxy) and unpack them
-  into `node_modules` by hand: `@next/swc-linux-arm64-gnu`, `lightningcss-linux-arm64-gnu`,
-  `@tailwindcss/oxide-linux-arm64-gnu`, each at the version the lockfile pins. They are gitignored and
-  harmless to the owner's macOS checkout, which picks its own platform package.
+  anything that loads one fails — through Node, which can't reach the registry to self-heal. Fetch the
+  linux-arm64 equivalents with `npm pack` (which *does* use the proxy) and unpack them into `node_modules`
+  by hand. **Five packages, not three** (S6):
+  | Package | Needed by | Symptom when missing |
+  |---|---|---|
+  | `@next/swc-linux-arm64-gnu` | `next dev` / `next build` | tries to download at startup, hangs/fails |
+  | `lightningcss-linux-arm64-gnu` | CSS pipeline | build error |
+  | `@tailwindcss/oxide-linux-arm64-gnu` | Tailwind v4 | build error |
+  | `@esbuild/linux-arm64` | Sanity CLI config load (jiti) | `CLI config cannot be loaded` |
+  | `@rolldown/binding-linux-arm64-gnu` | Sanity CLI → Vite → rolldown | `Class extends value undefined` |
+  Take each version from that package's own `package.json` in `node_modules` (they are *not* all the same
+  as the versions named in older revisions of this doc). One-liner per package:
+  `npm pack <pkg>@<ver> && tar xzf *.tgz && cp -R package/* node_modules/<pkg>/`.
+  They are gitignored and harmless to the owner's macOS checkout, which picks its own platform package.
+  The two CLI ones are why `npm run typegen` appears broken in a fresh VM session — fix them first.
 - **`.next` must not be renamed in place.** Turbopack refuses to start when its persistence directory is
   stale (`Failed to open database … Operation not permitted`), and any `.next-*` sibling left in the tree
   is **not** gitignored, so Tailwind v4 scans it for class candidates and pulls mangled bytes out of the
@@ -648,18 +660,42 @@ media"]`; nothing below 768px, drawer covers it).
       Captured through the desktop browser pane; the legacy host is off the egress allowlist (Q14)
 - [x] Document dimensions/quality of the legacy imagery → `content/legacy/IMAGE-MANIFEST.md`. **Every image
       fails the masthead bar** (Q5)
-- [ ] Download the legacy imagery — **blocked on Q14** (host not on the allowlist)
+- [x] ~~Download the legacy imagery — **blocked on Q14** (host not on the allowlist)~~ — done out of
+      sequence in the image-migration session: Q14 closed, 124 assets uploaded, 111 referenced
 - [x] Seed `settings` — title, blurb, description, legal, homepage ref, full side-nav (§6.2) with the
       Programs dropdown, contact block with address/phone/hours/Facebook, `foundingDate`, `areaServed`.
       `priceRange` and `geo` deliberately left empty: Q6 is unanswered and coordinates would be invented
-- [ ] Build the home page in the page builder: masthead → mission/vision (infoSection) → programs grid →
-      featured testimonial → gallery teaser → CTA (`mailto:` "Book a tour")
-- [ ] Add optional `seo` object (`metaTitle`, `metaDescription`, `ogImage`, `noIndex`) to `page` —
-      **backport this to the template**, it's generally useful; wire into `generateMetadata`
-- [ ] Screenshot at 3 breakpoints for the client review thread
+- [x] Build the home page in the page builder: masthead → mission/vision (infoSection) → programs grid →
+      featured testimonial → gallery teaser → CTA (`mailto:` "Book a tour"). The *content* was seeded in
+      S3; what was missing was the code under it, and one content bug:
+      - `programsGrid` had schema but **no React renderer**, so the homepage rendered the red "Unknown
+        block" alert (OWNER-TODO item D). `ProgramsGrid.tsx` added and registered; GROQ resolves the
+        `mode` switch so the component never branches. Cards link to `/programs/<slug>` — **those routes
+        land in S8**, as the side rail's Programs children already do
+      - `testimonials` with `source: "documents"` (S3) resolved nothing — the component only ever read
+        the template's inline array, so the homepage showed a heading above an empty list. Both sources
+        now normalise to one shape; `limit` is applied in JS (a GROQ slice cannot take a runtime value
+        from the enclosing block). Three featured quotes render
+      - **Content bug found and fixed in `production`:** the `callToAction` `body` on `/` and `/programs`
+        was seeded as a plain **string** where the schema wants Portable Text, so `<PortableText>` printed
+        `Unknown block type "undefined"` into the page. Both patched and republished. This is the same
+        warning S5 logged from the build and deferred to S12's content proof — it is now closed
+- [x] Add optional `seo` object (`metaTitle`, `metaDescription`, `ogImage`, `noIndex`) to `page` —
+      **backport candidate, logged in the FORK-SYNC registry**; wired into `generateMetadata` on both `/`
+      and `/[slug]` through a shared `pageMetadata()` so the two routes cannot drift. Every field is
+      optional and falls back to the document's own `name`/`subheading`/`heading`. Also fixed a real
+      metadata bug it exposed — the homepage was emitting a bare `<title>Home</title>` (§12)
+- [ ] Screenshot at 3 breakpoints for the client review thread — **carried, deliberately.** No browser
+      can be installed in the Cowork VM (`cdn.playwright.dev` is off the allowlist) and, more to the
+      point, **Q19 means local renders fall back to system fonts** — a client-facing screenshot from here
+      would misrepresent the typography the client is being asked to approve (OWNER-TODO item 9). These
+      belong on the Vercel preview
 
-**Acceptance:** `/` renders from Sanity with no lorem/template remnants; Lighthouse ≥95 a11y, ≥90 perf on
-the preview deployment.
+**Acceptance:** `/` renders from Sanity with no lorem/template remnants ✅ — verified in the rendered HTML
+against the live `production` dataset: zero "Unknown block" alerts on any of the six routes, exactly one
+`h1` each, 12 images and zero missing `alt`, all seven homepage sections present in order, three program
+cards with correct slugs, three featured testimonials, CTA body rendering as prose. Lighthouse ⬜ — still
+owner-side (Q19 blocks a local production build, and therefore a local Lighthouse run).
 
 ---
 
@@ -807,6 +843,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | S4 | cowork/opus | `feat/fsma-s4-sidenav` (local, unpushed) | **Done, with one item carried.** Side rail + mobile top bar/drawer replace the template header; skip link, offset content column, view-transition anchors, rail contact block. Two nav-resolution bugs fixed in `navHelpers.ts`. **First session to render the site**: all six routes 200 against `production`, geometry verified headlessly at 360/768/1024/1440 | **Q11 is closed** — `NODE_USE_ENV_PROXY=1` makes Node use the egress proxy (§5.1). **New Q18**: git cannot merge or check out in the mounted repo (no `unlink`). **New Q19**: `fonts.googleapis.com` is off the allowlist, so `next build` fails outright. Drawer keyboard test carried to the owner's preview |
 | 2026-09-13 | S5 | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done, one item carried.** Masthead (both variants) + floating social rail built and wired through `CachedPage`; masthead owns the visual h1; rail-footer socials deduped (§12); `masthead` added to `getPageQuery`, typegen regenerated; type-check/lint/format clean. **First session run on the owner's Mac** (OpenCode), not the Cowork VM — §5.1's sandbox quirks didn't apply: typegen ran as one script, the owner's dev server rendered all six routes 200, mastheads verified in HTML (per-page height/tone/placement, exactly one h1 per route). Image-weight/LCP measurement carried (no photography; Q20 blocked builds at the time) | **Q20 found and then fixed in-session** (see next row). Q18/Q19 are Cowork-VM-only and did not reproduce on the Mac |
 | 2026-09-13 | Q20 fix | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done.** `__placeholder__` guard in both hidden-type detail routes; **first full production build passes** (23 pages; `/`, `/[slug]` + all six routes static/PPR with 1y tags; placeholder paths prerender the 404). type-check/lint/format clean | **Q20 closed; backport candidate for the template.** Two pre-existing build warnings to audit later: `[@portabletext/react] Unknown block type "undefined"` during static generation (add to S12's content proof) and `Bail out to client-side rendering: next/dynamic` (template behaviour, pages still prerender) |
+| 2026-09-14 | S6 | cowork/opus | `feat/fsma-s6-home` (local, unpushed) | **Done, screenshots carried.** The homepage's content was already seeded (S3); this session built the code under it: `ProgramsGrid` renderer + GROQ resolution, document-sourced testimonials, and an optional page-level `seo` object wired through a shared `pageMetadata()`. Fixed two real bugs the wiring exposed — a seeded `callToAction.body` stored as a string instead of Portable Text on `/` and `/programs` (this was S5's `Unknown block type \"undefined\"` build warning, now closed), and a bare `<title>Home</title>` on the homepage. All six routes 200 against `production`, zero unknown blocks, one h1 each, zero missing alt; production build passes (23 pages) | **New Q21**: `npm run format` rewrites ~50 untouched files in the Cowork VM — reverted, needs a deliberate clean-up commit. **New Q22**: `node_modules` needs two *more* linux-arm64 natives than §5.1 lists (`@esbuild`, `@rolldown/binding`) or the Sanity CLI cannot even load its config. Q19 unchanged and now blocks screenshots too |
 
 ---
 
@@ -839,6 +876,16 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-13 | Brand blue in the logo is `#2B2FD4`, not the raw `#3300FF` of the JPG | The source blue is near-maximally saturated and vibrates against black at large sizes; `#2B2FD4` is the value §7.4 already named and keeps the blue/black/yellow relationship. The UI's `--primary` is darker still (`#27327C`) for contrast — the logo keeps its own blue, the interface does not borrow it | — |
 | 2026-09-13 | Favicon tile is the **cap alone**, not cap + "FSMA" | "FSMA" is unreadable below ~48px (verified at 16px and 32px). The lettered `logo-mark.svg` is for the nav rail; the icon tile is the mortarboard reversed out of `--primary` | §7.4's "cap + FSMA for the rail/favicon" |
 | 2026-09-13 | Heading face: **Outfit** (provisional) | Wider weight range than Poppins and a tighter fit beside Orbitron. §7.3 asks for both to be shown to the client in context — **not yet done**, so treat this as reversible until they have seen it | — |
+
+| 2026-09-14 | **Seeded `callToAction.body` was a plain string, not Portable Text** | The S3 seed wrote `body: "A tour and a classroom observation…"` where the schema declares `blockContentTextOnly`. Content Lake is schemaless, so it accepted it (the same property that let S3 seed undeployed types), and `<PortableText>` then printed `Unknown block type "undefined"` into the rendered page on `/` and `/programs`. Patched both documents to proper block arrays and republished. **The general lesson for the remaining seeding sessions:** schemaless writes mean a seed script's field *shapes* are never validated — only rendering catches them, so seed and render in the same session, or query for the mismatch explicitly | S5's §11 note deferring this warning to S12's content proof |
+| 2026-09-14 | **Homepage `<title>` is emitted as `absolute`, not through the template** | The root layout sets `title.template: '%s | <site title>'`, which Next applies to *child* segments — and `app/page.tsx` is the **same segment** that defines it, so the homepage rendered a bare `<title>Home</title>` while every `/[slug]` route correctly rendered `About Us \| Future Scholars Montessori Academy`. `pageMetadata()` takes an optional `siteTitle`, passed only from `/`, and emits `{absolute}`. Note this also means the homepage title is the school's name rather than "Home \| …", which is what it should be anyway. **Backport candidate** — the template has the same bug | — |
+| 2026-09-14 | Programs-grid `mode` resolves in GROQ; the testimonials `limit` resolves in JS | Both are the same "pick a source" shape, but only one can be done the same way. `mode == "selected" => programs[]->{…}` is a clean GROQ `select()`. The testimonials `limit`, though, would need `[0...^.limit]` — a slice range cannot take a runtime value from the enclosing scope. So GROQ fetches an ordered, featured-filtered `[0...24]` and the component slices. Recording it so the asymmetry doesn't read as an oversight later | — |
+| 2026-09-14 | Testimonials `Quote` type is **derived** from the inline array member, not hand-written | The two sources produce structurally identical image sub-objects, but hand-writing `hotspot?: unknown` immediately failed type-check against `SanityImageHotspot`. `InlineTestimonial['authorImage']` tracks whatever typegen emits, so a schema change to the image field cannot silently drift from this component | — |
+| 2026-09-14 | Program cards link to `/programs/<slug>`, which does not exist until S8 | Considered rendering the cards unlinked until the routes land. Rejected: the side rail has already linked to those three URLs since S4, so not linking the cards would not avoid the broken link, it would only make the grid inconsistent with the nav. S11's "zero broken internal links" check is the backstop, and S8 is two sessions away | — |
+| 2026-09-14 | **Q21: `npm run format` rewrites ~50 files nobody touched in the Cowork VM** | The repo as committed is formatted at `printWidth` **80**; `@sanity/prettier-config@3.0.0` — the version in the lockfile and in the mounted `node_modules` — resolves to **100**, so a repo-wide format reflows every file that has a line between the two. Reverted everything not mine and kept my own files at the config's real 100 (`prettier --check` passes on them). Since both machines share the same mounted `node_modules`, the Mac would produce the identical 50-file diff, which means **no repo-wide format has been run since the config changed** — the earlier sessions' "format clean" only ever meant "the command exited 0". Wants a deliberate one-commit reformat, not a silent side-effect of a feature branch. Same failure mode as the two lockfile incidents: an environment-wide rewrite riding along in `git add -A` | §5.1, which warned about the lockfile but not about prettier |
+| 2026-09-14 | **Q22: the Sanity CLI needs two more linux-arm64 natives than §5.1 lists** | §5.1 names `@next/swc`, `lightningcss` and `@tailwindcss/oxide`. It is missing two, and without them `sanity schema extract` dies before it starts, with the useless message `CLI config cannot be loaded — Class extends value undefined`: the CLI loads `sanity.cli.ts` through jiti → Vite → **rolldown**, and both `esbuild` and `@rolldown/binding` are darwin-only in the mounted tree. Adding `@esbuild/linux-arm64` and `@rolldown/binding-linux-arm64-gnu` at the lockfile's versions fixes it. Note the version numbers are *not* the ones in §5.1 — read them from each package's own `package.json` rather than assuming | §5.1's three-package list |
+| 2026-09-14 | `next dev` now runs **in the mount**, given a delete grant — but only with `--webpack` | With deletion granted for the folder (Q18), `rm -rf .next` works and the dev server starts in place; the copy-to-`$HOME`-with-symlinked-`node_modules` dance from S4 was not needed. Turbopack still cannot be used, but for a *new* reason: it treats the blocked `fonts.gstatic.com` as a hard module-resolution error (`Can't resolve '@vercel/turbopack-next/internal/font/google/font'`) and every route 500s, where webpack only warns and falls back to system fonts. So: grant deletion early, then `NODE_USE_ENV_PROXY=1 npx next dev --webpack` | §5.1's "dev server must run from a copy outside the mount" |
+| 2026-09-14 | Q19 verified again, and worked around **only** for a throwaway build | `next build` still fails outright on all three `next/font/google` faces. To prove the session's changes actually build, the three font calls in `layout.tsx` were temporarily replaced with `{variable, className}` stubs, the build run (23 pages, every route prerendered, **no PortableText warning any more**), and `layout.tsx` restored from a copy — verified with `git diff`. The stub is a verification technique, **not** a fix and never committed; self-hosting the faces (OWNER-TODO item A) remains the real answer, and cannot be done from an agent session because the `.woff2` files are themselves unreachable | — |
 
 ### S1 contrast audit (light theme, 2026-09-13)
 

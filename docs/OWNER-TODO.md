@@ -1,9 +1,9 @@
 # FSMA — owner action list
 
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
-Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
+Items 1–3 and 4–6 are done. What remains is mostly client answers, plus two environment fixes (A, E).
 
-Last updated: 2026-09-13 (after S4 — the side-nav shell).
+Last updated: 2026-09-14 (after S6 — the home page).
 
 ---
 
@@ -56,11 +56,31 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
       inside), press Esc (should close and put focus back on the hamburger). It is stock Radix modal
       Dialog, so it should be right; I just can't claim it.
 
-- [ ] **D. Heads-up: the homepage shows a red "Unknown block" box.** S3 added the `programsGrid` schema and
-      the homepage uses it, but the React renderer for it lands in S6/S8. Don't show the client the
-      homepage until then — `/about`, `/gallery` and `/testimonials` are clean.
+- [x] **D. ~~The homepage shows a red "Unknown block" box.~~** Fixed in S6 — the `programsGrid` renderer
+      now exists, and a second cause turned up alongside it (a seeded CTA body stored as a plain string
+      where the schema wants Portable Text, on `/` **and** `/programs`). Both fixed and republished.
+      **The homepage is now showable.** Every route renders clean: zero unknown blocks, one `h1` each,
+      no missing alt text.
 
 ---
+
+## New from S6 — decisions I need from you
+
+- [ ] **E. Prettier is misconfigured and it is a trap** (plan Q21). The repo on disk is formatted at
+      `printWidth` 80, but `@sanity/prettier-config@3.0.0` — the version your `node_modules` and the
+      lockfile both carry — resolves to 100. So `npm run format` rewrites **~50 files nobody touched**.
+      I reverted all of it this session, but it will ambush the next person who runs the script and
+      doesn't check `git status`. Two clean ways out, your call:
+      1. pin `printWidth: 80` in a root `.prettierrc` so the config matches what is already committed, or
+      2. run the reformat once, deliberately, and commit it on its own branch.
+      Until then, don't run `npm run format` repo-wide on a feature branch.
+
+- [ ] **F. Client screenshots have to come from the Vercel preview, not from me** (follows from A).
+      S6 asked for homepage screenshots at three breakpoints for the client thread. I can verify the
+      rendered HTML, and did — but local renders fall back to system fonts because of the Google Fonts
+      block, so any screenshot I produce shows the wrong typeface. Since item 9 below is literally
+      "show the client the heading typeface", sending them a screenshot in the wrong font would be
+      worse than sending none. Once the preview is up, three widths (360 / 768 / 1440) is all it needs.
 
 ## Deploys and hosting (S0b)
 
@@ -147,3 +167,10 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
 
 - **Disk:** `frontend/node_modules/.stale/` holds ~140 MB of caches and scratch I had to move aside rather
   than delete (see Q18). Safe to `rm -rf` whenever you like; it is gitignored.
+
+- **The Cowork VM needs five linux-arm64 native packages, not three.** `node_modules` is your macOS
+  install, so agent sessions have to hand-unpack linux builds. Two were missing from the notes and are
+  the reason `npm run typegen` looks broken in a fresh session: `@esbuild/linux-arm64` and
+  `@rolldown/binding-linux-arm64-gnu` (the Sanity CLI loads its config through jiti → Vite → rolldown,
+  and fails with an unhelpful `Class extends value undefined`). Plan §5.1 now has the full table.
+  Harmless to your Mac — they're gitignored and it picks its own platform packages.
