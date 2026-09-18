@@ -850,6 +850,23 @@
           },
           "optional": true
         },
+        "layout": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "cards"
+              },
+              {
+                "type": "string",
+                "value": "letters"
+              }
+            ]
+          },
+          "optional": true
+        },
         "source": {
           "type": "objectAttribute",
           "value": {

@@ -155,6 +155,7 @@ export type Testimonials = {
   _type: 'testimonials'
   heading?: string
   subheading?: string
+  layout?: 'cards' | 'letters'
   source?: 'manual' | 'documents'
   featuredOnly?: boolean
   limit?: number

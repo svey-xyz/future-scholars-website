@@ -14,6 +14,24 @@ export const testimonials = defineType({
   fields: [
     defineField({name: 'heading', title: 'Heading', type: 'string'}),
     defineField({name: 'subheading', title: 'Subheading', type: 'string'}),
+    // FSMA fork: presentation only — both layouts read the same data, so an
+    // editor can flip a block between them without re-entering anything.
+    defineField({
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      initialValue: 'cards',
+      description:
+        'Cards: pull quotes in a grid, full text behind \u201cRead more\u201d — for a few testimonials on a mixed page. Letters: every testimonial in full, one per row — for a dedicated testimonials page.',
+      options: {
+        list: [
+          {title: 'Cards', value: 'cards'},
+          {title: 'Letters (full page)', value: 'letters'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    }),
     // FSMA fork (build plan S3): testimonials are also documents, so the same
     // quote can appear here and on /testimonials without being retyped. The
     // template's inline array stays for back-compat — `source` picks between
@@ -117,6 +135,7 @@ export const testimonials = defineType({
       title: 'Columns',
       type: 'number',
       initialValue: 3,
+      hidden: ({parent}) => parent?.layout === 'letters',
       options: {
         list: [
           {title: 'One', value: 1},
@@ -129,15 +148,22 @@ export const testimonials = defineType({
     }),
   ],
   preview: {
-    select: {heading: 'heading', count: 'testimonials', source: 'source', limit: 'limit'},
-    prepare({heading, count, source, limit}) {
+    select: {
+      heading: 'heading',
+      count: 'testimonials',
+      source: 'source',
+      limit: 'limit',
+      layout: 'layout',
+    },
+    prepare({heading, count, source, limit, layout}) {
       const n = Array.isArray(count) ? count.length : 0
+      const kind = layout === 'letters' ? 'Testimonials (letters)' : 'Testimonials'
       return {
         title: heading || 'Testimonials',
         subtitle:
           source === 'documents'
-            ? `Testimonials · from documents${limit ? ` · up to ${limit}` : ''}`
-            : `Testimonials · ${n} item${n === 1 ? '' : 's'}`,
+            ? `${kind} · from documents${limit ? ` · up to ${limit}` : ''}`
+            : `${kind} · ${n} item${n === 1 ? '' : 's'}`,
       }
     },
   },
