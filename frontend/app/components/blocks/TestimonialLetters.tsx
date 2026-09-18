@@ -1,7 +1,11 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import Reveal from '@/app/components/motion/Reveal'
-import TestimonialAttribution, {normalise, type Quote} from './TestimonialAttribution'
+import TestimonialAttribution, {
+  normalise,
+  testimonialAnchor,
+  type Quote,
+} from './TestimonialAttribution'
 import {cn} from '@/lib/utils'
 
 type Props = {
@@ -26,6 +30,9 @@ type Props = {
  */
 export default function TestimonialLetters({items, blockKey, hasHeading}: Props) {
   const Name = hasHeading ? 'h3' : 'h2'
+  // Two families signing identically would share a fragment id; suffix the
+  // repeats so ids stay unique (card deep links land on the first).
+  const seen = new Map<string, number>()
 
   return (
     <ol className="divide-y divide-border">
@@ -41,12 +48,19 @@ export default function TestimonialLetters({items, blockKey, hasHeading}: Props)
             ? t.highlight
             : null
         const flip = i % 2 === 1
+        const base = testimonialAnchor(t.authorName, t.key)
+        const n = (seen.get(base) ?? 0) + 1
+        seen.set(base, n)
+        const anchor = n === 1 ? base : `${base}-${n}`
 
         return (
           <Reveal as="li" key={t.key} className="py-12 first:pt-4 lg:py-20 lg:first:pt-8">
+            {/* Deep-link target for the homepage cards. `scroll-mt` clears the
+                fixed mobile top bar (same offsets as block anchors). */}
             <article
+              id={anchor}
               aria-labelledby={nameId}
-              className="grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-8"
+              className="scroll-mt-20 lg:scroll-mt-8 grid grid-cols-1 gap-8 lg:grid-cols-12 lg:gap-x-8"
             >
               <aside
                 className={cn(

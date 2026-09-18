@@ -1,3 +1,5 @@
+import {stegaClean} from '@sanity/client/stega'
+
 import Image from '@/app/components/common/SanityImage'
 import {Avatar as AvatarRoot, AvatarFallback} from '@/components/ui/avatar'
 import {cn} from '@/lib/utils'
@@ -27,6 +29,21 @@ export const normalise = (value: string): string =>
     .replace(/\s+/g, ' ')
     .replace(/^[\s"'“”‘’.…]+|[\s"'“”‘’.…]+$/g, '')
     .toLowerCase()
+
+/**
+ * Fragment id for a testimonial on the letters page, e.g.
+ * `#the-lewandowski-family`. Derived from the attribution so the URL reads
+ * well; the card grid and the letters layout both call this, so the deep link
+ * and its target can't drift. `stegaClean` first — draft-mode markers would
+ * otherwise end up in the id.
+ */
+export const testimonialAnchor = (authorName: string | null | undefined, fallback: string) =>
+  (stegaClean(authorName) ?? '')
+    .normalize('NFKD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '') || `testimonial-${fallback}`
 
 type Props = {
   t: Quote

@@ -153,10 +153,21 @@ export const getPageQuery = defineQuery(`
           _type == "testimonial" && (^.featuredOnly != true || featured == true)
         ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{
           ${testimonialCardFields}
-        }
+        },
+        // The page that shows testimonials in full (a letters-layout block).
+        // Card "Read more" deep-links there instead of expanding in place;
+        // null (no such page yet) falls back to the in-card disclosure.
+        "fullPageSlug": *[
+          _type == "page" && defined(slug.current)
+          && count(pageBuilder[_type == "testimonials" && layout == "letters"]) > 0
+        ] | order(_updatedAt desc)[0].slug.current
       },
       _type == "facultyGrid" => {
         ...,
+        button {
+          ...,
+          ${linkFields}
+        },
         "people": select(
           mode == "selected" => people[]->{ ${personCardFields} },
           *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){

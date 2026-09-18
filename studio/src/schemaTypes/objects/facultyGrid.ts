@@ -17,6 +17,23 @@ export const facultyGrid = defineType({
   fields: [
     defineField({name: 'heading', title: 'Heading', type: 'string'}),
     defineField({name: 'subheading', title: 'Subheading', type: 'string'}),
+    // Presentation only — both layouts read the same people.
+    defineField({
+      name: 'layout',
+      title: 'Layout',
+      type: 'string',
+      initialValue: 'cards',
+      description:
+        'Cards: full staff cards with portraits and biographies (About page). Highlight: a single text column with names, roles and credentials, plus a link onward (homepage teaser).',
+      options: {
+        list: [
+          {title: 'Cards', value: 'cards'},
+          {title: 'Highlight', value: 'highlight'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+    }),
     defineField({
       name: 'mode',
       title: 'Which people',
@@ -52,16 +69,28 @@ export const facultyGrid = defineType({
       type: 'boolean',
       initialValue: true,
       description: 'Off shows name, role and credentials only — useful for a large staff list.',
+      hidden: ({parent}) => parent?.layout === 'highlight',
     }),
-    columnsField,
+    defineField({
+      name: 'button',
+      title: 'Link onward',
+      type: 'button',
+      description: 'Highlight layout only, e.g. "Meet our directors" → About › Directors.',
+      hidden: ({parent}) => parent?.layout !== 'highlight',
+    }),
+    {
+      ...columnsField,
+      hidden: ({parent}: {parent?: {layout?: string}}) => parent?.layout === 'highlight',
+    },
     anchorField,
   ],
   preview: {
-    select: {heading: 'heading', mode: 'mode'},
-    prepare({heading, mode}) {
+    select: {heading: 'heading', mode: 'mode', layout: 'layout'},
+    prepare({heading, mode, layout}) {
+      const kind = layout === 'highlight' ? 'Highlight' : 'Cards'
       return {
         title: heading || 'Faculty Grid',
-        subtitle: mode === 'selected' ? 'Faculty · hand-picked' : 'Faculty · everyone',
+        subtitle: `${kind} · ${mode === 'selected' ? 'hand-picked' : 'everyone'}`,
       }
     },
   },

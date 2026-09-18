@@ -31,7 +31,7 @@ export const testimonial = defineType({
       type: 'text',
       rows: 3,
       description:
-        'The strongest sentence or two, copied verbatim from the quote. This is what the card shows; the full quote sits behind \u201cRead more\u201d. Leave empty to fall back to the opening sentence.',
+        'The strongest sentence or two, copied verbatim from the quote. This is what the card shows; \u201cRead more\u201d links to the full quote on the testimonials page. Leave empty to fall back to the opening sentence.',
       validation: (Rule) => Rule.max(240).custom(isExcerptOf('quote')),
     }),
     defineField({

@@ -99,6 +99,7 @@ export type FacultyGrid = {
   _type: 'facultyGrid'
   heading?: string
   subheading?: string
+  layout?: 'cards' | 'highlight'
   mode?: 'all' | 'selected'
   people?: Array<
     {
@@ -106,6 +107,7 @@ export type FacultyGrid = {
     } & PersonReference
   >
   showBio?: boolean
+  button?: Button
   columns?: 2 | 3 | 4
   anchor?: string
 }

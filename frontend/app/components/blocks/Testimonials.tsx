@@ -1,11 +1,18 @@
+import Link from 'next/link'
 import {stegaClean} from '@sanity/client/stega'
+import {ArrowRightIcon} from '@heroicons/react/24/outline'
 
 import Reveal from '@/app/components/motion/Reveal'
-import TestimonialAttribution, {normalise, type Quote} from './TestimonialAttribution'
+import TestimonialAttribution, {
+  normalise,
+  testimonialAnchor,
+  type Quote,
+} from './TestimonialAttribution'
 import TestimonialLetters from './TestimonialLetters'
 import TestimonialQuote from './TestimonialQuote'
 import {Card} from '@/components/ui/card'
 import {cn} from '@/lib/utils'
+import {documentHref} from '@/sanity/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 type Props = {
@@ -45,6 +52,8 @@ export default function Testimonials({block, className}: Props) {
   // Presentation only — both layouts consume the same normalised items.
   // `stegaClean`: enum values carry stega characters in draft mode.
   const letters = stegaClean(block.layout) === 'letters'
+  // Where "Read more" goes: the letters page, if one exists (see query).
+  const fullPage = block.fullPageSlug ? documentHref('page', block.fullPageSlug) : null
 
   // GROQ resolves the documents (ordered, featured-filtered); the `limit` is
   // applied here rather than as a GROQ slice, which cannot take a runtime
@@ -103,12 +112,42 @@ export default function Testimonials({block, className}: Props) {
                     &rdquo;
                   </span>
                   <figure className="relative flex h-full flex-col gap-4 p-6">
-                    <TestimonialQuote
-                      highlight={highlight}
-                      quote={t.quote ?? ''}
-                      expandable={expandable}
-                      authorName={authorNameText}
-                    />
+                    {fullPage ? (
+                      <>
+                        <blockquote className="space-y-4 text-lg leading-8 font-medium text-pretty">
+                          {highlight
+                            .split(/\n{2,}/)
+                            .filter(Boolean)
+                            .map((paragraph, p) => (
+                              <p key={p}>{paragraph}</p>
+                            ))}
+                        </blockquote>
+                        {expandable && (
+                          <Link
+                            href={`${fullPage}#${testimonialAnchor(t.authorName, t.key)}`}
+                            transitionTypes={['nav-forward']}
+                            className="group/more -mx-2 -my-1 inline-flex min-h-11 w-fit items-center gap-1.5 rounded-md px-2 py-1 font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+                          >
+                            Read more
+                            <span className="sr-only">
+                              {' '}
+                              of {authorNameText || 'this family'}&rsquo;s testimonial
+                            </span>
+                            <ArrowRightIcon
+                              aria-hidden="true"
+                              className="size-4 transition-transform duration-200 motion-safe:group-hover/more:translate-x-0.5 motion-reduce:transition-none"
+                            />
+                          </Link>
+                        )}
+                      </>
+                    ) : (
+                      <TestimonialQuote
+                        highlight={highlight}
+                        quote={t.quote ?? ''}
+                        expandable={expandable}
+                        authorName={authorNameText}
+                      />
+                    )}
                     <figcaption className="mt-auto">
                       <TestimonialAttribution
                         t={t}

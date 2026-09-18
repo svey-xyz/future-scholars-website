@@ -511,6 +511,23 @@
           },
           "optional": true
         },
+        "layout": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "cards"
+              },
+              {
+                "type": "string",
+                "value": "highlight"
+              }
+            ]
+          },
+          "optional": true
+        },
         "mode": {
           "type": "objectAttribute",
           "value": {
@@ -554,6 +571,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "boolean"
+          },
+          "optional": true
+        },
+        "button": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "button"
           },
           "optional": true
         },

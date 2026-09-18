@@ -1,5 +1,8 @@
 import {PortableText, type PortableTextBlock} from 'next-sanity'
+import {stegaClean} from '@sanity/client/stega'
+import {ArrowRightIcon} from '@heroicons/react/24/outline'
 
+import ResolvedLink from '@/app/components/common/ResolvedLink'
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
 import {Card} from '@/components/ui/card'
@@ -43,6 +46,11 @@ export default function FacultyGrid({block, className}: Props) {
   const NameHeading = heading ? 'h3' : 'h2'
 
   if (items.length === 0) return null
+
+  // `stegaClean`: enum values carry stega characters in draft mode.
+  if (stegaClean(block.layout) === 'highlight') {
+    return <FacultyHighlight block={block} className={className} />
+  }
 
   return (
     <section className={cn('container my-12 lg:my-16', className)}>
@@ -113,6 +121,92 @@ export default function FacultyGrid({block, className}: Props) {
           )
         })}
       </ul>
+    </section>
+  )
+}
+
+/**
+ * Highlight layout — the homepage teaser. A single text column: intro, the
+ * directors as short text entries (name, role, credentials), and a link on to
+ * the About page. No cards and no portraits: the About page carries those, and
+ * the homepage has enough imagery already.
+ *
+ * The onward link is a text link with a trailing arrow (the site's "this
+ * navigates" cue, cf. the testimonial cards), not a button: the CTA block
+ * further down owns the page's one primary button.
+ */
+function FacultyHighlight({
+  block,
+  className,
+}: {
+  block: ExtractPageBuilderType<'facultyGrid'>
+  className?: string
+}) {
+  const {heading, subheading, button} = block
+  const items = block.people ?? []
+  const NameHeading = heading ? 'h3' : 'h2'
+
+  return (
+    <section className={cn('container my-12 lg:my-16', className)}>
+      <div className="flex max-w-3xl flex-col gap-6">
+        <header className="flex flex-col gap-3">
+          {heading && (
+            <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+              {heading}
+            </Reveal>
+          )}
+          {subheading && (
+            <Reveal as="p" i={1} className="text-lg leading-8 text-pretty text-muted-foreground">
+              {subheading}
+            </Reveal>
+          )}
+        </header>
+
+        <ul className="flex flex-col gap-4">
+          {items.map((person, i) => {
+            const name = [person.firstName, person.lastName].filter(Boolean).join(' ')
+            const credentials = person.credentials ?? []
+            return (
+              <Reveal
+                as="li"
+                key={person._id}
+                i={i + 2}
+                className="border-l-2 border-primary/30 pl-4"
+              >
+                <NameHeading className="font-display text-lg">
+                  {name}
+                  {person.role && (
+                    <span className="font-sans text-base font-normal text-muted-foreground">
+                      , {person.role}
+                    </span>
+                  )}
+                </NameHeading>
+                {credentials.length > 0 && (
+                  <p className="mt-1 text-sm leading-6 text-muted-foreground">
+                    {credentials.join(' \u00b7 ')}
+                  </p>
+                )}
+              </Reveal>
+            )
+          })}
+        </ul>
+
+        {button?.buttonText && button.link && (
+          <Reveal i={items.length + 2}>
+            <ResolvedLink
+              link={button.link}
+              transitionTypes={['nav-forward']}
+              className="group/more -mx-2 inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 py-1 font-sans text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            >
+              {button.buttonText}
+              <ArrowRightIcon
+                aria-hidden="true"
+                className="size-4 transition-transform duration-200 motion-safe:group-hover/more:translate-x-0.5 motion-reduce:transition-none"
+              />
+            </ResolvedLink>
+          </Reveal>
+        )}
+      </div>
     </section>
   )
 }
