@@ -1,5 +1,6 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {HelpCircleIcon} from '@sanity/icons/HelpCircle'
+import {anchorField} from './shared'
 
 /**
  * FAQ — accessible question/answer list. Rendered with native <details>/<summary>
@@ -40,6 +41,7 @@ export const faq = defineType({
         }),
       ],
     }),
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', count: 'items'},

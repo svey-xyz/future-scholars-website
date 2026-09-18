@@ -17,12 +17,16 @@ export type GalleryAspect = NonNullable<GalleryBlock['aspect']>
 // schema options list in studio documents/page.ts; unset = auto.
 export type TitleDisplay = 'plain' | 'highlighted' | 'none'
 
-// Represents a Link after GROQ dereferencing (page becomes a slug string)
+// Represents a Link after GROQ dereferencing: `page` becomes the referenced
+// document's slug and `pageType` its `_type` (see `documentHref`).
 export type DereferencedLink = {
   _type: 'link'
   linkType?: 'href' | 'page'
   href?: string
   page?: string | null
+  pageType?: string | null
+  /** Block anchor on the target document, rendered as `#anchor`. */
+  anchor?: string | null
   openInNewTab?: boolean
 }
 

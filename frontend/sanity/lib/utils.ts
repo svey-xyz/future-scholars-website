@@ -33,6 +33,24 @@ export function resolveOpenGraphImage(
   return {url, alt: (image as {alt?: string})?.alt || '', width, height}
 }
 
+/**
+ * Route for a linkable document. The single frontend source of truth for
+ * document → URL; mirror changes in Studio's `resolveHref` (sanity.config.ts)
+ * and `linkableTypes` (studio objects/link.ts).
+ */
+export function documentHref(type: string | null | undefined, slug: string): string | null {
+  const cleanSlug = stegaClean(slug)
+  // Unset type = legacy projection that only dereferenced `page` documents.
+  switch (stegaClean(type) ?? 'page') {
+    case 'page':
+      return `/${cleanSlug}`
+    case 'program':
+      return `/programs/${cleanSlug}`
+    default:
+      return null
+  }
+}
+
 // Resolve a link to its href: an internal page path or the raw URL. Otherwise null.
 export function linkResolver(link: Link | DereferencedLink | undefined) {
   if (!link) return null
@@ -49,7 +67,10 @@ export function linkResolver(link: Link | DereferencedLink | undefined) {
       return link.href || null
     case 'page':
       if (link?.page && typeof link.page === 'string') {
-        return `/${link.page}`
+        const path = documentHref('pageType' in link ? link.pageType : 'page', link.page)
+        // Optional deep link to a block's `anchor` (rendered as its wrapper id).
+        const anchor = 'anchor' in link ? stegaClean(link.anchor)?.trim() : undefined
+        return path && anchor ? `${path}#${anchor}` : path
       }
       return null
     default:

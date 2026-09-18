@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {ImagesIcon} from '@sanity/icons/Images'
 
-import {altField, columnsField} from './shared'
+import {altField, columnsField, anchorField} from './shared'
 
 /**
  * Gallery — layout-switchable media gallery (grid / masonry / carousel) of
@@ -79,6 +79,7 @@ export const gallery = defineType({
       // redundant — hide the toggle there (the frontend also forces it off).
       hidden: ({parent}) => (parent as {layout?: string})?.layout === 'carousel',
     }),
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', items: 'items'},

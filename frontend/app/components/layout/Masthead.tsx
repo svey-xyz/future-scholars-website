@@ -120,8 +120,11 @@ export default function Masthead({masthead, heading, subheading, titleDisplay}: 
 
       <div
         className={cn(
-          'flex flex-col gap-4 px-6 py-8 sm:px-10 lg:px-14 lg:py-12',
-          centered ? 'items-center' : 'items-start pb-8 lg:pb-12',
+          'flex flex-col gap-4 py-8 lg:py-12',
+          // Left placement shares the content column's `container` (max-width,
+          // auto margins, 2rem gutter) so the lockup's left edge lines up with
+          // every block below it. Centred copy keeps its own padding.
+          centered ? 'items-center px-6 sm:px-10 lg:px-14' : 'container items-start',
           // Photographs take the on-dark token (white) for copy; brand panels
           // inherit their tone's foreground from the header element.
           isImage && 'text-primary-foreground',

@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
+import {anchorField} from './shared'
 
 /**
  * Note — a frosted, toned callout card (info / warning / danger) built on
@@ -55,6 +56,7 @@ export const note = defineType({
       type: 'blockContentTextOnly',
       validation: (Rule) => Rule.required(),
     }),
+    anchorField,
   ],
   preview: {
     select: {tone: 'tone', content: 'content'},

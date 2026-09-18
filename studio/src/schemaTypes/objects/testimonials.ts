@@ -1,5 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {BlockquoteIcon} from '@sanity/icons/Blockquote'
+import {anchorField} from './shared'
 
 /**
  * Testimonials — renders `testimonial` documents, so the same quote can appear
@@ -60,6 +61,7 @@ export const testimonials = defineType({
         direction: 'horizontal',
       },
     }),
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', limit: 'limit', layout: 'layout', featuredOnly: 'featuredOnly'},

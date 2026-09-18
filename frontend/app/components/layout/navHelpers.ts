@@ -21,10 +21,8 @@ export type ResolvedNavLink = {
 /**
  * Resolves a nav link to an href plus its external/new-tab state.
  *
- * `linkType: 'href'` does not imply external: the Programs children are
- * authored as `href` links to routes that aren't `page` documents
- * (`/programs/infants`, …), and `/about#admissions` is authored the same way.
- * Externality is a property of the resolved href,
+ * `linkType: 'href'` does not imply external: site paths such as
+ * `/about#admissions` are authored as relative URLs. Externality is a property of the resolved href,
  * not of how the editor happened to author it: anything starting with `/` is
  * an internal route.
  *

@@ -306,9 +306,9 @@ export type PageReference = {
 
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page'
+  linkType?: 'page' | 'href'
+  page?: PageReference | ProgramReference
   href?: string
-  page?: PageReference
   openInNewTab?: boolean
 }
 
@@ -369,9 +369,9 @@ export type BlockContent = Array<
       style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<{
-        linkType?: 'href' | 'page'
+        linkType?: 'page' | 'href'
+        page?: PageReference | ProgramReference
         href?: string
-        page?: PageReference
         openInNewTab?: boolean
         _type: 'link'
         _key: string
@@ -456,38 +456,6 @@ export type Testimonial = {
   order?: number
 }
 
-export type Program = {
-  _id: string
-  _type: 'program'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: string
-  slug: Slug
-  ageRange: string
-  ratio?: string
-  classroomName?: string
-  summary: string
-  body?: BlockContent
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  scheduleNote?: string
-  order: number
-  masthead?: Masthead
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -505,9 +473,9 @@ export type Settings = {
     style?: 'normal'
     listItem?: never
     markDefs?: Array<{
-      linkType?: 'href' | 'page'
+      linkType?: 'page' | 'href'
+      page?: PageReference | ProgramReference
       href?: string
-      page?: PageReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -594,6 +562,38 @@ export type Page = {
         _key: string
       } & Note)
   >
+}
+
+export type Program = {
+  _id: string
+  _type: 'program'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  slug: Slug
+  ageRange: string
+  ratio?: string
+  classroomName?: string
+  summary: string
+  body?: BlockContent
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  scheduleNote?: string
+  order: number
+  masthead?: Masthead
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -871,10 +871,10 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | Testimonial
-  | Program
-  | Slug
   | Settings
   | Page
+  | Program
+  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -900,7 +900,7 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)			}		}	}}
+// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)			}		}	}}
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
@@ -919,8 +919,8 @@ export type SettingsQueryResult = {
     listItem?: never
     markDefs?: Array<{
       linkType?: 'href' | 'page'
+      page?: PageReference | ProgramReference
       href?: string
-      page?: PageReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -959,9 +959,10 @@ export type SettingsQueryResult = {
           link: {
             _type: 'link'
             linkType?: 'href' | 'page'
-            href?: string
             page: string | null
+            href?: string
             openInNewTab?: boolean
+            pageType: 'page' | 'program' | null
           }
           resolvedTitle: string | null
         }> | null
@@ -973,9 +974,10 @@ export type SettingsQueryResult = {
         link: {
           _type: 'link'
           linkType?: 'href' | 'page'
-          href?: string
           page: string | null
+          href?: string
           openInNewTab?: boolean
+          pageType: 'page' | 'program' | null
         }
         resolvedTitle: string | null
       }
@@ -1034,7 +1036,7 @@ export type SettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: getPageQuery
-// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    titleDisplay,    masthead,    seo,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },      _type == "featuresGrid" => {        ...,        features[]{          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current  }      }        }      },      _type == "gallery" => {        ...,        items[]{          ...,          _type == "galleryImage" => {            "aspectRatio": asset->metadata.dimensions.aspectRatio          },          _type == "galleryVideo" => {            "poster": poster{              ...,              "aspectRatio": asset->metadata.dimensions.aspectRatio            }          }        }      },      _type == "programsGrid" => {        ...,        "programs": select(          mode == "selected" => programs[]->{   _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99) },          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){              _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99)          }        )      },      _type == "testimonials" => {        ...,        "documentTestimonials": *[          _type == "testimonial" && (^.featuredOnly != true || featured == true)        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{            _id,  quote,  highlight,  authorName,  authorRole,  authorImage        }      },      _type == "facultyGrid" => {        ...,        "people": select(          mode == "selected" => people[]->{   _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99) },          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){              _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99)          }        )      },      _type == "contactDetails" => {        ...,        "contact": *[_type == "settings"][0].contact      },      _type == "faq" => {        ...,        items[]{          ...,          answer[]{            ...,            markDefs[]{              ...,                _type == "link" => {    "page": page->slug.current  }            }          }        }      },      _type == "note" => {        ...,        tone,        icon,        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },    },  }
+// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    titleDisplay,    masthead,    seo,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }          }        }      },      _type == "featuresGrid" => {        ...,        features[]{          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }      }        }      },      _type == "gallery" => {        ...,        items[]{          ...,          _type == "galleryImage" => {            "aspectRatio": asset->metadata.dimensions.aspectRatio          },          _type == "galleryVideo" => {            "poster": poster{              ...,              "aspectRatio": asset->metadata.dimensions.aspectRatio            }          }        }      },      _type == "programsGrid" => {        ...,        "programs": select(          mode == "selected" => programs[]->{   _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99) },          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){              _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99)          }        )      },      _type == "testimonials" => {        ...,        "documentTestimonials": *[          _type == "testimonial" && (^.featuredOnly != true || featured == true)        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{            _id,  quote,  highlight,  authorName,  authorRole,  authorImage        }      },      _type == "facultyGrid" => {        ...,        "people": select(          mode == "selected" => people[]->{   _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99) },          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){              _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99)          }        )      },      _type == "contactDetails" => {        ...,        "contact": *[_type == "settings"][0].contact      },      _type == "faq" => {        ...,        items[]{          ...,          answer[]{            ...,            markDefs[]{              ...,                _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }            }          }        }      },      _type == "note" => {        ...,        tone,        icon,        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }          }        }      },    },  }
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
@@ -1058,9 +1060,10 @@ export type GetPageQueryResult = {
           link: {
             _type: 'link'
             linkType?: 'href' | 'page'
-            href?: string
             page: string | null
+            href?: string
             openInNewTab?: boolean
+            pageType: 'page' | 'program' | null
           } | null
         } | null
         image?: {
@@ -1134,6 +1137,7 @@ export type GetPageQueryResult = {
               _type: 'link'
               _key: string
               page: null
+              pageType: null
             }> | null
             level?: number
             _type: 'block'
@@ -1180,9 +1184,10 @@ export type GetPageQueryResult = {
           link: {
             _type: 'link'
             linkType?: 'href' | 'page'
-            href?: string
             page: string | null
+            href?: string
             openInNewTab?: boolean
+            pageType: 'page' | 'program' | null
           } | null
           _type: 'feature'
           _key: string
@@ -1246,11 +1251,12 @@ export type GetPageQueryResult = {
               listItem?: 'bullet' | 'number'
               markDefs: Array<{
                 linkType?: 'href' | 'page'
-                href?: string
                 page: string | null
+                href?: string
                 openInNewTab?: boolean
                 _type: 'link'
                 _key: string
+                pageType: 'page' | 'program' | null
               }> | null
               level?: number
               _type: 'block'
@@ -1298,6 +1304,7 @@ export type GetPageQueryResult = {
             _type: 'link'
             _key: string
             page: null
+            pageType: null
           }> | null
           level?: number
           _type: 'block'
@@ -1392,7 +1399,7 @@ export type SitemapDataResult = Array<
 
 // Source: sanity/lib/queries.ts
 // Variable: programQuery
-// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
+// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
 export type ProgramQueryResult = {
   _id: string
   name: string
@@ -1424,11 +1431,12 @@ export type ProgramQueryResult = {
         listItem?: 'bullet' | 'number'
         markDefs: Array<{
           linkType?: 'href' | 'page'
-          href?: string
           page: string | null
+          href?: string
           openInNewTab?: boolean
           _type: 'link'
           _key: string
+          pageType: 'page' | 'program' | null
         }> | null
         level?: number
         _type: 'block'
@@ -1470,10 +1478,10 @@ export type PagesSlugsResult = Array<{
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
-    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    masthead,\n    seo,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": *[\n          _type == "testimonial" && (^.featuredOnly != true || featured == true)\n        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n          \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n        }\n      },\n      _type == "facultyGrid" => {\n        ...,\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
+    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
+    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    masthead,\n    seo,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n          }\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": *[\n          _type == "testimonial" && (^.featuredOnly != true || featured == true)\n        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n          \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n        }\n      },\n      _type == "facultyGrid" => {\n        ...,\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
     '\n  *[(_type == "page" || _type == "program")\n    && defined(slug.current)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
-    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
+    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
     '\n  *[_type == "program" && defined(slug.current)]\n  {"slug": slug.current}\n': ProgramSlugsQueryResult
     '\n  *[_type == "page" && defined(slug.current)\n    && slug.current != *[_type == "settings"][0].homepage->slug.current]\n  {"slug": slug.current}\n': PagesSlugsResult
   }

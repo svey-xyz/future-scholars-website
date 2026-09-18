@@ -3,6 +3,7 @@ import {sanityFetchMetadata} from '@/sanity/lib/live'
 import {resolveSiteOrigin} from '@/app/components/seo'
 import {settingsQuery, sitemapData} from '@/sanity/lib/queries'
 import {headers} from 'next/headers'
+import {documentHref} from '@/sanity/lib/utils'
 
 /**
  * sitemap.xml: the site root, every `page` (except the designated homepage,
@@ -36,32 +37,15 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly',
   })
 
-  if (allPages != null && allPages.data.length != 0) {
-    let priority: number
-    let changeFrequency:
-      'monthly' | 'always' | 'hourly' | 'daily' | 'weekly' | 'yearly' | 'never' | undefined
-    let url: string
-
-    for (const p of allPages.data) {
-      switch (p._type) {
-        case 'page':
-          priority = 0.8
-          changeFrequency = 'monthly'
-          url = `${origin}/${p.slug}`
-          break
-        case 'program':
-          priority = 0.8
-          changeFrequency = 'monthly'
-          url = `${origin}/programs/${p.slug}`
-          break
-      }
-      sitemap.push({
-        lastModified: p._updatedAt || new Date(),
-        priority,
-        changeFrequency,
-        url,
-      })
-    }
+  for (const p of allPages?.data ?? []) {
+    const path = p.slug ? documentHref(p._type, p.slug) : null
+    if (!path) continue
+    sitemap.push({
+      url: `${origin}${path}`,
+      lastModified: p._updatedAt || new Date(),
+      priority: 0.8,
+      changeFrequency: 'monthly',
+    })
   }
 
   return sitemap

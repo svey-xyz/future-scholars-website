@@ -1,5 +1,5 @@
 import {defineArrayMember, defineType, defineField} from 'sanity'
-import type {Link} from '../../../sanity.types'
+import {linkFields} from './link'
 
 /**
  * Rich text used by info sections, program bodies and FAQ answers. It can be
@@ -25,56 +25,7 @@ export const blockContent = defineType({
             name: 'link',
             type: 'object',
             title: 'Link',
-            fields: [
-              defineField({
-                name: 'linkType',
-                title: 'Link Type',
-                type: 'string',
-                initialValue: 'href',
-                options: {
-                  list: [
-                    {title: 'URL', value: 'href'},
-                    {title: 'Page', value: 'page'},
-                  ],
-                  layout: 'radio',
-                },
-              }),
-              defineField({
-                name: 'href',
-                title: 'URL',
-                type: 'url',
-                hidden: ({parent}) => parent?.linkType !== 'href' && parent?.linkType != null,
-                validation: (Rule) =>
-                  Rule.custom((value, context) => {
-                    const parent = context.parent as Link
-                    if (parent?.linkType === 'href' && !value) {
-                      return 'URL is required when Link Type is URL'
-                    }
-                    return true
-                  }),
-              }),
-              defineField({
-                name: 'page',
-                title: 'Page',
-                type: 'reference',
-                to: [{type: 'page'}],
-                hidden: ({parent}) => parent?.linkType !== 'page',
-                validation: (Rule) =>
-                  Rule.custom((value, context) => {
-                    const parent = context.parent as Link
-                    if (parent?.linkType === 'page' && !value) {
-                      return 'Page reference is required when Link Type is Page'
-                    }
-                    return true
-                  }),
-              }),
-              defineField({
-                name: 'openInNewTab',
-                title: 'Open in new tab',
-                type: 'boolean',
-                initialValue: false,
-              }),
-            ],
+            fields: linkFields,
           },
         ],
       },

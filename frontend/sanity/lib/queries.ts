@@ -7,7 +7,8 @@ const navLinkProjection = /* groq */ `
   link {
     ...,
     _type == "link" => {
-      "page": page->slug.current
+      "page": page->slug.current,
+      "pageType": page->_type
     }
   },
   "resolvedTitle": coalesce(title, link.page->name, link.href)
@@ -74,7 +75,8 @@ const personCardFields = /* groq */ `
 
 const linkReference = /* groq */ `
   _type == "link" => {
-    "page": page->slug.current
+    "page": page->slug.current,
+    "pageType": page->_type
   }
 `
 

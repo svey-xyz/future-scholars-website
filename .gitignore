@@ -25,6 +25,8 @@ yarn-error.log*
 
 # Sanity dataset exports / migration artifacts (large tarballs — keep local)
 /backups
+.sanity
+functions/**/.build
 
 # vercel
 .vercel

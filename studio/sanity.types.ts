@@ -306,9 +306,9 @@ export type PageReference = {
 
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page'
+  linkType?: 'page' | 'href'
+  page?: PageReference | ProgramReference
   href?: string
-  page?: PageReference
   openInNewTab?: boolean
 }
 
@@ -369,9 +369,9 @@ export type BlockContent = Array<
       style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<{
-        linkType?: 'href' | 'page'
+        linkType?: 'page' | 'href'
+        page?: PageReference | ProgramReference
         href?: string
-        page?: PageReference
         openInNewTab?: boolean
         _type: 'link'
         _key: string
@@ -456,38 +456,6 @@ export type Testimonial = {
   order?: number
 }
 
-export type Program = {
-  _id: string
-  _type: 'program'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  name: string
-  slug: Slug
-  ageRange: string
-  ratio?: string
-  classroomName?: string
-  summary: string
-  body?: BlockContent
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  scheduleNote?: string
-  order: number
-  masthead?: Masthead
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
 export type Settings = {
   _id: string
   _type: 'settings'
@@ -505,9 +473,9 @@ export type Settings = {
     style?: 'normal'
     listItem?: never
     markDefs?: Array<{
-      linkType?: 'href' | 'page'
+      linkType?: 'page' | 'href'
+      page?: PageReference | ProgramReference
       href?: string
-      page?: PageReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -594,6 +562,38 @@ export type Page = {
         _key: string
       } & Note)
   >
+}
+
+export type Program = {
+  _id: string
+  _type: 'program'
+  _createdAt: string
+  _updatedAt: string
+  _rev: string
+  name: string
+  slug: Slug
+  ageRange: string
+  ratio?: string
+  classroomName?: string
+  summary: string
+  body?: BlockContent
+  image?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  scheduleNote?: string
+  order: number
+  masthead?: Masthead
+}
+
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type SanityAssistInstructionTask = {
@@ -871,10 +871,10 @@ export type AllSanitySchemaTypes =
   | SanityImageCrop
   | SanityImageHotspot
   | Testimonial
-  | Program
-  | Slug
   | Settings
   | Page
+  | Program
+  | Slug
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
