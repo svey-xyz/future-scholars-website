@@ -2,8 +2,7 @@ import {defineArrayMember, defineType, defineField} from 'sanity'
 import type {Link} from '../../../sanity.types'
 
 /**
- * This is the schema definition for the rich text fields used for
- * for this blog studio. When you import it in schemas.js it can be
+ * Rich text used by info sections, program bodies and FAQ answers. It can be
  * reused in other parts of the studio with:
  *  {
  *    name: 'someName',
@@ -36,7 +35,6 @@ export const blockContent = defineType({
                   list: [
                     {title: 'URL', value: 'href'},
                     {title: 'Page', value: 'page'},
-                    {title: 'Post', value: 'post'},
                   ],
                   layout: 'radio',
                 },
@@ -66,21 +64,6 @@ export const blockContent = defineType({
                     const parent = context.parent as Link
                     if (parent?.linkType === 'page' && !value) {
                       return 'Page reference is required when Link Type is Page'
-                    }
-                    return true
-                  }),
-              }),
-              defineField({
-                name: 'post',
-                title: 'Post',
-                type: 'reference',
-                to: [{type: 'post'}],
-                hidden: ({parent}) => parent?.linkType !== 'post',
-                validation: (Rule) =>
-                  Rule.custom((value, context) => {
-                    const parent = context.parent as Link
-                    if (parent?.linkType === 'post' && !value) {
-                      return 'Post reference is required when Link Type is Post'
                     }
                     return true
                   }),

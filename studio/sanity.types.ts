@@ -23,22 +23,6 @@ export type Address = {
   country?: string
 }
 
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
-
-export type AuthorImage = {
-  asset?: SanityImageAssetReference
-  media?: unknown // Unable to locate the referenced type "authorImage.media" in schema
-  hotspot?: SanityImageHotspot
-  crop?: SanityImageCrop
-  alt?: string
-  _type: 'image'
-}
-
 export type Note = {
   _type: 'note'
   tone: 'info' | 'warning' | 'danger'
@@ -54,22 +38,6 @@ export type Note = {
     | 'fire'
     | 'shield'
   content: BlockContentTextOnly
-  background?: Background
-}
-
-export type Scores = {
-  _type: 'scores'
-  heading?: string
-  caption?: BlockContentTextOnly
-  items?: Array<{
-    label: string
-    value: number
-    max?: number
-    asPercent?: boolean
-    _type: 'score'
-    _key: string
-  }>
-  background?: Background
 }
 
 export type Stats = {
@@ -84,6 +52,7 @@ export type Stats = {
     _key: string
   }>
   columns?: 2 | 3 | 4
+  anchor?: string
 }
 
 export type Faq = {
@@ -156,19 +125,8 @@ export type Testimonials = {
   heading?: string
   subheading?: string
   layout?: 'cards' | 'letters'
-  source?: 'manual' | 'documents'
   featuredOnly?: boolean
   limit?: number
-  testimonials?: Array<{
-    quote: string
-    highlight?: string
-    authorName: string
-    authorRole?: string
-    sourceUrl?: string
-    authorImage?: AuthorImage
-    _type: 'testimonial'
-    _key: string
-  }>
   columns?: 1 | 2 | 3
 }
 
@@ -178,21 +136,31 @@ export type FeaturesGrid = {
   subheading?: string
   features?: Array<{
     icon?:
-      | 'sparkles'
-      | 'bolt'
-      | 'shield'
-      | 'rocket'
-      | 'chip'
-      | 'cloud'
-      | 'code'
-      | 'chart'
-      | 'cursor'
+      | 'academic'
+      | 'book'
+      | 'puzzle'
+      | 'paint'
+      | 'music'
       | 'globe'
-      | 'lock'
-      | 'heart'
-      | 'star'
+      | 'science'
+      | 'math'
+      | 'idea'
+      | 'outdoors'
+      | 'care'
+      | 'smile'
+      | 'independence'
+      | 'community'
+      | 'home'
+      | 'safety'
+      | 'schedule'
+      | 'calendar'
+      | 'apply'
+      | 'document'
+      | 'talk'
+      | 'phone'
+      | 'email'
+      | 'location'
       | 'check'
-      | 'beaker'
     heading: string
     text?: string
     link?: Link
@@ -201,6 +169,13 @@ export type FeaturesGrid = {
   }>
   columns?: 2 | 3 | 4
   anchor?: string
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type GalleryVideo = {
@@ -243,111 +218,6 @@ export type Gallery = {
   enableLightbox?: boolean
 }
 
-export type AuthorsArchive = {
-  _type: 'authorsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'all' | 'picked'
-  limit?: number
-  authors?: Array<
-    {
-      _key: string
-    } & PersonReference
-  >
-  columns?: 2 | 3 | 4
-}
-
-export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
-}
-
-export type ProjectReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'project'
-}
-
-export type ProjectsArchive = {
-  _type: 'projectsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'latest' | 'all' | 'picked'
-  limit?: number
-  category?: CategoryReference
-  projects?: Array<
-    {
-      _key: string
-    } & ProjectReference
-  >
-  columns?: 2 | 3
-  showFilter?: boolean
-  showTechFilter?: boolean
-  showSort?: boolean
-  sortField?: 'publishedAt' | 'updatedAt' | 'title'
-  sortDirection?: 'desc' | 'asc'
-}
-
-export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
-
-export type PostsArchive = {
-  _type: 'postsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'latest' | 'all' | 'picked'
-  limit?: number
-  category?: CategoryReference
-  posts?: Array<
-    {
-      _key: string
-    } & PostReference
-  >
-  columns?: 2 | 3
-  sortField?: 'date' | 'title'
-  sortDirection?: 'desc' | 'asc'
-}
-
-export type Hero = {
-  _type: 'hero'
-  eyebrow?: string
-  heading: string
-  lede?: string
-  buttons?: Array<
-    {
-      _key: string
-    } & Button
-  >
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  layout?: 'center' | 'split'
-  theme?: 'light' | 'dark'
-}
-
-export type Background = {
-  _type: 'background'
-  type: 'none' | 'shader'
-  preset?: 'blob'
-  speed?: number
-  intensity?: number
-  colorSource?: 'theme' | 'custom'
-  customColor?: string
-  opacity?: number
-}
-
 export type NavDropdown = {
   _type: 'navDropdown'
   title: string
@@ -367,7 +237,7 @@ export type NavLink = {
 export type Social = {
   _type: 'social'
   title: string
-  platform: 'twitter' | 'instagram' | 'facebook' | 'vimeo' | 'linkedin' | 'github' | 'mastodon'
+  platform: 'twitter' | 'instagram' | 'facebook' | 'vimeo' | 'linkedin'
   url: string
 }
 
@@ -436,10 +306,9 @@ export type PageReference = {
 
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
+  linkType?: 'href' | 'page'
   href?: string
   page?: PageReference
-  post?: PostReference
   openInNewTab?: boolean
 }
 
@@ -454,11 +323,11 @@ export type CallToAction = {
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
+    alt?: string
     _type: 'image'
   }
-  theme?: 'light' | 'dark'
+  theme?: 'light' | 'brand'
   contentAlignment?: 'textFirst' | 'imageFirst'
-  background?: Background
   anchor?: string
 }
 
@@ -467,7 +336,6 @@ export type InfoSection = {
   heading?: string
   subheading?: string
   content?: BlockContent
-  background?: Background
   anchor?: string
 }
 
@@ -501,10 +369,9 @@ export type BlockContent = Array<
       style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<{
-        linkType?: 'href' | 'page' | 'post'
+        linkType?: 'href' | 'page'
         href?: string
         page?: PageReference
-        post?: PostReference
         openInNewTab?: boolean
         _type: 'link'
         _key: string
@@ -529,52 +396,15 @@ export type Button = {
   link?: Link
 }
 
-export type Technology = {
+export type Person = {
   _id: string
-  _type: 'technology'
+  _type: 'person'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
-  slug: Slug
-  url?: string
-  description?: string
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
-export type Category = {
-  _id: string
-  _type: 'category'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  description?: string
-}
-
-export type TechnologyReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'technology'
-}
-
-export type Project = {
-  _id: string
-  _type: 'project'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  excerpt?: string
-  coverImage?: {
+  firstName: string
+  lastName: string
+  picture: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -582,31 +412,10 @@ export type Project = {
     alt?: string
     _type: 'image'
   }
-  publishedAt?: string
-  updatedAt?: string
-  website?: string
-  repo?: string
-  categories?: Array<
-    {
-      _key: string
-    } & CategoryReference
-  >
-  tech?: Array<
-    {
-      _key: string
-    } & TechnologyReference
-  >
-  featured?: boolean
-  hidden?: boolean
-  body?: BlockContent
-  ogImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
+  role?: string
+  credentials?: Array<string>
+  bio?: BlockContentTextOnly
+  order?: number
 }
 
 export type SanityImageCrop = {
@@ -673,11 +482,10 @@ export type Program = {
   masthead?: Masthead
 }
 
-export type SanityFileAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type Settings = {
@@ -697,10 +505,9 @@ export type Settings = {
     style?: 'normal'
     listItem?: never
     markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
+      linkType?: 'href' | 'page'
       href?: string
       page?: PageReference
-      post?: PostReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -709,19 +516,6 @@ export type Settings = {
     _type: 'block'
     _key: string
   }>
-  logo?: {
-    asset?: SanityFileAssetReference
-    media?: unknown
-    _type: 'file'
-  }
-  favicon?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
   ogImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -748,17 +542,7 @@ export type Settings = {
         _key: string
       } & NavDropdown)
   >
-  mobileNav?: {
-    showFooterContent?: boolean
-  }
   legal?: string
-  builtWith?: Array<{
-    name: string
-    url?: string
-    icon?: string
-    _type: 'builtWithItem'
-    _key: string
-  }>
   homepage?: PageReference
 }
 
@@ -775,12 +559,7 @@ export type Page = {
   titleDisplay?: 'plain' | 'highlighted' | 'none'
   masthead?: Masthead
   seo?: Seo
-  archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
-  background?: Background
   pageBuilder?: Array<
-    | ({
-        _key: string
-      } & Hero)
     | ({
         _key: string
       } & CallToAction)
@@ -793,9 +572,6 @@ export type Page = {
     | ({
         _key: string
       } & Stats)
-    | ({
-        _key: string
-      } & Scores)
     | ({
         _key: string
       } & Testimonials)
@@ -817,65 +593,7 @@ export type Page = {
     | ({
         _key: string
       } & Note)
-    | ({
-        _key: string
-      } & PostsArchive)
-    | ({
-        _key: string
-      } & ProjectsArchive)
-    | ({
-        _key: string
-      } & AuthorsArchive)
   >
-}
-
-export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  content?: BlockContent
-  excerpt?: string
-  coverImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date?: string
-  author?: PersonReference
-  categories?: Array<
-    {
-      _key: string
-    } & CategoryReference
-  >
-}
-
-export type Person = {
-  _id: string
-  _type: 'person'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  firstName: string
-  lastName: string
-  picture: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  role?: string
-  credentials?: Array<string>
-  bio?: BlockContentTextOnly
-  order?: number
 }
 
 export type SanityAssistInstructionTask = {
@@ -1123,10 +841,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | Address
-  | SanityImageAssetReference
-  | AuthorImage
   | Note
-  | Scores
   | Stats
   | Faq
   | ContactDetails
@@ -1136,16 +851,9 @@ export type AllSanitySchemaTypes =
   | ProgramsGrid
   | Testimonials
   | FeaturesGrid
+  | SanityImageAssetReference
   | GalleryVideo
   | Gallery
-  | AuthorsArchive
-  | CategoryReference
-  | ProjectReference
-  | ProjectsArchive
-  | PostReference
-  | PostsArchive
-  | Hero
-  | Background
   | NavDropdown
   | NavLink
   | Social
@@ -1159,20 +867,14 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Technology
-  | Slug
-  | Category
-  | TechnologyReference
-  | Project
+  | Person
   | SanityImageCrop
   | SanityImageHotspot
   | Testimonial
   | Program
-  | SanityFileAssetReference
+  | Slug
   | Settings
   | Page
-  | Post
-  | Person
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations

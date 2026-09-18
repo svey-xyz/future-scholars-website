@@ -3,7 +3,7 @@ import {LinkIcon} from '@sanity/icons/Link'
 
 /**
  * A single navigation link. Reuses the shared `link` object so it can point at a
- * page, post, or external URL. The optional `title` overrides the linked
+ * page or a URL. The optional `title` overrides the linked
  * document's own title when shown in the nav.
  * Learn more: https://www.sanity.io/docs/studio/object-type
  */
@@ -33,11 +33,10 @@ export const navLink = defineType({
       linkType: 'link.linkType',
       href: 'link.href',
       page: 'link.page.name',
-      post: 'link.post.title',
     },
-    prepare({title, href, page, post}) {
+    prepare({title, href, page}) {
       return {
-        title: title || page || post || href || 'Nav Link',
+        title: title || page || href || 'Nav Link',
         subtitle: 'Nav Link',
       }
     },

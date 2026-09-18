@@ -18,7 +18,7 @@ import ContactHub from './ContactHub'
 import SideNavLinks from './SideNavLinks'
 import type {NavItem, SettingsContact} from '@/sanity/lib/types'
 
-// Mount gate, same as the template's `MobileNav`: a store that reads `false`
+// Mount gate: a store that reads `false`
 // on the server and `true` on the client. An effect would be the obvious
 // alternative, but `react-hooks/set-state-in-effect` (React Compiler) rejects
 // setState inside an effect body — this is the sanctioned isomorphic form.
@@ -34,9 +34,8 @@ type SideNavMobileProps = {
 /**
  * Below `lg`, the side rail becomes a fixed top bar plus a left drawer (D11).
  *
- * The Sheet is **modal** here — unlike the template's `MobileNav`, which had to
- * go non-modal so the persistent header underneath stayed operable. Nothing in
- * this bar needs to stay live behind the drawer, so Radix's own modal
+ * The Sheet is **modal**: nothing in the top bar needs to stay live behind the
+ * drawer, so Radix's own modal
  * behaviour does the work the spec asks for and we hand-roll none of it:
  * focus trap, Esc to close, focus returned to the hamburger, body scroll lock,
  * and the rest of the page hidden from assistive tech (docs/A11Y.md — "Don't

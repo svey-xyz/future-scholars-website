@@ -5,7 +5,8 @@ import {anchorField, columnsField} from './shared'
 
 /**
  * Features Grid — icon / heading / text cards, optional per-feature link.
- * `icon` values map to Heroicons in frontend/app/components/FeaturesGrid.tsx.
+ * `icon` values map to Heroicons in frontend/app/components/blocks/FeaturesGrid.tsx.
+ * Good for program highlights, the admissions steps and "why us" lists.
  */
 export const featuresGrid = defineType({
   name: 'featuresGrid',
@@ -29,23 +30,34 @@ export const featuresGrid = defineType({
               name: 'icon',
               title: 'Icon',
               type: 'string',
+              description: 'Decorative only — the heading carries the meaning.',
               options: {
                 list: [
-                  {title: 'Sparkles', value: 'sparkles'},
-                  {title: 'Bolt', value: 'bolt'},
-                  {title: 'Shield', value: 'shield'},
-                  {title: 'Rocket', value: 'rocket'},
-                  {title: 'Chip', value: 'chip'},
-                  {title: 'Cloud', value: 'cloud'},
-                  {title: 'Code', value: 'code'},
-                  {title: 'Chart', value: 'chart'},
-                  {title: 'Cursor', value: 'cursor'},
-                  {title: 'Globe', value: 'globe'},
-                  {title: 'Lock', value: 'lock'},
-                  {title: 'Heart', value: 'heart'},
-                  {title: 'Star', value: 'star'},
+                  {title: 'Graduation cap', value: 'academic'},
+                  {title: 'Open book', value: 'book'},
+                  {title: 'Puzzle piece (hands-on materials)', value: 'puzzle'},
+                  {title: 'Paintbrush (art)', value: 'paint'},
+                  {title: 'Musical note', value: 'music'},
+                  {title: 'Globe (culture & geography)', value: 'globe'},
+                  {title: 'Beaker (science)', value: 'science'},
+                  {title: 'Calculator (mathematics)', value: 'math'},
+                  {title: 'Light bulb (curiosity)', value: 'idea'},
+                  {title: 'Sun (outdoor play)', value: 'outdoors'},
+                  {title: 'Heart (care)', value: 'care'},
+                  {title: 'Smile (wellbeing)', value: 'smile'},
+                  {title: 'Raised hand (independence)', value: 'independence'},
+                  {title: 'Group (families & community)', value: 'community'},
+                  {title: 'House (home-like environment)', value: 'home'},
+                  {title: 'Shield (safety)', value: 'safety'},
+                  {title: 'Clock (hours)', value: 'schedule'},
+                  {title: 'Calendar (visit / start date)', value: 'calendar'},
+                  {title: 'Clipboard (application)', value: 'apply'},
+                  {title: 'Document (forms)', value: 'document'},
+                  {title: 'Speech bubbles (meet / talk)', value: 'talk'},
+                  {title: 'Phone', value: 'phone'},
+                  {title: 'Envelope (email)', value: 'email'},
+                  {title: 'Map pin (location)', value: 'location'},
                   {title: 'Check', value: 'check'},
-                  {title: 'Beaker', value: 'beaker'},
                 ],
               },
             }),

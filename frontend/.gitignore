@@ -14,11 +14,6 @@
 /.next/
 /out/
 
-# serwist (generated service worker)
-/public/sw.js
-/public/sw.js.map
-/public/swe-worker*
-
 # sanity
 /.sanity/
 /dist/

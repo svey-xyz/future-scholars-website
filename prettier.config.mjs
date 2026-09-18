@@ -12,9 +12,6 @@ import sanityConfig from '@sanity/prettier-config'
  * at 100 it needs 58. The repo was never at 80, so the width stays at the
  * shared config's value and the churn was closed by reformatting once and
  * by teaching .prettierignore to leave prose and vendored code alone.
- *
- * Fork divergence, logged in docs/FORK-SYNC.md — backport candidate, since
- * nothing here is FSMA-specific.
  */
 export default {
   ...sanityConfig,

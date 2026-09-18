@@ -4,7 +4,7 @@ import {toPlainText, type PortableTextBlock} from 'next-sanity'
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 import {telHref} from '@/lib/utils'
 import {resolveSiteOrigin} from './siteOrigin'
-import type {PostQueryResult, SettingsQueryResult} from '@/sanity.types'
+import type {SettingsQueryResult} from '@/sanity.types'
 
 /**
  * Renders a schema.org JSON-LD `<script>`. React/Next render
@@ -59,8 +59,8 @@ export function siteUrl(settings: SettingsQueryResult): string | undefined {
 /**
  * The organisation's schema.org type(s).
  *
- * **FSMA fork divergence.** Upstream this is a plain `Organization`, which is
- * true but says nothing a search engine can act on. FSMA is a Montessori
+ * A plain `Organization` would be true but says nothing a search engine can
+ * act on. FSMA is a Montessori
  * school for 6 months – 6 years, so it is both a `Preschool` (an
  * `EducationalOrganization`) and a `ChildCare` (a `LocalBusiness`) — the two
  * together are what make a "Montessori daycare near me" query resolvable, and
@@ -69,9 +69,7 @@ export function siteUrl(settings: SettingsQueryResult): string | undefined {
  * `#organization` stays valid.
  *
  * Hard-coded rather than an editor field on purpose: what kind of institution
- * this is, is not content that changes. A template backport would make it
- * configurable; a fork should not carry a setting with exactly one possible
- * value (build plan §0 rule 6).
+ * this is, is not content that changes, so it is not a setting.
  */
 const ORGANIZATION_TYPE = ['Preschool', 'ChildCare']
 
@@ -165,39 +163,6 @@ export function siteJsonLd(settings: SettingsQueryResult) {
   return {
     '@context': 'https://schema.org',
     '@graph': url ? [organization, webSite] : [webSite],
-  }
-}
-
-/** `BlogPosting` node for a post detail route. */
-export function blogPostingJsonLd(
-  post: NonNullable<PostQueryResult>,
-  settings?: SettingsQueryResult,
-) {
-  const headline = clean(post.title)
-  if (!headline) return null
-
-  const base = settings ? siteUrl(settings) : undefined
-  const slug = clean(post.slug)
-  const url = base && slug ? `${base}/posts/${slug}` : undefined
-  const image = resolveOpenGraphImage(post.coverImage)?.url
-  const author =
-    post.author?.firstName && post.author?.lastName
-      ? {
-          '@type': 'Person',
-          'name': `${clean(post.author.firstName)} ${clean(post.author.lastName)}`,
-        }
-      : undefined
-
-  return {
-    '@context': 'https://schema.org',
-    '@type': 'BlogPosting',
-    headline,
-    ...(url ? {url, mainEntityOfPage: {'@type': 'WebPage', '@id': url}} : {}),
-    ...(clean(post.excerpt) ? {description: clean(post.excerpt)} : {}),
-    ...(image ? {image} : {}),
-    ...(post.date ? {datePublished: post.date} : {}),
-    ...(author ? {author} : {}),
-    ...(base ? {publisher: {'@id': `${base}/#organization`}} : {}),
   }
 }
 

@@ -1,7 +1,7 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S0–S8 done; most of S11 done. Next up: S9. · **Updated:** 2026-09-18 (rev 16) · **Owner:** Hayden Soule (svey)
-**Repo:** `github.com/svey-xyz/future-scholars-website` (fork of `sanity-next-clean`)
+**Status:** S0–S8 done; most of S11 done; template leftovers removed. Next up: S9. · **Updated:** 2026-09-18 (rev 17) · **Owner:** Hayden Soule (svey)
+**Repo:** `github.com/svey-xyz/future-scholars-website` (started from `sanity-next-clean`; no longer synced with it)
 **Owner actions and client questions:** `docs/OWNER-TODO.md`
 
 ---
@@ -9,22 +9,18 @@
 ## 0. Rules for agents
 
 1. **One session per run.** Finish it, update this doc, commit, stop.
-2. **Sync first.** `git fetch upstream` and merge if behind (see `docs/FORK-SYNC.md`). Never hand-copy
-   template files.
-3. **Read before coding:** `AGENTS.md`, then the doc for your area — `docs/A11Y.md` (UI),
-   `docs/CACHING.md` (routes/data), `docs/TRANSITIONS.md` (navigation), `docs/MIGRATION.md` (content).
+2. **Read before coding:** `AGENTS.md`, then the doc for your area — `docs/A11Y.md` (UI),
+   `docs/CACHING.md` (routes/data), `docs/TRANSITIONS.md` (navigation).
    For Next.js APIs, read `node_modules/next/dist/docs/`.
-4. **Branch per session:** `feat/fsma-s<N>-<slug>` off `main`. Agents can't push; the owner pushes and
+3. **Branch per session:** `feat/fsma-s<N>-<slug>` off `main`. Agents can't push; the owner pushes and
    opens the PR.
-5. **Update this doc before finishing:** delete the tasks you completed, add one line to §11, add a
+4. **Update this doc before finishing:** delete the tasks you completed, add one line to §11, add a
    line to §12 for any decision that differs from this plan, and put new blockers in §4.
-6. **Log fork divergence** in `docs/FORK-SYNC.md`. If a change would help any template user, backport
-   it instead of forking it.
-7. **Read only what you need.** The schema or component you're editing, plus the section referenced
+5. **Read only what you need.** The schema or component you're editing, plus the section referenced
    in the task.
-8. **Never invent client facts.** If an address, phone, hours, URL or name isn't confirmed, leave a
+6. **Never invent client facts.** If an address, phone, hours, URL or name isn't confirmed, leave a
    `TODO(client)` marker and add it to `OWNER-TODO.md`.
-9. **Re-check inherited blockers.** Two blockers were carried for four sessions with the wrong
+7. **Re-check inherited blockers.** Two blockers were carried for four sessions with the wrong
    diagnosis. Re-run the check before working around one.
 
 **Done means:** `npm run type-check` and `npm run lint` pass; `npm run typegen` was run and committed if
@@ -35,7 +31,7 @@ the schema changed; Lighthouse a11y ≥95 on the routes you touched; the session
 ## 1. Brief & scope
 
 Montessori school in Ottawa (ages 6 months – 6 years). We're replacing a ~2010 static HTML site
-(`futurescholarsmontessori.com`) with this template.
+(`futurescholarsmontessori.com`) with a Next.js + Sanity site.
 
 **What the client asked for**
 - Pages: Home, Montessori, Programs, Testimonials, Gallery, and About Us. About Us merges the old
@@ -55,7 +51,6 @@ payments, analytics, cookie banner.
 
 | Thing | Value |
 |---|---|
-| Upstream | `github.com/svey-xyz/sanity-next-clean` as remote `upstream` (HTTPS) |
 | Sanity | project `wzs9gcps`, org `oqjnHYtnD`. Datasets: `production` (public), `staging` (private) |
 | Studio | deployed separately with `sanity deploy`. It isn't mounted at `/studio` |
 | Frontend | Vercel, linked to the repo; env vars set for Preview and Production |
@@ -75,7 +70,7 @@ Reopening one of these requires a line in §12.
 
 | # | Decision |
 |---|---|
-| D1 | Built on the `sanity-next-clean` fork. |
+| D1 | Started from the `sanity-next-clean` template. Detached on 2026-09-18: no upstream remote, no sync, no backports. Change anything freely. |
 | D2 | Hosted on Vercel; DNS stays with the client. |
 | D3 | Every legacy `.htm` URL gets a **301**. Use `statusCode: 301`, because `permanent: true` sends a 308. |
 | D4 | Old copy is ported verbatim; the client edits it later in Studio. |
@@ -87,8 +82,8 @@ Reopening one of these requires a line in §12.
 | D10 | WCAG 2.2 AA is the floor; aim for AAA where feasible. |
 | D11 | Desktop side rail from 1024px up; top bar + modal drawer below that. |
 | D12 | The masthead is a **page field**, not a page-builder block. When present, it owns the visual `<h1>`. |
-| D13 | Unused template types (posts, projects, categories, technologies, archives) are **hidden, not deleted**. Archive blocks stay in the `pageBuilder` union and are blocked by validation. |
-| D14 | Light theme only. Dark tokens stay defined; the toggle is removed. |
+| D13 | Template-only features are **deleted**, not hidden: posts, projects, categories, technologies, archive blocks, hero, scores, shader backgrounds, starter/onboarding, built-with footer, the template top-bar nav and the PWA. |
+| D14 | Light theme only. No dark tokens, no theme provider, no `dark:` variants. |
 | D15 | No WebGL `ShaderBackground`. |
 | D16 | Contact data lives only in `settings.contact`. The rail, `contactDetails` block and JSON-LD all read from there. |
 | D17 | `/programs` is a CMS `page`. Only `app/programs/[slug]` is coded. |
@@ -101,22 +96,22 @@ Client and owner questions are tracked in `OWNER-TODO.md`.
 
 | # | Question | Status |
 |---|---|---|
-| Q24 | The `featuresGrid` icons are developer-themed (rocket, chip…), so the admissions steps have no icons. Either re-theme the icon set (a fork divergence) or keep numbered text. | Open, cosmetic |
 | Q26 | No canonical origin is set. Needs the apex-vs-`www` decision; then set `settings.ogImage.metadataBase` or `NEXT_PUBLIC_SITE_URL`. `siteOrigin.ts` falls back to the Vercel domain until then. | Owner (OWNER-TODO) |
 | Q27 | Title separator: the site uses `\|`, the original spec said `·`. | Owner (OWNER-TODO) |
 
 ---
 
-## 5. Fork conventions
+## 5. Project conventions
 
-`CLAUDE.md` covers the template architecture. These are the additions specific to this fork:
+`CLAUDE.md` covers the architecture. The highlights:
 
 - **Typegen:** `npm run typegen` from the repo root.
 - **Tokens** are HSL channel triplets (`--primary: 232 52% 32%`). Don't convert them to OKLCH.
-- **FSMA content types:** `program`, `testimonial` (documents); `masthead`, `seo` (page fields); and
-  the blocks `programsGrid`, `facultyGrid`, `contactDetails`. The `person` document gained `role`,
-  `bio`, `credentials` and `order`. `settings` gained `schoolInfo`: `foundingDate`, `areaServed`,
-  `priceRange`, and `geo` as a plain `{lat, lng}`.
+- **Content types:** `page`, `program`, `testimonial`, `person` (staff: `role`, `bio`, `credentials`,
+  `order`) and the `settings` singleton (with `schoolInfo`: `foundingDate`, `areaServed`, `priceRange`,
+  and `geo` as a plain `{lat, lng}`). Page fields `masthead` and `seo`. Blocks: `callToAction`,
+  `infoSection`, `featuresGrid`, `stats` (Key facts), `testimonials`, `programsGrid`, `facultyGrid`,
+  `contactDetails`, `gallery`, `faq`, `note`.
 - **Anchors:** the `anchor` field is rendered as the block wrapper's `id` by `BlockRenderer`, with
   `scroll-mt` so the fixed bar doesn't cover the target.
 - **Grid headings:** grid items are `h3` under a block heading and `h2` when the block has no heading.
@@ -126,7 +121,7 @@ Client and owner questions are tracked in `OWNER-TODO.md`.
 
 ### 5.1 Agent sandbox quirks
 
-These are environment issues, not repo bugs. Don't change the template to work around them.
+These are environment issues, not repo bugs. Don't change the code to work around them.
 
 - **Node needs the proxy flag.** Prefix every networked Node command with `NODE_USE_ENV_PROXY=1`
   (for example `next dev`, `next build` or a script). Node ignores `HTTPS_PROXY` without it.
@@ -267,7 +262,7 @@ and Programs currently use Unsplash placeholders; Gallery and Testimonials use b
 - [ ] Keyboard and screen-reader pass on the rail, drawer and lightbox; reduced-motion pass.
 - [ ] Sanity webhook → `/api/revalidate-tags` using the secret; confirm publishing reaches the live
       site.
-- [ ] On-brand 404 and offline pages.
+- [ ] On-brand 404 page.
 - [ ] Content proof (spelling, "Casa"/"Montessori" capitalisation, ages and ratios). Grep for
       `TODO(client)`; none can ship.
 - [ ] Client review round, then cutover (§10).
@@ -326,6 +321,7 @@ One line per session.
 | 09-17 | Audit, ContactHub | Redirects, canonicals, JSON-LD, heading and lightbox fixes; ContactHub and placeholder mastheads |
 | 09-18 | S8 | `/programs/[slug]`, breadcrumbs, sitemap entries (PRs #6, #7 merged) |
 | 09-18 | Docs trim | Plan and OWNER-TODO cut to open work only |
+| 09-18 | Drop template | Detached from `sanity-next-clean`; template types, blocks, dark mode, PWA and docs removed; school icon set; blueprint pointed at `wzs9gcps` |
 
 ---
 
@@ -334,24 +330,35 @@ One line per session.
 Only decisions that are still relevant and not already covered in §3–§7.
 
 - Admissions FAQ **not built**: there's no source content, so the answers would have to be invented
-  (rule 8). The `faq` block is ready if the client supplies Q&As.
+  (rule 6). The `faq` block is ready if the client supplies Q&As.
 - The four admissions step *labels* are ours; every fact in them comes from `admissions.md`.
 - The fax number is kept because the old site advertises it. The client decides whether to drop it.
 - `openingHours` in JSON-LD only uses rows that have an explicit `schemaOrg` value; nothing is
   inferred.
 - JSON-LD type is `['Preschool', 'ChildCare']`, hard-coded.
 - The homepage title uses `{absolute}`, because the root layout's `title.template` doesn't apply to
-  its own segment. Backport candidate.
-- `linkType: 'href'` links are internal when the href starts with `/`. Backport candidate.
+  its own segment.
+- `linkType: 'href'` links are internal when the href starts with `/`.
 - The mobile drawer is a modal Radix Sheet, so Radix handles the focus trap and scroll lock.
 - Nav groups unmount when closed. Force-mounting put hidden links in the tab order.
 - The map is a link, not an iframe. With no `mapUrl` set, it falls back to a search on the Settings
   address.
-- `telHref()` adds the country code. Backport candidate.
+- `telHref()` adds the country code.
 - Content Lake doesn't validate what seed scripts write, so check the rendered page in the same
   session as any seeding. A CTA body once shipped as a string instead of Portable Text.
 - Legacy thumbnails aren't uploaded; Sanity generates its own.
 - The three testimonial photos are uploaded but not attached, because the source doesn't say who is in
   them.
-- **Backport list** for the template: placeholder static params, `siteOrigin.ts` fallback chain,
-  `seo` object, `anchor` field, `Breadcrumbs`, and exact pins for `next`/`sanity`/`next-sanity`.
+- **Template removal (rev 17).** Unknown slugs now 404 instead of showing the template's "create
+  this page" onboarding. The `testimonials` block always reads testimonial documents (the inline
+  array, `source` switch and source links are gone). The CTA `theme` is `light` | `brand` (academy blue
+  with a sunflower button); the old `dark` option depended on dark tokens. CTA images now carry real
+  alt text instead of "Demo image". `stats` is re-labelled **Key facts** and renders a `<dl>`.
+  IBM Plex Mono is gone; small-caps labels use Inter semibold. Settings lost `builtWith`, `mobileNav`,
+  `favicon` and `logo` (none were rendered); `blurb` is now the default meta description.
+  Social platforms: GitHub and Mastodon removed.
+- `sanity.blueprint.ts` pointed the `invalidate-tags` Function at the template's Sanity project
+  (`h52u3jiw`), so publishing never revalidated this site. Fixed to `wzs9gcps.production`; redeploy
+  the blueprint (OWNER-TODO).
+- Data left by removed fields is cleaned by `studio/migrations/drop-template-fields.ts`, run after
+  the frontend deploy (OWNER-TODO).

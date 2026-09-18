@@ -1,10 +1,10 @@
-<!-- BEGIN:fork-sync-agent-rules -->
+<!-- BEGIN:project-agent-rules -->
 
-# Template & forks: sync from upstream before editing a fork
+# Future Scholars Montessori Academy
 
-`sanity-next-clean` is a **template**; sites like `soule-directory-site` are **git forks** kept in sync *from* it. **Before making any edit to a fork, `git fetch` the template and check whether the fork is behind — if it is, sync first (a real `git merge`, never hand-copying), then edit.** Editing a stale fork re-introduces fixed bugs and causes avoidable conflicts. Full procedure + divergence registry: [`docs/FORK-SYNC.md`](docs/FORK-SYNC.md).
+Client site for an Ottawa Montessori school. The plan, locked decisions (D1–D17) and session rules live in [`docs/FSMA-BUILD-PLAN.md`](docs/FSMA-BUILD-PLAN.md); read §0 before starting a session. Never invent client facts — leave a `TODO(client)` and add it to [`docs/OWNER-TODO.md`](docs/OWNER-TODO.md).
 
-<!-- END:fork-sync-agent-rules -->
+<!-- END:project-agent-rules -->
 
 <!-- BEGIN:nextjs-agent-rules -->
 
@@ -18,7 +18,7 @@ Before any Next.js work, find and read the relevant doc in `node_modules/next/di
 
 # Accessibility: read docs/A11Y.md before any UI change
 
-Before adding, restyling, or refactoring any UI (components, routes, page-builder blocks, schema-driven UI strings), read [`docs/A11Y.md`](docs/A11Y.md). It defines contrast targets (WCAG 2.2 AAA where feasible, AA floor), the token system, focus rules, ARIA conventions, and the per-PR checklist. Run the `design:accessibility-review` skill on non-trivial visual changes and Lighthouse Accessibility ≥95 in both light and dark before merging.
+Before adding, restyling, or refactoring any UI (components, routes, page-builder blocks, schema-driven UI strings), read [`docs/A11Y.md`](docs/A11Y.md). It defines contrast targets (WCAG 2.2 AAA where feasible, AA floor), the token system, focus rules, ARIA conventions, and the per-PR checklist. Run the `design:accessibility-review` skill on non-trivial visual changes and Lighthouse Accessibility ≥95 before merging. The site is light-only (D14).
 
 <!-- END:a11y-agent-rules -->
 
@@ -28,6 +28,6 @@ Before adding, restyling, or refactoring any UI (components, routes, page-builde
 
 This repo ships React View Transitions (`experimental.viewTransition` in `frontend/next.config.ts`). **Whenever you add or change a component, page, route, or navigation, consider how it should transition** — don't ship UI that ignores the system. Read [`docs/TRANSITIONS.md`](docs/TRANSITIONS.md) before touching navigation, route content, Suspense boundaries, or any element that visually persists across routes.
 
-Defaults already in place: app-wide crossfade + directional slides (`app/components/motion/PageTransition.tsx`, wired in `app/layout.tsx`), shared-element morph on post titles, Suspense reveals, and an anchored header. New work should fit this model: tag new `<Link>`s with `transitionTypes` (`nav-forward`/`nav-back`), give elements that persist across routes a matching `<ViewTransition name>`, wrap new streaming `<Suspense>` boundaries in enter/exit `<ViewTransition>`s, and add any new CSS classes to the view-transition block in `app/globals.css`. Keep transition components RSC and honour `prefers-reduced-motion` (handled globally in `globals.css` — don't bypass it).
+Defaults already in place: app-wide crossfade + directional slides (`app/components/motion/PageTransition.tsx`, wired in `app/layout.tsx`) and anchored shell chrome (side rail, mobile top bar, contact hub). New work should fit this model: tag new `<Link>`s with `transitionTypes` (`nav-forward`/`nav-back`), give elements that persist across routes a matching `<ViewTransition name>`, wrap new streaming `<Suspense>` boundaries in enter/exit `<ViewTransition>`s, and add any new CSS classes to the view-transition block in `app/globals.css`. Keep transition components RSC and honour `prefers-reduced-motion` (handled globally in `globals.css` — don't bypass it).
 
 <!-- END:view-transitions-agent-rules -->

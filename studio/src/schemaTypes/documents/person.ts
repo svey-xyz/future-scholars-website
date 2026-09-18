@@ -3,13 +3,12 @@ import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Person} from '../../../sanity.types'
 
 /**
- * Person schema.  Define and edit the fields for the 'person' content type.
- * Learn more: https://www.sanity.io/docs/studio/schema-types
+ * Staff member (directors, teachers). Rendered by the `facultyGrid` block.
  */
 
 export const person = defineType({
   name: 'person',
-  title: 'Person',
+  title: 'Staff member',
   icon: UserIcon,
   type: 'document',
   fields: [
@@ -55,9 +54,6 @@ export const person = defineType({
       },
       validation: (rule) => rule.required(),
     }),
-    // FSMA fork (build plan S3): the template's `person` is name + picture only.
-    // Faculty on the About page need a role and a short bio. Additive — logged
-    // in the FORK-SYNC divergence registry.
     defineField({
       name: 'role',
       title: 'Role',

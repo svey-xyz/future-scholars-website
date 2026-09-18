@@ -8,8 +8,8 @@ import SideNavMobile from './SideNavMobile'
 import {getSettings} from './getSettings'
 
 /**
- * The app shell's navigation (S4, D11): a fixed left rail from `lg` up, a fixed
- * top bar + left drawer below it. Replaces the template's `Header`.
+ * The app shell's navigation (D11): a fixed left rail from `lg` up, a fixed
+ * top bar + left drawer below it.
  *
  * Cached component, three-layer pattern (docs/CACHING.md): `perspective` and
  * `stega` are resolved by the layout and passed in as plain props. It shares

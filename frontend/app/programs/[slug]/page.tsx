@@ -25,7 +25,7 @@ import {resolveOpenGraphImage} from '@/sanity/lib/utils'
 import type {ProgramQueryResult} from '@/sanity.types'
 
 /**
- * FSMA fork (build plan S8): `/programs/[slug]` — one route for the Infants,
+ * `/programs/[slug]` — one route for the Infants,
  * Toddlers and Casa `program` documents.
  *
  * The **index** is deliberately *not* a route here. `/programs` is an ordinary
@@ -41,8 +41,8 @@ type Props = {
 
 export async function generateStaticParams() {
   const {data} = await sanityFetchStaticParams({query: programSlugsQuery})
-  // Cache Components rejects an empty param list; same placeholder guard as
-  // the hidden template routes (plan Q20). `CachedProgram` 404s it.
+  // Cache Components rejects an empty param list, so return a placeholder
+  // slug when there are no programs. `CachedProgram` 404s it.
   return data.length > 0 ? data : [{slug: '__placeholder__'}]
 }
 
@@ -114,8 +114,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
 
   if (!program?._id) return notFound()
 
-  // Structured data is crawler-facing: published perspective, never stega —
-  // the same rule the post route follows.
+  // Structured data is crawler-facing: published perspective, never stega.
   const [{data: settings}, {data: published}] = await Promise.all([
     sanityFetchMetadata({query: settingsQuery, perspective: 'published'}),
     perspective === 'published' && !stega

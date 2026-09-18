@@ -19,13 +19,12 @@ export type ResolvedNavLink = {
 }
 
 /**
- * FSMA divergence from the template's nav leaves (DesktopNav / MobileNav).
+ * Resolves a nav link to an href plus its external/new-tab state.
  *
- * Those treat *every* `linkType: 'href'` link as external — it gets the
- * new-tab affordance and is never marked active. That is wrong here: the
- * Programs children are authored as `href` links to routes that don't exist
- * as `page` documents yet (`/programs/infants`, …), and `/about#admissions`
- * is authored the same way. Externality is a property of the resolved href,
+ * `linkType: 'href'` does not imply external: the Programs children are
+ * authored as `href` links to routes that aren't `page` documents
+ * (`/programs/infants`, …), and `/about#admissions` is authored the same way.
+ * Externality is a property of the resolved href,
  * not of how the editor happened to author it: anything starting with `/` is
  * an internal route.
  *
@@ -43,7 +42,7 @@ export function resolveNavLink(link: NavLinkItem, homepageSlug?: string | null):
 
   return {
     href,
-    // Spread the authored link so the projected shape (page/post) is kept;
+    // Spread the authored link so the projected shape is kept;
     // only the href and its type are overridden.
     link: rewritten ? {...link.link, linkType: 'href', href} : link.link,
     label: link.resolvedTitle || link.title || '',

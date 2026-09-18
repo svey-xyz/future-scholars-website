@@ -23,22 +23,6 @@ export type Address = {
   country?: string
 }
 
-export type SanityImageAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
-}
-
-export type AuthorImage = {
-  asset?: SanityImageAssetReference
-  media?: unknown // Unable to locate the referenced type "authorImage.media" in schema
-  hotspot?: SanityImageHotspot
-  crop?: SanityImageCrop
-  alt?: string
-  _type: 'image'
-}
-
 export type Note = {
   _type: 'note'
   tone: 'info' | 'warning' | 'danger'
@@ -54,22 +38,6 @@ export type Note = {
     | 'fire'
     | 'shield'
   content: BlockContentTextOnly
-  background?: Background
-}
-
-export type Scores = {
-  _type: 'scores'
-  heading?: string
-  caption?: BlockContentTextOnly
-  items?: Array<{
-    label: string
-    value: number
-    max?: number
-    asPercent?: boolean
-    _type: 'score'
-    _key: string
-  }>
-  background?: Background
 }
 
 export type Stats = {
@@ -84,6 +52,7 @@ export type Stats = {
     _key: string
   }>
   columns?: 2 | 3 | 4
+  anchor?: string
 }
 
 export type Faq = {
@@ -156,19 +125,8 @@ export type Testimonials = {
   heading?: string
   subheading?: string
   layout?: 'cards' | 'letters'
-  source?: 'manual' | 'documents'
   featuredOnly?: boolean
   limit?: number
-  testimonials?: Array<{
-    quote: string
-    highlight?: string
-    authorName: string
-    authorRole?: string
-    sourceUrl?: string
-    authorImage?: AuthorImage
-    _type: 'testimonial'
-    _key: string
-  }>
   columns?: 1 | 2 | 3
 }
 
@@ -178,21 +136,31 @@ export type FeaturesGrid = {
   subheading?: string
   features?: Array<{
     icon?:
-      | 'sparkles'
-      | 'bolt'
-      | 'shield'
-      | 'rocket'
-      | 'chip'
-      | 'cloud'
-      | 'code'
-      | 'chart'
-      | 'cursor'
+      | 'academic'
+      | 'book'
+      | 'puzzle'
+      | 'paint'
+      | 'music'
       | 'globe'
-      | 'lock'
-      | 'heart'
-      | 'star'
+      | 'science'
+      | 'math'
+      | 'idea'
+      | 'outdoors'
+      | 'care'
+      | 'smile'
+      | 'independence'
+      | 'community'
+      | 'home'
+      | 'safety'
+      | 'schedule'
+      | 'calendar'
+      | 'apply'
+      | 'document'
+      | 'talk'
+      | 'phone'
+      | 'email'
+      | 'location'
       | 'check'
-      | 'beaker'
     heading: string
     text?: string
     link?: Link
@@ -201,6 +169,13 @@ export type FeaturesGrid = {
   }>
   columns?: 2 | 3 | 4
   anchor?: string
+}
+
+export type SanityImageAssetReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'sanity.imageAsset'
 }
 
 export type GalleryVideo = {
@@ -243,111 +218,6 @@ export type Gallery = {
   enableLightbox?: boolean
 }
 
-export type AuthorsArchive = {
-  _type: 'authorsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'all' | 'picked'
-  limit?: number
-  authors?: Array<
-    {
-      _key: string
-    } & PersonReference
-  >
-  columns?: 2 | 3 | 4
-}
-
-export type CategoryReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'category'
-}
-
-export type ProjectReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'project'
-}
-
-export type ProjectsArchive = {
-  _type: 'projectsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'latest' | 'all' | 'picked'
-  limit?: number
-  category?: CategoryReference
-  projects?: Array<
-    {
-      _key: string
-    } & ProjectReference
-  >
-  columns?: 2 | 3
-  showFilter?: boolean
-  showTechFilter?: boolean
-  showSort?: boolean
-  sortField?: 'publishedAt' | 'updatedAt' | 'title'
-  sortDirection?: 'desc' | 'asc'
-}
-
-export type PostReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'post'
-}
-
-export type PostsArchive = {
-  _type: 'postsArchive'
-  heading?: string
-  subheading?: string
-  source?: 'latest' | 'all' | 'picked'
-  limit?: number
-  category?: CategoryReference
-  posts?: Array<
-    {
-      _key: string
-    } & PostReference
-  >
-  columns?: 2 | 3
-  sortField?: 'date' | 'title'
-  sortDirection?: 'desc' | 'asc'
-}
-
-export type Hero = {
-  _type: 'hero'
-  eyebrow?: string
-  heading: string
-  lede?: string
-  buttons?: Array<
-    {
-      _key: string
-    } & Button
-  >
-  image?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  layout?: 'center' | 'split'
-  theme?: 'light' | 'dark'
-}
-
-export type Background = {
-  _type: 'background'
-  type: 'none' | 'shader'
-  preset?: 'blob'
-  speed?: number
-  intensity?: number
-  colorSource?: 'theme' | 'custom'
-  customColor?: string
-  opacity?: number
-}
-
 export type NavDropdown = {
   _type: 'navDropdown'
   title: string
@@ -367,7 +237,7 @@ export type NavLink = {
 export type Social = {
   _type: 'social'
   title: string
-  platform: 'twitter' | 'instagram' | 'facebook' | 'vimeo' | 'linkedin' | 'github' | 'mastodon'
+  platform: 'twitter' | 'instagram' | 'facebook' | 'vimeo' | 'linkedin'
   url: string
 }
 
@@ -436,10 +306,9 @@ export type PageReference = {
 
 export type Link = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
+  linkType?: 'href' | 'page'
   href?: string
   page?: PageReference
-  post?: PostReference
   openInNewTab?: boolean
 }
 
@@ -454,11 +323,11 @@ export type CallToAction = {
     media?: unknown
     hotspot?: SanityImageHotspot
     crop?: SanityImageCrop
+    alt?: string
     _type: 'image'
   }
-  theme?: 'light' | 'dark'
+  theme?: 'light' | 'brand'
   contentAlignment?: 'textFirst' | 'imageFirst'
-  background?: Background
   anchor?: string
 }
 
@@ -467,7 +336,6 @@ export type InfoSection = {
   heading?: string
   subheading?: string
   content?: BlockContent
-  background?: Background
   anchor?: string
 }
 
@@ -501,10 +369,9 @@ export type BlockContent = Array<
       style?: 'normal' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'blockquote'
       listItem?: 'bullet' | 'number'
       markDefs?: Array<{
-        linkType?: 'href' | 'page' | 'post'
+        linkType?: 'href' | 'page'
         href?: string
         page?: PageReference
-        post?: PostReference
         openInNewTab?: boolean
         _type: 'link'
         _key: string
@@ -529,52 +396,15 @@ export type Button = {
   link?: Link
 }
 
-export type Technology = {
+export type Person = {
   _id: string
-  _type: 'technology'
+  _type: 'person'
   _createdAt: string
   _updatedAt: string
   _rev: string
-  title: string
-  slug: Slug
-  url?: string
-  description?: string
-}
-
-export type Slug = {
-  _type: 'slug'
-  current: string
-  source?: string
-}
-
-export type Category = {
-  _id: string
-  _type: 'category'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  description?: string
-}
-
-export type TechnologyReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'technology'
-}
-
-export type Project = {
-  _id: string
-  _type: 'project'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  excerpt?: string
-  coverImage?: {
+  firstName: string
+  lastName: string
+  picture: {
     asset?: SanityImageAssetReference
     media?: unknown
     hotspot?: SanityImageHotspot
@@ -582,31 +412,10 @@ export type Project = {
     alt?: string
     _type: 'image'
   }
-  publishedAt?: string
-  updatedAt?: string
-  website?: string
-  repo?: string
-  categories?: Array<
-    {
-      _key: string
-    } & CategoryReference
-  >
-  tech?: Array<
-    {
-      _key: string
-    } & TechnologyReference
-  >
-  featured?: boolean
-  hidden?: boolean
-  body?: BlockContent
-  ogImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
+  role?: string
+  credentials?: Array<string>
+  bio?: BlockContentTextOnly
+  order?: number
 }
 
 export type SanityImageCrop = {
@@ -673,11 +482,10 @@ export type Program = {
   masthead?: Masthead
 }
 
-export type SanityFileAssetReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'sanity.fileAsset'
+export type Slug = {
+  _type: 'slug'
+  current: string
+  source?: string
 }
 
 export type Settings = {
@@ -697,10 +505,9 @@ export type Settings = {
     style?: 'normal'
     listItem?: never
     markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
+      linkType?: 'href' | 'page'
       href?: string
       page?: PageReference
-      post?: PostReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -709,19 +516,6 @@ export type Settings = {
     _type: 'block'
     _key: string
   }>
-  logo?: {
-    asset?: SanityFileAssetReference
-    media?: unknown
-    _type: 'file'
-  }
-  favicon?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
   ogImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -748,17 +542,7 @@ export type Settings = {
         _key: string
       } & NavDropdown)
   >
-  mobileNav?: {
-    showFooterContent?: boolean
-  }
   legal?: string
-  builtWith?: Array<{
-    name: string
-    url?: string
-    icon?: string
-    _type: 'builtWithItem'
-    _key: string
-  }>
   homepage?: PageReference
 }
 
@@ -775,12 +559,7 @@ export type Page = {
   titleDisplay?: 'plain' | 'highlighted' | 'none'
   masthead?: Masthead
   seo?: Seo
-  archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
-  background?: Background
   pageBuilder?: Array<
-    | ({
-        _key: string
-      } & Hero)
     | ({
         _key: string
       } & CallToAction)
@@ -793,9 +572,6 @@ export type Page = {
     | ({
         _key: string
       } & Stats)
-    | ({
-        _key: string
-      } & Scores)
     | ({
         _key: string
       } & Testimonials)
@@ -817,65 +593,7 @@ export type Page = {
     | ({
         _key: string
       } & Note)
-    | ({
-        _key: string
-      } & PostsArchive)
-    | ({
-        _key: string
-      } & ProjectsArchive)
-    | ({
-        _key: string
-      } & AuthorsArchive)
   >
-}
-
-export type Post = {
-  _id: string
-  _type: 'post'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  title: string
-  slug: Slug
-  content?: BlockContent
-  excerpt?: string
-  coverImage?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  date?: string
-  author?: PersonReference
-  categories?: Array<
-    {
-      _key: string
-    } & CategoryReference
-  >
-}
-
-export type Person = {
-  _id: string
-  _type: 'person'
-  _createdAt: string
-  _updatedAt: string
-  _rev: string
-  firstName: string
-  lastName: string
-  picture: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
-  role?: string
-  credentials?: Array<string>
-  bio?: BlockContentTextOnly
-  order?: number
 }
 
 export type SanityAssistInstructionTask = {
@@ -1123,10 +841,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | Address
-  | SanityImageAssetReference
-  | AuthorImage
   | Note
-  | Scores
   | Stats
   | Faq
   | ContactDetails
@@ -1136,16 +851,9 @@ export type AllSanitySchemaTypes =
   | ProgramsGrid
   | Testimonials
   | FeaturesGrid
+  | SanityImageAssetReference
   | GalleryVideo
   | Gallery
-  | AuthorsArchive
-  | CategoryReference
-  | ProjectReference
-  | ProjectsArchive
-  | PostReference
-  | PostsArchive
-  | Hero
-  | Background
   | NavDropdown
   | NavLink
   | Social
@@ -1159,20 +867,14 @@ export type AllSanitySchemaTypes =
   | BlockContentTextOnly
   | BlockContent
   | Button
-  | Technology
-  | Slug
-  | Category
-  | TechnologyReference
-  | Project
+  | Person
   | SanityImageCrop
   | SanityImageHotspot
   | Testimonial
   | Program
-  | SanityFileAssetReference
+  | Slug
   | Settings
   | Page
-  | Post
-  | Person
   | SanityAssistInstructionTask
   | SanityAssistTaskStatus
   | SanityAssistSchemaTypeAnnotations
@@ -1198,7 +900,7 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	builtWith[]{		name,		url,		icon	},	mobileNav,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "post": post->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "post": post->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)			}		}	}}
+// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)			}		}	}}
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
@@ -1216,10 +918,9 @@ export type SettingsQueryResult = {
     style?: 'normal'
     listItem?: never
     markDefs?: Array<{
-      linkType?: 'href' | 'page' | 'post'
+      linkType?: 'href' | 'page'
       href?: string
       page?: PageReference
-      post?: PostReference
       openInNewTab?: boolean
       _type: 'link'
       _key: string
@@ -1228,19 +929,6 @@ export type SettingsQueryResult = {
     _type: 'block'
     _key: string
   }>
-  logo?: {
-    asset?: SanityFileAssetReference
-    media?: unknown
-    _type: 'file'
-  }
-  favicon?: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  }
   ogImage?: {
     asset?: SanityImageAssetReference
     media?: unknown
@@ -1270,10 +958,9 @@ export type SettingsQueryResult = {
           title: string | null
           link: {
             _type: 'link'
-            linkType?: 'href' | 'page' | 'post'
+            linkType?: 'href' | 'page'
             href?: string
             page: string | null
-            post: string | null
             openInNewTab?: boolean
           }
           resolvedTitle: string | null
@@ -1285,24 +972,15 @@ export type SettingsQueryResult = {
         title: string | null
         link: {
           _type: 'link'
-          linkType?: 'href' | 'page' | 'post'
+          linkType?: 'href' | 'page'
           href?: string
           page: string | null
-          post: string | null
           openInNewTab?: boolean
         }
         resolvedTitle: string | null
       }
   > | null
-  mobileNav: {
-    showFooterContent?: boolean
-  } | null
   legal: string | null
-  builtWith: Array<{
-    name: string
-    url: string | null
-    icon: string | null
-  }> | null
   homepage: {
     _id: string
     _type: 'page'
@@ -1316,12 +994,7 @@ export type SettingsQueryResult = {
     titleDisplay?: 'highlighted' | 'none' | 'plain'
     masthead?: Masthead
     seo?: Seo
-    archive?: 'authorsArchive' | 'postsArchive' | 'projectsArchive'
-    background?: Background
     pageBuilder?: Array<
-      | ({
-          _key: string
-        } & AuthorsArchive)
       | ({
           _key: string
         } & CallToAction)
@@ -1342,25 +1015,13 @@ export type SettingsQueryResult = {
         } & Gallery)
       | ({
           _key: string
-        } & Hero)
-      | ({
-          _key: string
         } & InfoSection)
       | ({
           _key: string
         } & Note)
       | ({
           _key: string
-        } & PostsArchive)
-      | ({
-          _key: string
         } & ProgramsGrid)
-      | ({
-          _key: string
-        } & ProjectsArchive)
-      | ({
-          _key: string
-        } & Scores)
       | ({
           _key: string
         } & Stats)
@@ -1373,7 +1034,7 @@ export type SettingsQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: getPageQuery
-// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    titleDisplay,    archive,    masthead,    seo,      background {    type,    preset,    speed,    intensity,    colorSource,    customColor,    opacity  },    "pageBuilder": pageBuilder[]{      ...,        background {    type,    preset,    speed,    intensity,    colorSource,    customColor,    opacity  },      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },      _type == "hero" => {        ...,        buttons[]{          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }        }      },      _type == "featuresGrid" => {        ...,        features[]{          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }        }      },      _type == "gallery" => {        ...,        items[]{          ...,          _type == "galleryImage" => {            "aspectRatio": asset->metadata.dimensions.aspectRatio          },          _type == "galleryVideo" => {            "poster": poster{              ...,              "aspectRatio": asset->metadata.dimensions.aspectRatio            }          }        }      },      _type == "programsGrid" => {        ...,        "programs": select(          mode == "selected" => programs[]->{   _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99) },          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){              _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99)          }        )      },      _type == "testimonials" => {        ...,        "documentTestimonials": select(          source == "documents" => *[            _type == "testimonial" && (^.featuredOnly != true || featured == true)          ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{              _id,  quote,  highlight,  authorName,  authorRole,  authorImage          },          []        )      },      _type == "facultyGrid" => {        ...,        "people": select(          mode == "selected" => people[]->{   _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99) },          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){              _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99)          }        )      },      _type == "contactDetails" => {        ...,        "contact": *[_type == "settings"][0].contact      },      _type == "faq" => {        ...,        items[]{          ...,          answer[]{            ...,            markDefs[]{              ...,                _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }            }          }        }      },      _type == "note" => {        ...,        tone,        icon,        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        }      },      _type == "scores" => {        ...,        heading,        caption[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }          }        },        items[]{          _key,          label,          value,          max,          asPercent        }      },      _type == "postsArchive" => {        ...,        category->{_id, title, "slug": slug.current},        "posts": select(          source == "picked" => posts[]->{   _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture}, },          source == "all" => *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc){              _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},          },          *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc)[0...24]{              _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},          }        )      },      _type == "projectsArchive" => {        ...,        category->{_id, title, "slug": slug.current},        "projects": select(          source == "picked" => projects[]->{   _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  website,  repo,  featured,  hidden,  "publishedAt": coalesce(publishedAt, _createdAt),  "updatedAt": coalesce(updatedAt, _updatedAt),  "categories": categories[]->{_id, title, "slug": slug.current},  "tech": tech[]->{_id, title, "slug": slug.current}, },          source == "all" => *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc){              _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  website,  repo,  featured,  hidden,  "publishedAt": coalesce(publishedAt, _createdAt),  "updatedAt": coalesce(updatedAt, _updatedAt),  "categories": categories[]->{_id, title, "slug": slug.current},  "tech": tech[]->{_id, title, "slug": slug.current},          },          *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc)[0...24]{              _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  website,  repo,  featured,  hidden,  "publishedAt": coalesce(publishedAt, _createdAt),  "updatedAt": coalesce(updatedAt, _updatedAt),  "categories": categories[]->{_id, title, "slug": slug.current},  "tech": tech[]->{_id, title, "slug": slug.current},          }        )      },      _type == "authorsArchive" => {        ...,        "authors": select(          source == "picked" => authors[]->{            _id, firstName, lastName, picture,            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])          },          *[_type == "person"] | order(lastName asc, firstName asc)[0...48]{            _id, firstName, lastName, picture,            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])          }        )      },    },  }
+// Query: *[_type == 'page' && slug.current == $slug][0]{    _id,    _type,    name,    slug,    heading,    subheading,    titleDisplay,    masthead,    seo,    "pageBuilder": pageBuilder[]{      ...,      _type == "callToAction" => {        ...,        button {          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current  }      }        }      },      _type == "infoSection" => {        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },      _type == "featuresGrid" => {        ...,        features[]{          ...,            link {      ...,        _type == "link" => {    "page": page->slug.current  }      }        }      },      _type == "gallery" => {        ...,        items[]{          ...,          _type == "galleryImage" => {            "aspectRatio": asset->metadata.dimensions.aspectRatio          },          _type == "galleryVideo" => {            "poster": poster{              ...,              "aspectRatio": asset->metadata.dimensions.aspectRatio            }          }        }      },      _type == "programsGrid" => {        ...,        "programs": select(          mode == "selected" => programs[]->{   _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99) },          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){              _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99)          }        )      },      _type == "testimonials" => {        ...,        "documentTestimonials": *[          _type == "testimonial" && (^.featuredOnly != true || featured == true)        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{            _id,  quote,  highlight,  authorName,  authorRole,  authorImage        }      },      _type == "facultyGrid" => {        ...,        "people": select(          mode == "selected" => people[]->{   _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99) },          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){              _id,  firstName,  lastName,  role,  credentials,  bio,  picture,  "order": coalesce(order, 99)          }        )      },      _type == "contactDetails" => {        ...,        "contact": *[_type == "settings"][0].contact      },      _type == "faq" => {        ...,        items[]{          ...,          answer[]{            ...,            markDefs[]{              ...,                _type == "link" => {    "page": page->slug.current  }            }          }        }      },      _type == "note" => {        ...,        tone,        icon,        content[]{          ...,          markDefs[]{            ...,              _type == "link" => {    "page": page->slug.current  }          }        }      },    },  }
 export type GetPageQueryResult = {
   _id: string
   _type: 'page'
@@ -1382,43 +1043,9 @@ export type GetPageQueryResult = {
   heading: string
   subheading: string | null
   titleDisplay: 'highlighted' | 'none' | 'plain' | null
-  archive: 'authorsArchive' | 'postsArchive' | 'projectsArchive' | null
   masthead: Masthead | null
   seo: Seo | null
-  background: {
-    type: 'none' | 'shader'
-    preset: 'blob' | null
-    speed: number | null
-    intensity: number | null
-    colorSource: 'custom' | 'theme' | null
-    customColor: string | null
-    opacity: number | null
-  } | null
   pageBuilder: Array<
-    | {
-        _key: string
-        _type: 'authorsArchive'
-        heading?: string
-        subheading?: string
-        source?: 'all' | 'picked'
-        limit?: number
-        authors: Array<{
-          _id: string
-          firstName: string
-          lastName: string
-          picture: {
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt?: string
-            _type: 'image'
-          }
-          postCount: number
-        }> | null
-        columns?: 2 | 3 | 4
-        background: null
-      }
     | {
         _key: string
         _type: 'callToAction'
@@ -1430,10 +1057,9 @@ export type GetPageQueryResult = {
           buttonText?: string
           link: {
             _type: 'link'
-            linkType?: 'href' | 'page' | 'post'
+            linkType?: 'href' | 'page'
             href?: string
             page: string | null
-            post: string | null
             openInNewTab?: boolean
           } | null
         } | null
@@ -1442,11 +1068,11 @@ export type GetPageQueryResult = {
           media?: unknown
           hotspot?: SanityImageHotspot
           crop?: SanityImageCrop
+          alt?: string
           _type: 'image'
         }
-        theme?: 'dark' | 'light'
+        theme?: 'brand' | 'light'
         contentAlignment?: 'imageFirst' | 'textFirst'
-        background?: Background
         anchor?: string
       }
     | {
@@ -1458,7 +1084,6 @@ export type GetPageQueryResult = {
         showMapLink?: boolean
         secondaryEmail?: string
         anchor?: string
-        background: null
         contact: Contact | null
       }
     | {
@@ -1487,7 +1112,6 @@ export type GetPageQueryResult = {
         showBio?: boolean
         columns?: 2 | 3 | 4
         anchor?: string
-        background: null
       }
     | {
         _key: string
@@ -1510,7 +1134,6 @@ export type GetPageQueryResult = {
               _type: 'link'
               _key: string
               page: null
-              post: null
             }> | null
             level?: number
             _type: 'block'
@@ -1519,7 +1142,6 @@ export type GetPageQueryResult = {
           _type: 'faqItem'
           _key: string
         }> | null
-        background: null
       }
     | {
         _key: string
@@ -1528,29 +1150,38 @@ export type GetPageQueryResult = {
         subheading?: string
         features: Array<{
           icon?:
-            | 'beaker'
-            | 'bolt'
-            | 'chart'
+            | 'academic'
+            | 'apply'
+            | 'book'
+            | 'calendar'
+            | 'care'
             | 'check'
-            | 'chip'
-            | 'cloud'
-            | 'code'
-            | 'cursor'
+            | 'community'
+            | 'document'
+            | 'email'
             | 'globe'
-            | 'heart'
-            | 'lock'
-            | 'rocket'
-            | 'shield'
-            | 'sparkles'
-            | 'star'
+            | 'home'
+            | 'idea'
+            | 'independence'
+            | 'location'
+            | 'math'
+            | 'music'
+            | 'outdoors'
+            | 'paint'
+            | 'phone'
+            | 'puzzle'
+            | 'safety'
+            | 'schedule'
+            | 'science'
+            | 'smile'
+            | 'talk'
           heading: string
           text?: string
           link: {
             _type: 'link'
-            linkType?: 'href' | 'page' | 'post'
+            linkType?: 'href' | 'page'
             href?: string
             page: string | null
-            post: string | null
             openInNewTab?: boolean
           } | null
           _type: 'feature'
@@ -1558,7 +1189,6 @@ export type GetPageQueryResult = {
         }> | null
         columns?: 2 | 3 | 4
         anchor?: string
-        background: null
       }
     | {
         _key: string
@@ -1598,38 +1228,6 @@ export type GetPageQueryResult = {
         columns?: 2 | 3 | 4
         aspect?: 'auto' | 'square' | 'video'
         enableLightbox?: boolean
-        background: null
-      }
-    | {
-        _key: string
-        _type: 'hero'
-        eyebrow?: string
-        heading: string
-        lede?: string
-        buttons: Array<{
-          _key: string
-          _type: 'button'
-          buttonText?: string
-          link: {
-            _type: 'link'
-            linkType?: 'href' | 'page' | 'post'
-            href?: string
-            page: string | null
-            post: string | null
-            openInNewTab?: boolean
-          } | null
-        }> | null
-        image?: {
-          asset?: SanityImageAssetReference
-          media?: unknown
-          hotspot?: SanityImageHotspot
-          crop?: SanityImageCrop
-          alt?: string
-          _type: 'image'
-        }
-        layout?: 'center' | 'split'
-        theme?: 'dark' | 'light'
-        background: null
       }
     | {
         _key: string
@@ -1647,10 +1245,9 @@ export type GetPageQueryResult = {
               style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
               listItem?: 'bullet' | 'number'
               markDefs: Array<{
-                linkType?: 'href' | 'page' | 'post'
+                linkType?: 'href' | 'page'
                 href?: string
                 page: string | null
-                post: string | null
                 openInNewTab?: boolean
                 _type: 'link'
                 _key: string
@@ -1669,15 +1266,6 @@ export type GetPageQueryResult = {
               markDefs: null
             }
         > | null
-        background: {
-          type: 'none' | 'shader'
-          preset: 'blob' | null
-          speed: number | null
-          intensity: number | null
-          colorSource: 'custom' | 'theme' | null
-          customColor: string | null
-          opacity: number | null
-        } | null
         anchor?: string
       }
     | {
@@ -1710,58 +1298,11 @@ export type GetPageQueryResult = {
             _type: 'link'
             _key: string
             page: null
-            post: null
           }> | null
           level?: number
           _type: 'block'
           _key: string
         }>
-        background?: Background
-      }
-    | {
-        _key: string
-        _type: 'postsArchive'
-        heading?: string
-        subheading?: string
-        source?: 'all' | 'latest' | 'picked'
-        limit?: number
-        category: {
-          _id: string
-          title: string
-          slug: string
-        } | null
-        posts: Array<{
-          _id: string
-          status: 'draft' | 'published'
-          title: string
-          slug: string
-          excerpt: string | null
-          coverImage: {
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt?: string
-            _type: 'image'
-          } | null
-          date: string
-          author: {
-            firstName: string
-            lastName: string
-            picture: {
-              asset?: SanityImageAssetReference
-              media?: unknown
-              hotspot?: SanityImageHotspot
-              crop?: SanityImageCrop
-              alt?: string
-              _type: 'image'
-            }
-          } | null
-        }> | null
-        columns?: 2 | 3
-        sortField?: 'date' | 'title'
-        sortDirection?: 'asc' | 'desc'
-        background: null
       }
     | {
         _key: string
@@ -1789,91 +1330,6 @@ export type GetPageQueryResult = {
         }> | null
         columns?: 2 | 3 | 4
         anchor?: string
-        background: null
-      }
-    | {
-        _key: string
-        _type: 'projectsArchive'
-        heading?: string
-        subheading?: string
-        source?: 'all' | 'latest' | 'picked'
-        limit?: number
-        category: {
-          _id: string
-          title: string
-          slug: string
-        } | null
-        projects: Array<{
-          _id: string
-          status: 'draft' | 'published'
-          title: string
-          slug: string
-          excerpt: string | null
-          coverImage: {
-            asset?: SanityImageAssetReference
-            media?: unknown
-            hotspot?: SanityImageHotspot
-            crop?: SanityImageCrop
-            alt?: string
-            _type: 'image'
-          } | null
-          website: string | null
-          repo: string | null
-          featured: boolean | null
-          hidden: boolean | null
-          publishedAt: string
-          updatedAt: string
-          categories: Array<{
-            _id: string
-            title: string
-            slug: string
-          }> | null
-          tech: Array<{
-            _id: string
-            title: string
-            slug: string
-          }> | null
-        }> | null
-        columns?: 2 | 3
-        showFilter?: boolean
-        showTechFilter?: boolean
-        showSort?: boolean
-        sortField?: 'publishedAt' | 'title' | 'updatedAt'
-        sortDirection?: 'asc' | 'desc'
-        background: null
-      }
-    | {
-        _key: string
-        _type: 'scores'
-        heading: string | null
-        caption: Array<{
-          children?: Array<{
-            marks?: Array<string>
-            text?: string
-            _type: 'span'
-            _key: string
-          }>
-          style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-          listItem?: 'bullet' | 'number'
-          markDefs: Array<{
-            href?: string
-            _type: 'link'
-            _key: string
-            page: null
-            post: null
-          }> | null
-          level?: number
-          _type: 'block'
-          _key: string
-        }> | null
-        items: Array<{
-          _key: string
-          label: string
-          value: number
-          max: number | null
-          asPercent: boolean | null
-        }> | null
-        background?: Background
       }
     | {
         _key: string
@@ -1888,7 +1344,7 @@ export type GetPageQueryResult = {
           _key: string
         }>
         columns?: 2 | 3 | 4
-        background: null
+        anchor?: string
       }
     | {
         _key: string
@@ -1896,45 +1352,31 @@ export type GetPageQueryResult = {
         heading?: string
         subheading?: string
         layout?: 'cards' | 'letters'
-        source?: 'documents' | 'manual'
         featuredOnly?: boolean
         limit?: number
-        testimonials?: Array<{
-          quote: string
-          highlight?: string
-          authorName: string
-          authorRole?: string
-          sourceUrl?: string
-          authorImage?: AuthorImage
-          _type: 'testimonial'
-          _key: string
-        }>
         columns?: 1 | 2 | 3
-        background: null
-        documentTestimonials:
-          | Array<{
-              _id: string
-              quote: string
-              highlight: string | null
-              authorName: string
-              authorRole: string | null
-              authorImage: {
-                asset?: SanityImageAssetReference
-                media?: unknown
-                hotspot?: SanityImageHotspot
-                crop?: SanityImageCrop
-                alt?: string
-                _type: 'image'
-              } | null
-            }>
-          | Array<never>
+        documentTestimonials: Array<{
+          _id: string
+          quote: string
+          highlight: string | null
+          authorName: string
+          authorRole: string | null
+          authorImage: {
+            asset?: SanityImageAssetReference
+            media?: unknown
+            hotspot?: SanityImageHotspot
+            crop?: SanityImageCrop
+            alt?: string
+            _type: 'image'
+          } | null
+        }>
       }
   > | null
 } | null
 
 // Source: sanity/lib/queries.ts
 // Variable: sitemapData
-// Query: *[(_type == "page" || _type == "post" || _type == "project" || _type == "program")    && defined(slug.current)    && !(_type == "project" && hidden == true)    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
+// Query: *[(_type == "page" || _type == "program")    && defined(slug.current)    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<
   | {
       slug: string
@@ -1943,24 +1385,14 @@ export type SitemapDataResult = Array<
     }
   | {
       slug: string
-      _type: 'post'
-      _updatedAt: string
-    }
-  | {
-      slug: string
       _type: 'program'
-      _updatedAt: string
-    }
-  | {
-      slug: string
-      _type: 'project'
       _updatedAt: string
     }
 >
 
 // Source: sanity/lib/queries.ts
 // Variable: programQuery
-// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
+// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
 export type ProgramQueryResult = {
   _id: string
   name: string
@@ -1991,10 +1423,9 @@ export type ProgramQueryResult = {
         style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
         listItem?: 'bullet' | 'number'
         markDefs: Array<{
-          linkType?: 'href' | 'page' | 'post'
+          linkType?: 'href' | 'page'
           href?: string
           page: string | null
-          post: string | null
           openInNewTab?: boolean
           _type: 'link'
           _key: string
@@ -2030,297 +1461,21 @@ export type ProgramSlugsQueryResult = Array<{
 }>
 
 // Source: sanity/lib/queries.ts
-// Variable: allPostsQuery
-// Query: *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type AllPostsQueryResult = Array<{
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-}>
-
-// Source: sanity/lib/queries.ts
-// Variable: morePostsQuery
-// Query: *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type MorePostsQueryResult = Array<{
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-}>
-
-// Source: sanity/lib/queries.ts
-// Variable: postQuery
-// Query: *[_type == "post" && slug.current == $slug] [0] {    content[]{    ...,    markDefs[]{      ...,        _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }    }  },      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  "date": coalesce(date, _updatedAt),  "author": author->{firstName, lastName, picture},  }
-export type PostQueryResult = {
-  content: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>
-          text?: string
-          _type: 'span'
-          _key: string
-        }>
-        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-        listItem?: 'bullet' | 'number'
-        markDefs: Array<{
-          linkType?: 'href' | 'page' | 'post'
-          href?: string
-          page: string | null
-          post: string | null
-          openInNewTab?: boolean
-          _type: 'link'
-          _key: string
-        }> | null
-        level?: number
-        _type: 'block'
-        _key: string
-      }
-    | {
-        asset?: SanityImageAssetReference
-        media?: unknown
-        hotspot?: SanityImageHotspot
-        crop?: SanityImageCrop
-        _type: 'image'
-        _key: string
-        markDefs: null
-      }
-  > | null
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-  date: string
-  author: {
-    firstName: string
-    lastName: string
-    picture: {
-      asset?: SanityImageAssetReference
-      media?: unknown
-      hotspot?: SanityImageHotspot
-      crop?: SanityImageCrop
-      alt?: string
-      _type: 'image'
-    }
-  } | null
-} | null
-
-// Source: sanity/lib/queries.ts
-// Variable: postPagesSlugs
-// Query: *[_type == "post" && defined(slug.current)]  {"slug": slug.current}
-export type PostPagesSlugsResult = Array<{
-  slug: string
-}>
-
-// Source: sanity/lib/queries.ts
 // Variable: pagesSlugs
 // Query: *[_type == "page" && defined(slug.current)    && slug.current != *[_type == "settings"][0].homepage->slug.current]  {"slug": slug.current}
 export type PagesSlugsResult = Array<{
   slug: string
 }>
 
-// Source: sanity/lib/queries.ts
-// Variable: archivePageSlugQuery
-// Query: *[_type == "page" && archive == $archive && defined(slug.current)][0].slug.current
-export type ArchivePageSlugQueryResult = string | null
-
-// Source: sanity/lib/queries.ts
-// Variable: allProjectsQuery
-// Query: *[_type == "project" && defined(slug.current) && !hidden] | order(featured desc, coalesce(publishedAt, _createdAt) desc) {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  website,  repo,  featured,  hidden,  "publishedAt": coalesce(publishedAt, _createdAt),  "updatedAt": coalesce(updatedAt, _updatedAt),  "categories": categories[]->{_id, title, "slug": slug.current},  "tech": tech[]->{_id, title, "slug": slug.current},  }
-export type AllProjectsQueryResult = Array<{
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-  website: string | null
-  repo: string | null
-  featured: boolean | null
-  hidden: boolean | null
-  publishedAt: string
-  updatedAt: string
-  categories: Array<{
-    _id: string
-    title: string
-    slug: string
-  }> | null
-  tech: Array<{
-    _id: string
-    title: string
-    slug: string
-  }> | null
-}>
-
-// Source: sanity/lib/queries.ts
-// Variable: projectBySlugQuery
-// Query: *[_type == "project" && slug.current == $slug] [0] {      _id,  "status": select(_originalId in path("drafts.**") => "draft", "published"),  "title": coalesce(title, "Untitled"),  "slug": slug.current,  excerpt,  coverImage,  website,  repo,  featured,  hidden,  "publishedAt": coalesce(publishedAt, _createdAt),  "updatedAt": coalesce(updatedAt, _updatedAt),  "categories": categories[]->{_id, title, "slug": slug.current},  "tech": tech[]->{_id, title, "slug": slug.current},    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }    },    ogImage,  }
-export type ProjectBySlugQueryResult = {
-  _id: string
-  status: 'draft' | 'published'
-  title: string
-  slug: string
-  excerpt: string | null
-  coverImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-  website: string | null
-  repo: string | null
-  featured: boolean | null
-  hidden: boolean | null
-  publishedAt: string
-  updatedAt: string
-  categories: Array<{
-    _id: string
-    title: string
-    slug: string
-  }> | null
-  tech: Array<{
-    _id: string
-    title: string
-    slug: string
-  }> | null
-  body: Array<
-    | {
-        children?: Array<{
-          marks?: Array<string>
-          text?: string
-          _type: 'span'
-          _key: string
-        }>
-        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
-        listItem?: 'bullet' | 'number'
-        markDefs: Array<{
-          linkType?: 'href' | 'page' | 'post'
-          href?: string
-          page: string | null
-          post: string | null
-          openInNewTab?: boolean
-          _type: 'link'
-          _key: string
-        }> | null
-        level?: number
-        _type: 'block'
-        _key: string
-      }
-    | {
-        asset?: SanityImageAssetReference
-        media?: unknown
-        hotspot?: SanityImageHotspot
-        crop?: SanityImageCrop
-        _type: 'image'
-        _key: string
-        markDefs: null
-      }
-  > | null
-  ogImage: {
-    asset?: SanityImageAssetReference
-    media?: unknown
-    hotspot?: SanityImageHotspot
-    crop?: SanityImageCrop
-    alt?: string
-    _type: 'image'
-  } | null
-} | null
-
-// Source: sanity/lib/queries.ts
-// Variable: projectSlugsQuery
-// Query: *[_type == "project" && defined(slug.current) && !hidden]  {"slug": slug.current}
-export type ProjectSlugsQueryResult = Array<{
-  slug: string
-}>
-
-// Source: sanity/lib/queries.ts
-// Variable: projectNavListQuery
-// Query: *[_type == "project" && defined(slug.current) && !hidden] | order(coalesce(publishedAt, _createdAt) desc) {    "slug": slug.current,    title  }
-export type ProjectNavListQueryResult = Array<{
-  slug: string
-  title: string
-}>
-
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tbuiltWith[]{\n\t\tname,\n\t\turl,\n\t\ticon\n\t},\n\tmobileNav,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "post": post->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "post": post->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
-    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    archive,\n    masthead,\n    seo,\n    \n  background {\n    type,\n    preset,\n    speed,\n    intensity,\n    colorSource,\n    customColor,\n    opacity\n  }\n,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      \n  background {\n    type,\n    preset,\n    speed,\n    intensity,\n    colorSource,\n    customColor,\n    opacity\n  }\n,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "hero" => {\n        ...,\n        buttons[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": select(\n          source == "documents" => *[\n            _type == "testimonial" && (^.featuredOnly != true || featured == true)\n          ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n            \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n          },\n          []\n        )\n      },\n      _type == "facultyGrid" => {\n        ...,\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "scores" => {\n        ...,\n        heading,\n        caption[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        },\n        items[]{\n          _key,\n          label,\n          value,\n          max,\n          asPercent\n        }\n      },\n      _type == "postsArchive" => {\n        ...,\n        category->{_id, title, "slug": slug.current},\n        "posts": select(\n          source == "picked" => posts[]->{ \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n },\n          source == "all" => *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc){\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n          },\n          *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc)[0...24]{\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n          }\n        )\n      },\n      _type == "projectsArchive" => {\n        ...,\n        category->{_id, title, "slug": slug.current},\n        "projects": select(\n          source == "picked" => projects[]->{ \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n },\n          source == "all" => *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc){\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n          },\n          *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc)[0...24]{\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n          }\n        )\n      },\n      _type == "authorsArchive" => {\n        ...,\n        "authors": select(\n          source == "picked" => authors[]->{\n            _id, firstName, lastName, picture,\n            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])\n          },\n          *[_type == "person"] | order(lastName asc, firstName asc)[0...48]{\n            _id, firstName, lastName, picture,\n            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])\n          }\n        )\n      },\n    },\n  }\n': GetPageQueryResult
-    '\n  *[(_type == "page" || _type == "post" || _type == "project" || _type == "program")\n    && defined(slug.current)\n    && !(_type == "project" && hidden == true)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
-    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
+    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
+    '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    masthead,\n    seo,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": *[\n          _type == "testimonial" && (^.featuredOnly != true || featured == true)\n        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n          \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n        }\n      },\n      _type == "facultyGrid" => {\n        ...,\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
+    '\n  *[(_type == "page" || _type == "program")\n    && defined(slug.current)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
+    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
     '\n  *[_type == "program" && defined(slug.current)]\n  {"slug": slug.current}\n': ProgramSlugsQueryResult
-    '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult
-    '\n  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': MorePostsQueryResult
-    '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult
-    '\n  *[_type == "post" && defined(slug.current)]\n  {"slug": slug.current}\n': PostPagesSlugsResult
     '\n  *[_type == "page" && defined(slug.current)\n    && slug.current != *[_type == "settings"][0].homepage->slug.current]\n  {"slug": slug.current}\n': PagesSlugsResult
-    '\n  *[_type == "page" && archive == $archive && defined(slug.current)][0].slug.current\n': ArchivePageSlugQueryResult
-    '\n  *[_type == "project" && defined(slug.current) && !hidden] | order(featured desc, coalesce(publishedAt, _createdAt) desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n  }\n': AllProjectsQueryResult
-    '\n  *[_type == "project" && slug.current == $slug] [0] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n    },\n    ogImage,\n  }\n': ProjectBySlugQueryResult
-    '\n  *[_type == "project" && defined(slug.current) && !hidden]\n  {"slug": slug.current}\n': ProjectSlugsQueryResult
-    '\n  *[_type == "project" && defined(slug.current) && !hidden] | order(coalesce(publishedAt, _createdAt) desc) {\n    "slug": slug.current,\n    title\n  }\n': ProjectNavListQueryResult
   }
 }
 // Lets @sanity/client releases that predate the global registry read it too

@@ -10,9 +10,6 @@ import {altField} from './shared'
  * own `name` / `heading` and the site-level Open Graph image, so a page is
  * never worse off for ignoring this. Only fill it in when the search-result
  * wording should differ from the on-page wording.
- *
- * Generally useful rather than FSMA-specific — **backport candidate** for
- * `sanity-next-clean` (build plan §0 rule 6, S6).
  */
 export const seo = defineType({
   name: 'seo',

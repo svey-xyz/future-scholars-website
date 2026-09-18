@@ -21,7 +21,7 @@ export default defineBlueprint({
         resource: {
           type: 'dataset',
           // <projectId>.<dataset>
-          id: 'h52u3jiw.production',
+          id: 'wzs9gcps.production',
         },
       },
     }),

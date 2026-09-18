@@ -51,8 +51,8 @@ const SCRIM_GRADIENT: Record<string, string> = {
   strong: 'bg-gradient-to-t from-black/85 via-black/55 to-black/25',
 }
 
-// Inline custom-property helper (typed) for the mount-entrance cascade — same
-// pattern as the hero block; `.enter` is gated on prefers-reduced-motion in
+// Inline custom-property helper (typed) for the mount-entrance cascade;
+// `.enter` is gated on prefers-reduced-motion in
 // globals.css, so reduced-motion users get everything instantly.
 const delay = (ms: number) => ({'--enter-d': `${ms}ms`}) as CSSProperties
 

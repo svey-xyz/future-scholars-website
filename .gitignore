@@ -23,7 +23,7 @@ yarn-error.log*
 .env.*
 !.env.example
 
-# migration artifacts (large tarballs — keep local; see docs/MIGRATION.md)
+# Sanity dataset exports / migration artifacts (large tarballs — keep local)
 /backups
 
 # vercel
@@ -37,3 +37,6 @@ next-env.d.ts
 # VS Code
 .vscode
 .env*
+
+# Agent session artefacts (screenshots, snapshots)
+/Claude outputs
