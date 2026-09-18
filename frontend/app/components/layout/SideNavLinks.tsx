@@ -85,7 +85,13 @@ function NavLeaf({
   nested?: boolean
   onNavigate?: () => void
 }) {
-  const {href, link: linkProp, label, isExternal, opensInNewTab} = resolveNavLink(link, homepageSlug)
+  const {
+    href,
+    link: linkProp,
+    label,
+    isExternal,
+    opensInNewTab,
+  } = resolveNavLink(link, homepageSlug)
   const isActive = isActiveHref(href, pathname)
 
   return (
@@ -148,11 +154,7 @@ function NavGroup({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        className={cn(
-          leafBase,
-          'group w-full text-left',
-          containsActive && 'text-primary',
-        )}
+        className={cn(leafBase, 'group w-full text-left', containsActive && 'text-primary')}
       >
         <span>{title}</span>
         <ChevronDownIcon

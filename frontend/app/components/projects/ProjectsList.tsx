@@ -87,7 +87,10 @@ type Option = {value: string; title: string}
  * keyed by `slug` (the URL-facing identity), with an "All" pseudo-option first.
  * Entries without a slug are skipped — they can't be deep-linked or matched.
  */
-function buildOptions(projects: Project[], pick: (p: Project) => readonly Taxon[] | null | undefined): Option[] {
+function buildOptions(
+  projects: Project[],
+  pick: (p: Project) => readonly Taxon[] | null | undefined,
+): Option[] {
   const seen = new Map<string, string>()
   for (const p of projects) {
     for (const t of pick(p) ?? []) {

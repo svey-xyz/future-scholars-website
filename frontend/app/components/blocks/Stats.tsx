@@ -38,7 +38,13 @@ export default function Stats({block}: Props) {
       {list.length > 0 && (
         <ul className={cn('mt-10 grid gap-8', colClass[cols])}>
           {list.map((stat, i) => (
-            <Reveal as="li" key={stat._key} i={i} variant="scale" className="group/stat flex flex-col gap-1">
+            <Reveal
+              as="li"
+              key={stat._key}
+              i={i}
+              variant="scale"
+              className="group/stat flex flex-col gap-1"
+            >
               <p className="text-4xl font-semibold tracking-tight text-foreground tabular-nums transition-transform duration-300 will-change-transform motion-safe:group-hover/stat:scale-105 origin-left lg:text-5xl">
                 {stat.value}
               </p>

@@ -38,9 +38,7 @@ export default function Avatar({person, date, small = false}: Props) {
             mode="cover"
           />
         ) : (
-          <AvatarFallback className={small ? 'text-[10px]' : 'text-xs'}>
-            {initials}
-          </AvatarFallback>
+          <AvatarFallback className={small ? 'text-[10px]' : 'text-xs'}>{initials}</AvatarFallback>
         )}
       </AvatarRoot>
       <div className="flex flex-col">

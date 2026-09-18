@@ -8,10 +8,10 @@
     "dev": "next dev",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
-    "typegen": "sanity typegen generate",
     "sanity:typegen": "cd ../studio && sanity schema extract --enforce-required-fields --path ../sanity.schema.json --force && cd ../frontend && sanity typegen generate",
     "start": "next start",
-    "type-check": "tsc --noEmit"
+    "type-check": "tsc --noEmit",
+    "typegen": "sanity typegen generate"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

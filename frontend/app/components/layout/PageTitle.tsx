@@ -29,8 +29,7 @@ type Props = {
  */
 export default function PageTitle({heading, subheading, display, heroLeads}: Props) {
   const mode =
-    (stegaClean(display ?? undefined) as TitleDisplay | undefined) ??
-    (heroLeads ? 'none' : 'plain')
+    (stegaClean(display ?? undefined) as TitleDisplay | undefined) ?? (heroLeads ? 'none' : 'plain')
 
   if (mode === 'none') return <h1 className="sr-only">{heading}</h1>
 

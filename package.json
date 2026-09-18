@@ -27,12 +27,11 @@
     "import-sample-data": "cd studio && sanity dataset import sample-data.tar.gz --dataset production --replace",
     "lint": "npm run lint --workspace=frontend",
     "schema:extract": "npm run schema:extract --workspace=studio",
+    "type-check": "tsc -p tsconfig.json && npm run type-check --workspaces",
     "typegen": "npm run schema:extract && run-p typegen:frontend typegen:studio",
     "typegen:frontend": "npm run typegen --workspace=frontend",
-    "typegen:studio": "npm run typegen --workspace=studio",
-    "type-check": "tsc -p tsconfig.json && npm run type-check --workspaces"
+    "typegen:studio": "npm run typegen --workspace=studio"
   },
-  "prettier": "@sanity/prettier-config",
   "dependencies": {
     "@sanity/blueprints": "^0.21.0",
     "@sanity/functions": "^1.4.0",

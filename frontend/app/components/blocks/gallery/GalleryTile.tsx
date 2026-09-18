@@ -16,7 +16,7 @@ type Props = {
   /** False when this item's carousel/lightbox slide is not the active one —
    *  video slides then unmount their iframe so playback stops. */
   isActive?: boolean
-	animate?: boolean
+  animate?: boolean
   sizes?: string
 }
 
@@ -40,7 +40,7 @@ export default function GalleryTile({
   enableLightbox,
   contained = false,
   isActive = true,
-	animate = true,
+  animate = true,
   sizes,
 }: Props) {
   const caption = itemCaption(item)
@@ -57,10 +57,18 @@ export default function GalleryTile({
             <GalleryVideo item={item} isActive={isActive} sizes={sizes} />
           </div>
         ) : (
-          <GalleryMedia item={item} fill={false} animate={animate} sizes={sizes} className="max-h-[80vh] rounded-lg" />
+          <GalleryMedia
+            item={item}
+            fill={false}
+            animate={animate}
+            sizes={sizes}
+            className="max-h-[80vh] rounded-lg"
+          />
         )}
         {caption && (
-          <figcaption className="mt-1 text-center text-sm text-muted-foreground">{caption}</figcaption>
+          <figcaption className="mt-1 text-center text-sm text-muted-foreground">
+            {caption}
+          </figcaption>
         )}
       </figure>
     )

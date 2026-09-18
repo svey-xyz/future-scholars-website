@@ -6,7 +6,13 @@ import {usePathname} from 'next/navigation'
 
 import {Button} from '@/components/ui/button'
 import {Separator} from '@/components/ui/separator'
-import {Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger} from '@/components/ui/sheet'
+import {
+  Sheet,
+  SheetContent,
+  SheetDescription,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet'
 import BrandMark from './BrandMark'
 import NavContact from './NavContact'
 import SideNavLinks from './SideNavLinks'
@@ -97,10 +103,7 @@ export default function SideNavMobile({
                 <HamburgerIcon open={open} />
               </Button>
             </SheetTrigger>
-            <SheetContent
-              side="left"
-              className="flex w-[19rem] max-w-[85vw] flex-col gap-0 p-0"
-            >
+            <SheetContent side="left" className="flex w-[19rem] max-w-[85vw] flex-col gap-0 p-0">
               <div className="px-5 pb-4 pt-6">
                 <SheetTitle className="sr-only">Menu</SheetTitle>
                 <SheetDescription className="sr-only">Site navigation</SheetDescription>

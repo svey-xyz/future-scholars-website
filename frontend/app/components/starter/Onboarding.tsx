@@ -63,12 +63,7 @@ type OnboardingMessageProps = {
   path?: string
 }
 
-export function OnboardingShell({
-  message,
-  link,
-  type,
-  path,
-}: OnboardingMessageProps) {
+export function OnboardingShell({message, link, type, path}: OnboardingMessageProps) {
   const isPresentation = useIsPresentationTool()
 
   return (
@@ -100,5 +95,3 @@ export function OnboardingShell({
     </Card>
   )
 }
-
-

@@ -139,9 +139,13 @@ export const shaderPresets = {
     // appended by ShaderBackground; these are inert defaults so the program
     // links and renders something sane before the first hook fires.
     uniforms: [
-			{ name: 'u_time', type: 'float', value: 0.0 },
-			{ name: 'u_posSeed', type: 'vec2', value: new Float32Array([Math.random() * 1000, Math.random() * 1000]) },
-			{ name: 'u_bgColour', type: 'vec3', value: new Float32Array([0.329, 0.208, 0.4]) },
+      {name: 'u_time', type: 'float', value: 0.0},
+      {
+        name: 'u_posSeed',
+        type: 'vec2',
+        value: new Float32Array([Math.random() * 1000, Math.random() * 1000]),
+      },
+      {name: 'u_bgColour', type: 'vec3', value: new Float32Array([0.329, 0.208, 0.4])},
     ],
   },
 } satisfies Record<string, ShaderPreset>

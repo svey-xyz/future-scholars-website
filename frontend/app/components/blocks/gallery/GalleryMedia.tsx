@@ -9,7 +9,7 @@ type Props = {
   item: GalleryItem
   /** Cover-fill the (sized) parent box — true for tiles, false for the contained lightbox image. */
   fill?: boolean
-	animate?: boolean
+  animate?: boolean
   sizes?: string
   loading?: 'lazy' | 'eager'
   className?: string
@@ -25,8 +25,16 @@ type Props = {
  * The hover-scale is scoped to `group/gal`, so it only animates on tiles, never
  * in the lightbox.
  */
-export default function GalleryMedia({item, fill = true, animate = true, sizes, loading = 'lazy', className}: Props) {
-  const scale = 'transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/gal:scale-105'
+export default function GalleryMedia({
+  item,
+  fill = true,
+  animate = true,
+  sizes,
+  loading = 'lazy',
+  className,
+}: Props) {
+  const scale =
+    'transition-transform duration-[900ms] ease-out will-change-transform motion-safe:group-hover/gal:scale-105'
 
   if (item._type === 'galleryImage') {
     if (!item.asset?._ref) return null

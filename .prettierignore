@@ -17,3 +17,17 @@ out/
 # Other generated files
 *.min.js
 *.min.css
+
+# Prose. Prettier reflows markdown paragraphs to printWidth, which rewrites
+# every doc in the repo the first time anyone runs `format` and makes the
+# diff of a one-line doc edit unreadable. Documentation is written and
+# reviewed by humans, so it is not Prettier's to own (build plan Q21).
+*.md
+*.mdx
+
+# Vendored/generated code we do not hand-edit: shadcn/ui components are
+# emitted by the shadcn CLI in its own style and are re-emitted on update,
+# and these JSON files are machine-written.
+frontend/components/ui/**
+.agents/skills/**
+scripts/legacy-assets.json
