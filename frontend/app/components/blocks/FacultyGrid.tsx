@@ -84,7 +84,7 @@ export default function FacultyGrid({block}: Props) {
                   <figcaption className="flex flex-1 flex-col gap-2">
                     <NameHeading className="font-display text-lg">{name}</NameHeading>
                     {person.role && (
-                      <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+                      <p className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                         {person.role}
                       </p>
                     )}

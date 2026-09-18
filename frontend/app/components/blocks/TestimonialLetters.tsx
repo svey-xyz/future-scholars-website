@@ -74,7 +74,6 @@ export default function TestimonialLetters({items, blockKey, hasHeading}: Props)
               </aside>
 
               <blockquote
-                cite={t.sourceUrl || undefined}
                 className={cn(
                   'max-w-prose space-y-6 text-lg leading-8 text-pretty lg:row-start-1 lg:col-span-7',
                   flip ? 'lg:col-start-1' : 'lg:col-start-6',

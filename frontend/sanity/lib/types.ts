@@ -13,26 +13,20 @@ export type GalleryImageItem = Extract<GalleryItem, {_type: 'galleryImage'}>
 export type GalleryVideoItem = Extract<GalleryItem, {_type: 'galleryVideo'}>
 export type GalleryAspect = NonNullable<GalleryBlock['aspect']>
 
-// Projects Archive — derived from the typed `projectsArchive` page-builder block.
-// SVE-40 builds the rich listing UI; this keeps the renderer type-safe meanwhile.
-export type ProjectsArchiveBlock = ExtractPageBuilderType<'projectsArchive'>
-export type ProjectsArchiveItem = NonNullable<ProjectsArchiveBlock['projects']>[number]
-
 // `page.titleDisplay` display modes (see layout/PageTitle.tsx). Mirrors the
 // schema options list in studio documents/page.ts; unset = auto.
 export type TitleDisplay = 'plain' | 'highlighted' | 'none'
 
-// Represents a Link after GROQ dereferencing (page/post become slug strings)
+// Represents a Link after GROQ dereferencing (page becomes a slug string)
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page' | 'post'
+  linkType?: 'href' | 'page'
   href?: string
   page?: string | null
-  post?: string | null
   openInNewTab?: boolean
 }
 
-// CMS-driven header navigation — derived from the typed `settingsQuery` result
+// CMS-driven site navigation — derived from the typed `settingsQuery` result
 // so the nav islands never hand-widen the shape. `navigation` is a discriminated
 // union on `_type` (navLink leaf | navDropdown group).
 type SettingsNavigation = NonNullable<NonNullable<SettingsQueryResult>['navigation']>
@@ -40,12 +34,6 @@ export type NavItem = SettingsNavigation[number]
 export type NavLinkItem = Extract<NavItem, {_type: 'navLink'}>
 export type NavDropdownItem = Extract<NavItem, {_type: 'navDropdown'}>
 
-// Footer / mobile-footer content shared between <Footer> and the mobile <Sheet>.
+// Contact + legal content from Settings (rail, drawer, footer, contact block).
 export type SettingsContact = NonNullable<SettingsQueryResult>['contact']
 export type SettingsLegal = NonNullable<SettingsQueryResult>['legal']
-export type SettingsMobileNav = NonNullable<SettingsQueryResult>['mobileNav']
-
-// CMS-driven "built with" footer list — derived from the typed `settingsQuery`
-// result so the footer never hand-widens the shape.
-export type SettingsBuiltWith = NonNullable<SettingsQueryResult>['builtWith']
-export type BuiltWithItem = NonNullable<SettingsBuiltWith>[number]

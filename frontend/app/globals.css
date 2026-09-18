@@ -3,8 +3,6 @@
 
 @plugin '@tailwindcss/typography';
 
-@custom-variant dark (&:where(.dark, .dark *));
-
 :root {
   /* FSMA palette — see docs/FSMA-BUILD-PLAN.md §7.2 and the contrast table in §12.
      Channel triplets (not colour functions): every consumer reads hsl(var(--x)). */
@@ -38,43 +36,11 @@
   --input: 36 14% 50%; /* control boundaries must clear 3:1 (WCAG 1.4.11) — 3.49:1 */
   --ring: 232 52% 32%;
   --radius: 0.75rem;
-  /* Shader accent (HSL channels) — read by ShaderBackground's readThemeRgb().
-     The shader is not wired on this site (D15); the token stays defined. */
-  --primary-accent: 44 96% 52%;
-}
-
-/* Defined but unused: the app is forced light (D14). Kept so the token contract
-   stays complete and a future dark mode is a provider change, not a re-palette. */
-.dark {
-  --background: 226 30% 10%;
-  --foreground: 38 30% 96%;
-  --card: 226 28% 14%;
-  --card-foreground: 38 30% 96%;
-  --popover: 226 28% 14%;
-  --popover-foreground: 38 30% 96%;
-  --primary: 228 72% 72%;
-  --primary-foreground: 226 40% 12%;
-  --secondary: 226 24% 22%;
-  --secondary-foreground: 38 30% 96%;
-  --muted: 226 22% 18%;
-  --muted-foreground: 226 14% 72%;
-  --accent: 226 24% 22%;
-  --accent-foreground: 38 30% 96%;
-  --brand-accent: 44 96% 60%;
-  --brand-accent-foreground: 226 40% 12%;
-  --brand-accent-strong: 44 90% 66%;
-  --destructive: 0 62% 46%;
-  --destructive-foreground: 0 0% 100%;
-  --border: 226 20% 24%;
-  --input: 226 16% 44%;
-  --ring: 228 72% 72%;
-  --primary-accent: 44 96% 60%;
 }
 
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-outfit);
-  --font-mono: var(--font-ibm-plex-mono);
 
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -139,8 +105,7 @@
 
 /* =========================================================================
    View transitions
-   Drives the <ViewTransition> boundaries (PageTransition, post-title morphs,
-   Suspense reveals). Enabled via experimental.viewTransition in next.config.ts.
+   Drives the <ViewTransition> boundaries (PageTransition, Suspense reveals). Enabled via experimental.viewTransition in next.config.ts.
    Classes are the string values passed to ViewTransition enter/exit/share and
    to <Link transitionTypes>. See docs/TRANSITIONS.md.
    ========================================================================= */
@@ -180,27 +145,6 @@
     400ms ease-in-out both vt-slide;
 }
 
-/* Suspense reveal — skeleton leaves down, content arrives up (asymmetric). */
-::view-transition-old(.slide-down) {
-  animation:
-    150ms ease-out both vt-fade reverse,
-    150ms ease-out both vt-slide-y reverse;
-}
-::view-transition-new(.slide-up) {
-  animation:
-    210ms ease-in 150ms both vt-fade,
-    400ms ease-in both vt-slide-y;
-}
-
-/* Shared-element morph (post card title → post detail <h1>). The default morph
-   works with no CSS; this just softens mid-flight interpolation with a blur. */
-::view-transition-group(.morph) {
-  animation-duration: 400ms;
-}
-::view-transition-image-pair(.morph) {
-  animation-name: vt-blur;
-}
-
 /* Gallery: shared-element morph scaffold for an optional tile → lightbox-image
    zoom. Wiring it requires a matching React `<ViewTransition name="gallery-media-…">`
    on the clicked tile *and* the active lightbox slide — which means the tiles
@@ -217,19 +161,7 @@
   animation-name: vt-blur;
 }
 
-/* Anchor the fixed header so it never slides/fades with the content. */
-::view-transition-group(site-header) {
-  animation: none;
-  z-index: 100;
-}
-::view-transition-old(site-header) {
-  display: none;
-}
-::view-transition-new(site-header) {
-  animation: none;
-}
-
-/* FSMA (S4): the same anchoring for the persistent app shell. The side rail and
+/* Anchor the persistent app shell. The side rail and
    the mobile top bar frame the content — they must not slide or fade with the
    page they frame. Only one of the two is ever rendered (the other is
    `display: none` at that breakpoint), so their names never collide. */
@@ -247,7 +179,7 @@
   animation: none;
 }
 
-/* FSMA (S5): the floating contact hub is fixed chrome too — same anchoring. */
+/* The floating contact hub is fixed chrome too — same anchoring. */
 ::view-transition-group(contact-hub) {
   animation: none;
   z-index: 100;
@@ -446,110 +378,12 @@
       transform: translateY(-12px);
     }
   }
-  @keyframes a-float-slow {
-    0%,
-    100% {
-      transform: translate(0, 0);
-    }
-    50% {
-      transform: translate(10px, -20px);
-    }
-  }
-  @keyframes a-pulse-glow {
-    0%,
-    100% {
-      opacity: 0.3;
-      transform: scale(1);
-    }
-    50% {
-      opacity: 0.55;
-      transform: scale(1.1);
-    }
-  }
-  @keyframes a-gradient-pan {
-    0% {
-      background-position: 0% 50%;
-    }
-    50% {
-      background-position: 100% 50%;
-    }
-    100% {
-      background-position: 0% 50%;
-    }
-  }
-  @keyframes a-shimmer {
-    0% {
-      background-position: -150% 0;
-    }
-    100% {
-      background-position: 250% 0;
-    }
-  }
-  @keyframes a-spin-slow {
-    to {
-      transform: rotate(360deg);
-    }
-  }
-
-  .animate-float {
-    animation: a-float 6s ease-in-out infinite;
-  }
   /* Testimonial quote mark: ambient float, but only while the card is hovered
      or holds focus — a grid of these floating at rest is restless, and the
      motion is decorative either way (the glyph is aria-hidden). */
   .testimonial-card:hover .quote-mark,
   .testimonial-card:focus-within .quote-mark {
     animation: a-float 6s ease-in-out infinite;
-  }
-  .animate-float-slow {
-    animation: a-float-slow 9s ease-in-out infinite;
-  }
-  .animate-pulse-glow {
-    animation: a-pulse-glow 5s ease-in-out infinite;
-  }
-  .animate-gradient-pan {
-    background-size: 200% 200%;
-    animation: a-gradient-pan 8s ease infinite;
-  }
-  .animate-spin-slow {
-    animation: a-spin-slow 24s linear infinite;
-  }
-
-  /* Shimmer sweep — decorative overlay; pair with aria-hidden + overflow-hidden. */
-  .animate-shimmer {
-    background-image: linear-gradient(
-      110deg,
-      transparent 25%,
-      hsl(var(--foreground) / 0.08) 45%,
-      hsl(var(--foreground) / 0.16) 50%,
-      hsl(var(--foreground) / 0.08) 55%,
-      transparent 75%
-    );
-    background-size: 220% 100%;
-    animation: a-shimmer 4.5s ease-in-out infinite;
-  }
-
-  /* ---- Header mobile nav: staggered item reveal inside the Sheet ----
-     The Radix Dialog (Sheet) handles its own slide-in via tw-animate-css; this
-     layers a per-item cascade on top so the links/sections fan in. Plays once
-     per open (items mount with the Sheet). `--reveal-i` (set inline per item)
-     drives the delay; capped so deep menus don't lag. Motion-safe via this gate
-     — reduced-motion users get the items instantly with no transform. */
-  @keyframes a-nav-item-in {
-    from {
-      opacity: 0;
-      transform: translateX(1.25rem);
-      filter: blur(4px);
-    }
-    to {
-      opacity: 1;
-      transform: none;
-      filter: blur(0);
-    }
-  }
-  .mobile-nav-item {
-    animation: a-nav-item-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
-    animation-delay: calc(min(var(--reveal-i, 0), 10) * 45ms);
   }
 
   /* ---- Floating contact hub: per-item entrance (§7.7) ----
@@ -589,113 +423,6 @@
   .gallery-lightbox-media {
     animation: a-gallery-in 0.4s cubic-bezier(0.22, 1, 0.36, 1) both;
   }
-
-  /* =======================================================================
-     Expanding header + splitting-Z logo  (SVE-37)
-     Pure CSS scroll-driven motion — zero JS. As the page scrolls down, the
-     header height/padding contract and a subtle shadow fades in; the logo's
-     chromatic ghost copies fan apart. Both ride `animation-timeline:
-     scroll(root)` so progress maps to document scroll, not a per-element view
-     window. Everything lives inside the `prefers-reduced-motion: no-preference`
-     gate, so reduced-motion users get a static (fully-expanded) header and a
-     static logo. The fixed header is out of flow and the layout reserves a
-     constant `pt-24`, so contracting it produces no layout shift (CLS).
-     Only runs where scroll timelines exist; elsewhere the header keeps its
-     static `h-24` chrome (progressive enhancement). ======================= */
-  @supports (animation-timeline: scroll(root)) {
-    @keyframes a-header-contract {
-      to {
-        height: 4.25rem; /* 68px — contracted from the 96px (h-24) rest state */
-        box-shadow: 0 1px 0 0 hsl(var(--border));
-      }
-    }
-    @keyframes a-header-pad {
-      to {
-        padding-top: 0.625rem; /* tighten the inner vertical padding on scroll */
-        padding-bottom: 0.625rem;
-      }
-    }
-
-    .app-header {
-      animation: a-header-contract linear both;
-      animation-timeline: scroll(root);
-      /* Map the full contraction to the first ~120px of scroll. */
-      animation-range: 0 120px;
-      /* Animate compositor-/paint-friendly props only; no transform on the bar
-         itself so the view-transition `site-header` anchor stays intact. */
-      will-change: height;
-    }
-    .app-header__inner {
-      animation: a-header-pad linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 120px;
-      will-change: padding;
-    }
-
-    /* Scroll-driven logo fan-out. Scroll progress feeds `--fan-scroll` (0→1);
-       hover/focus feeds `--fan-hover` (0→1) below. The two channels are summed
-       in each layer's transform so scroll and pointer fan-out compose instead
-       of clobbering one another (separate custom props → no animation/
-       transition fight over a single value). */
-    @keyframes a-logo-fan-scroll {
-      to {
-        --fan-scroll: 1;
-      }
-    }
-    .logo-z {
-      animation: a-logo-fan-scroll linear both;
-      animation-timeline: scroll(root);
-      animation-range: 0 220px;
-    }
-  }
-
-  /* Hover/focus channel — transitions smoothly; reduced-motion users never see
-     it because this whole block is inside the no-preference gate. */
-  .group\/logo:hover .logo-z,
-  .group\/logo:focus-visible .logo-z {
-    --fan-hover: 1;
-  }
-  .logo-z__layer {
-    transition: --fan-hover 300ms ease-out;
-  }
-}
-
-/* Registered so the fan custom properties interpolate (animation + transition)
-   instead of snapping. Declared outside the media gate; they default to 0 so a
-   static logo renders identically under reduced motion / unsupported engines. */
-@property --fan-scroll {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0;
-}
-@property --fan-hover {
-  syntax: '<number>';
-  inherits: true;
-  initial-value: 0;
-}
-
-/* The chromatic ghost layers. Rotate/translate about their own center (default
-   SVG transform-box is the viewport, which would skew the rotation). The base
-   copy carries no fan offset and stays put for legibility. Transforms read the
-   summed fan channels; with both at 0 (reduced motion / no scroll support) the
-   layers sit perfectly stacked. */
-.logo-z__layer {
-  transform-box: fill-box;
-  transform-origin: center;
-}
-.logo-z--r {
-  transform: translate(
-      calc((var(--fan-scroll) + var(--fan-hover)) * -3.5px),
-      calc((var(--fan-scroll) + var(--fan-hover)) * -2.5px)
-    )
-    rotate(calc((var(--fan-scroll) + var(--fan-hover)) * -9deg));
-}
-.logo-z--b {
-  transform: translate(
-      calc((var(--fan-scroll) + var(--fan-hover)) * 3.5px),
-      calc((var(--fan-scroll) + var(--fan-hover)) * 2.5px)
-    )
-    rotate(calc((var(--fan-scroll) + var(--fan-hover)) * 9deg));
 }
 
 /* ================================================================

@@ -24,13 +24,25 @@ Things an agent session can't do: they need your credentials, a browser, or an a
       page.
 - [ ] **Screenshots for the client** at 360, 768 and 1440 px.
 
+## After merging `chore/fsma-drop-template`
+
+- [ ] **Redeploy the schema and Studio:** `cd studio && npx sanity schema deploy && npx sanity deploy`.
+- [ ] **Redeploy the revalidation Function.** `sanity.blueprint.ts` pointed at the template's Sanity
+      project, so publishing never revalidated this site. Run `npx sanity blueprints deploy` from the
+      repo root, then publish a change and check `npx sanity functions logs invalidate-tags`. If the
+      old stack was bound to the other project, re-run `npx sanity blueprints init` first
+      (docs/CACHING.md).
+- [ ] **Clean leftover field data** once the new frontend is live on Vercel:
+      `cd studio && npx sanity migration run drop-template-fields` (dry run), then add
+      `--no-dry-run`. It removes `settings.mobileNav` and the testimonials blocks' `source`.
+- [ ] **Old service worker:** the PWA is gone. The site hasn't launched, so only browsers that opened
+      a preview before this change can still have the worker; clear site data once in those.
+
 ## Repo housekeeping (on your Mac, as its own commit)
 
 - [ ] Remove `react-dom` from the root `package.json`; it conflicts with the `^19.2.7` in each
       workspace. While you're there, pin `next`, `sanity` and `next-sanity` to exact versions, then
       run `npm install`. Do this on your Mac because the sandbox's npm rewrites the lockfile.
-- [ ] Upload `frontend/public/brand/logo-full.svg` to **Settings → logo** in Studio. It's a `file`
-      field and is only used for editor previews.
 - [ ] Optional: delete `frontend/node_modules/.stale/` (about 140 MB of old caches; it's gitignored).
 
 ## Ask the client

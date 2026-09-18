@@ -1,5 +1,5 @@
 /**
- * This component uses Portable Text to render a post body.
+ * Renders rich-text (`blockContent`) fields: info sections, program bodies, FAQ answers.
  *
  * You can learn more about Portable Text on:
  * https://www.sanity.io/docs/block-content
@@ -81,7 +81,7 @@ export default function CustomPortableText({
   return (
     <div
       className={cn(
-        'prose dark:prose-invert prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40',
+        'prose prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40',
         className,
       )}
     >

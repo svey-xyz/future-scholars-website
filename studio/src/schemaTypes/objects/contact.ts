@@ -18,10 +18,9 @@ export const contact = defineType({
       validation: (Rule) =>
         Rule.regex(/^(\+\d{1,2}\s?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}$/, {name: 'phone number'}),
     }),
-    // FSMA fork (build plan S7): the legacy site publishes a fax number. It is
-    // close to useless in 2026, but it is a contact method the school currently
-    // advertises — dropping it silently would be a content decision, not a
-    // migration. Optional, so the template's other forks ignore it.
+    // The legacy site publishes a fax number. It is close to useless in 2026,
+    // but it is a contact method the school currently advertises — dropping it
+    // is the client's call (OWNER-TODO), not a migration decision.
     defineField({
       title: 'Fax',
       name: 'fax',

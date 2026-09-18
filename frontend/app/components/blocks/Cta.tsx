@@ -21,14 +21,17 @@ type CtaProps = {
 export default function CTA({block}: CtaProps) {
   const {heading, eyebrow, body = [], button, image, theme, contentAlignment} = block
 
-  const isDark = theme === 'dark'
+  // `stegaClean`: enum values carry stega characters in draft mode.
+  const isBrand = stegaClean(theme) === 'brand'
   const isImageFirst = stegaClean(contentAlignment) === 'imageFirst'
 
   return (
     <section
       className={cn(
         'relative isolate overflow-x-clip',
-        isDark && 'dark bg-background text-foreground',
+        // Brand panel: the academy blue with the sunflower button — the one
+        // place the bright accent may be a fill (§7.2).
+        isBrand && 'bg-primary text-primary-foreground',
       )}
     >
       <div className="container relative">
@@ -41,7 +44,7 @@ export default function CTA({block}: CtaProps) {
           >
             {eyebrow && (
               <Reveal i={0}>
-                <Badge variant="secondary" className="font-mono uppercase tracking-tight">
+                <Badge variant="secondary" className="uppercase tracking-wide">
                   {eyebrow}
                 </Badge>
               </Reveal>
@@ -53,7 +56,13 @@ export default function CTA({block}: CtaProps) {
             )}
             {body && (
               <Reveal i={2} className="lg:text-left">
-                <PortableText value={body as PortableTextBlock[]} />
+                <PortableText
+                  value={body as PortableTextBlock[]}
+                  className={cn(
+                    isBrand &&
+                      'prose-invert prose-a:text-primary-foreground prose-a:decoration-primary-foreground/60',
+                  )}
+                />
               </Reveal>
             )}
 
@@ -62,7 +71,11 @@ export default function CTA({block}: CtaProps) {
                 <Button
                   asChild
                   size="lg"
-                  className="group/cta relative overflow-hidden rounded-full transition-transform duration-200 will-change-transform motion-safe:hover:scale-[1.04] motion-safe:active:scale-95"
+                  className={cn(
+                    'group/cta relative overflow-hidden rounded-full transition-transform duration-200 will-change-transform motion-safe:hover:scale-[1.04] motion-safe:active:scale-95',
+                    isBrand &&
+                      'bg-brand-accent text-brand-accent-foreground hover:bg-brand-accent/90 focus-visible:ring-primary-foreground',
+                  )}
                 >
                   <ResolvedLink link={button.link}>
                     {/* Sheen sweep on hover (decorative). */}
@@ -79,15 +92,10 @@ export default function CTA({block}: CtaProps) {
 
           {image?.asset?._ref && (
             <Reveal variant="scale" className="group/img relative isolate">
-              {/* Rotating conic glow behind the image (decorative). */}
-              <div
-                aria-hidden="true"
-                className="animate-spin-slow pointer-events-none absolute -inset-4 -z-10 rounded-[1.5rem] opacity-60 blur-2xl [background:conic-gradient(from_0deg,hsl(var(--primary)/0.25),transparent_35%,transparent_65%,hsl(var(--primary)/0.25))]"
-              />
               <div className="overflow-hidden rounded-sm">
                 <Image
                   id={image.asset._ref}
-                  alt="Demo image"
+                  alt={image.alt ?? ''}
                   width={704}
                   crop={image.crop}
                   mode="cover"

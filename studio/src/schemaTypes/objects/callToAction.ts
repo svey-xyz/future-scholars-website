@@ -5,11 +5,10 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
 import {ControlsIcon} from '@sanity/icons/Controls'
 
-import {anchorField, backgroundField} from './shared'
+import {altField, anchorField} from './shared'
 
 /**
- * Call to action schema object.  Objects are reusable schema structures document.
- * Learn more: https://www.sanity.io/docs/studio/object-type
+ * Call to action — eyebrow, heading, short body, one button, optional image.
  */
 
 export const callToAction = defineType({
@@ -67,6 +66,7 @@ export const callToAction = defineType({
       options: {
         hotspot: true,
       },
+      fields: [altField],
     }),
     defineField({
       name: 'theme',
@@ -75,11 +75,11 @@ export const callToAction = defineType({
       options: {
         list: [
           {title: 'Light', value: 'light'},
-          {title: 'Dark', value: 'dark'},
+          {title: 'Brand', value: 'brand'},
         ],
         layout: 'radio',
       },
-      description: 'Use dark theme with white tile grid background',
+      description: 'Brand sets the section on academy blue with a sunflower button.',
       initialValue: 'light',
       group: 'designSystem',
     }),
@@ -99,7 +99,6 @@ export const callToAction = defineType({
       hidden: ({parent}) => !Boolean(parent?.image?.asset),
       group: 'designSystem',
     }),
-    {...backgroundField, group: 'designSystem'},
     {...anchorField, group: 'designSystem'},
   ],
   preview: {

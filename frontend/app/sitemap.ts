@@ -5,14 +5,14 @@ import {settingsQuery, sitemapData} from '@/sanity/lib/queries'
 import {headers} from 'next/headers'
 
 /**
- * This file creates a sitemap (sitemap.xml) for the application. Learn more about sitemaps in Next.js here: https://nextjs.org/docs/app/api-reference/file-conventions/metadata/sitemap
- * Be sure to update the `changeFrequency` and `priority` values to match your application's content.
+ * sitemap.xml: the site root, every `page` (except the designated homepage,
+ * which is `/`) and every `program` detail route.
  */
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Metadata-route fetch ('use cache' lives in the helper): crawler-facing, so
   // always the published perspective and never stega.
-  const [allPostsAndPages, {data: settings}] = await Promise.all([
+  const [allPages, {data: settings}] = await Promise.all([
     sanityFetchMetadata({query: sitemapData, perspective: 'published'}),
     sanityFetchMetadata({query: settingsQuery, perspective: 'published'}),
   ])
@@ -36,34 +36,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     changeFrequency: 'monthly',
   })
 
-  if (allPostsAndPages != null && allPostsAndPages.data.length != 0) {
+  if (allPages != null && allPages.data.length != 0) {
     let priority: number
     let changeFrequency:
       'monthly' | 'always' | 'hourly' | 'daily' | 'weekly' | 'yearly' | 'never' | undefined
     let url: string
 
-    for (const p of allPostsAndPages.data) {
+    for (const p of allPages.data) {
       switch (p._type) {
         case 'page':
           priority = 0.8
           changeFrequency = 'monthly'
           url = `${origin}/${p.slug}`
           break
-        case 'post':
-          priority = 0.5
-          changeFrequency = 'never'
-          url = `${origin}/posts/${p.slug}`
-          break
-        // FSMA fork (build plan S8): program detail routes.
         case 'program':
           priority = 0.8
           changeFrequency = 'monthly'
           url = `${origin}/programs/${p.slug}`
-          break
-        case 'project':
-          priority = 0.6
-          changeFrequency = 'monthly'
-          url = `${origin}/projects/${p.slug}`
           break
       }
       sitemap.push({

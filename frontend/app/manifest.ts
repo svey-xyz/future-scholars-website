@@ -1,7 +1,7 @@
 import type {MetadataRoute} from 'next'
 import {toPlainText} from 'next-sanity'
 
-import * as demo from '@/sanity/lib/demo'
+import {SITE_NAME} from '@/app/components/seo'
 import {sanityFetchMetadata} from '@/sanity/lib/live'
 import {settingsQuery} from '@/sanity/lib/queries'
 
@@ -13,26 +13,24 @@ const BACKGROUND_COLOR = '#FAF8F4'
 const SHORT_NAME = 'Future Scholars'
 
 export default async function manifest(): Promise<MetadataRoute.Manifest> {
-  // Metadata-route fetch ('use cache' lives in the helper): the installed-PWA
-  // manifest is always published content, never stega.
+  // Metadata-route fetch ('use cache' lives in the helper): always published
+  // content, never stega.
   const {data: settings} = await sanityFetchMetadata({
     query: settingsQuery,
     perspective: 'published',
   })
 
-  const name = settings?.title || demo.title
-  const description = toPlainText(settings?.description || demo.description)
+  const name = settings?.title || SITE_NAME
+  const description = settings?.description ? toPlainText(settings.description) : undefined
 
   return {
-    // Stable identity + scope so the installed app stays the same PWA across
-    // deploys and the service worker controls every in-app navigation.
-    id: '/',
-    scope: '/',
+    // Plain web manifest (home-screen icon + name). No service worker: this is
+    // a static marketing site, so it opens in the browser rather than standalone.
     name,
     short_name: SHORT_NAME,
     description,
     start_url: '/',
-    display: 'standalone',
+    display: 'browser',
     background_color: BACKGROUND_COLOR,
     theme_color: THEME_COLOR,
     icons: [

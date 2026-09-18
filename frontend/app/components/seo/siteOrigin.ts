@@ -6,10 +6,9 @@ import type {SettingsQueryResult} from '@/sanity.types'
  * The site's absolute origin, used for `metadataBase`, canonical URLs and
  * every `@id`/`url` in the JSON-LD graph.
  *
- * Why this exists: the only source the template had was
- * `settings.ogImage.metadataBase`, an editor-entered field. It is empty in
- * the FSMA dataset (the production domain is still a cutover decision — plan
- * §10 step 5 hasn't settled apex vs `www`), and an empty `metadataBase`
+ * Why this exists: `settings.ogImage.metadataBase` is an editor-entered field
+ * that stays empty until the apex-vs-`www` decision (plan Q26), and an empty
+ * `metadataBase`
  * silently costs a lot: Next emits no canonical link, relative Open Graph
  * image URLs never resolve, and `siteJsonLd` drops the `Organization` node
  * entirely because it has no `@id` to hang it on. All of that was invisible
@@ -29,9 +28,6 @@ import type {SettingsQueryResult} from '@/sanity.types'
  *
  * Returns the bare origin, no trailing slash, or `undefined` when nothing is
  * configured — callers must keep working without it.
- *
- * **Backport candidate:** nothing here is FSMA-specific, and the template has
- * the same gap.
  */
 export function resolveSiteOrigin(settings?: SettingsQueryResult): string | undefined {
   const candidates = [

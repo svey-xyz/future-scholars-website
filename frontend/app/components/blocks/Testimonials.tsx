@@ -39,39 +39,23 @@ function leadSentences(quote: string): string {
 }
 
 export default function Testimonials({block}: Props) {
-  const {heading, subheading, testimonials, documentTestimonials, columns, limit} = block
+  const {heading, subheading, documentTestimonials, columns, limit} = block
   const cols = columns ?? 3
   // Presentation only — both layouts consume the same normalised items.
-  // `stegaClean` for the same reason as `source` below.
+  // `stegaClean`: enum values carry stega characters in draft mode.
   const letters = stegaClean(block.layout) === 'letters'
 
-  // FSMA fork (build plan S3/S6): `source` picks between the template's inline
-  // array and the `testimonial` documents, so the same quote can appear here
-  // and on /testimonials without being retyped. GROQ resolves the documents
-  // (ordered, featured-filtered); the `limit` is applied here rather than as a
-  // GROQ slice, which cannot take a runtime value from the enclosing block.
-  // `stegaClean`: enum values carry stega characters in draft mode, so a raw
-  // comparison would always fall through to the inline array.
-  const fromDocuments = stegaClean(block.source) === 'documents'
-
-  const items: Quote[] = fromDocuments
-    ? (documentTestimonials ?? []).slice(0, limit ?? 3).map((t) => ({
-        key: t._id,
-        quote: t.quote,
-        highlight: t.highlight,
-        authorName: t.authorName,
-        authorRole: t.authorRole,
-        authorImage: t.authorImage,
-      }))
-    : (testimonials ?? []).map((t) => ({
-        key: t._key,
-        quote: t.quote,
-        highlight: t.highlight,
-        authorName: t.authorName,
-        authorRole: t.authorRole,
-        sourceUrl: t.sourceUrl,
-        authorImage: t.authorImage,
-      }))
+  // GROQ resolves the documents (ordered, featured-filtered); the `limit` is
+  // applied here rather than as a GROQ slice, which cannot take a runtime
+  // value from the enclosing block.
+  const items: Quote[] = (documentTestimonials ?? []).slice(0, limit ?? 3).map((t) => ({
+    key: t._id,
+    quote: t.quote,
+    highlight: t.highlight,
+    authorName: t.authorName,
+    authorRole: t.authorRole,
+    authorImage: t.authorImage,
+  }))
 
   if (items.length === 0) return null
 
@@ -123,7 +107,6 @@ export default function Testimonials({block}: Props) {
                       quote={t.quote ?? ''}
                       expandable={expandable}
                       authorName={authorNameText}
-                      cite={t.sourceUrl}
                     />
                     <figcaption className="mt-auto">
                       <TestimonialAttribution

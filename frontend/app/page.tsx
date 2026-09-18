@@ -1,11 +1,11 @@
 import type {Metadata} from 'next'
 import {draftMode} from 'next/headers'
+import {notFound} from 'next/navigation'
 import {Suspense} from 'react'
 
 import {CachedPage} from '@/app/components/blocks'
 import {getSettings} from '@/app/components/layout'
 import {pageMetadata} from '@/app/components/seo'
-import {OnboardingShell} from '@/app/components/starter'
 import {Skeleton} from '@/components/ui/skeleton'
 import {
   getDynamicFetchOptions,
@@ -13,7 +13,6 @@ import {
   type DynamicFetchOptions,
 } from '@/sanity/lib/live'
 import {getPageQuery, settingsQuery} from '@/sanity/lib/queries'
-import {studioUrl} from '@/sanity/lib/api'
 
 /**
  * Generate metadata for the page.
@@ -65,30 +64,14 @@ async function CachedHome({perspective, stega}: DynamicFetchOptions) {
   const settings = await getSettings({perspective, stega})
   const slug = settings?.homepage?.slug?.current
 
-  if (!slug) {
-    return (
-      <div className="py-40">
-        <OnboardingShell
-          message={{
-            title: `A homepage is not set yet`,
-            description: 'Get started by setting a homepage in the Sanity Studio site settings.',
-          }}
-          link={{
-            title: 'Set Homepage',
-            href: `${studioUrl}/structure/intent/edit/id=siteSettings;type=siteSettings;path=homepage`,
-          }}
-          type="siteSettings"
-          path="homepage"
-        />
-      </div>
-    )
-  }
+  // Settings → Homepage must point at a page; without it there is nothing to render.
+  if (!slug) notFound()
 
   return <CachedPage slug={slug} perspective={perspective} stega={stega} />
 }
 
-/** Draft-mode streaming fallback — mirrors the standard-height masthead every
-    seeded page opens with (S5), so streaming it in doesn't shift layout. */
+/** Draft-mode streaming fallback — mirrors the standard-height masthead, so
+    streaming it in doesn't shift layout. */
 function HomeFallback() {
   return <Skeleton className="h-[34vh] min-h-60 w-full rounded-none lg:h-[48vh] lg:min-h-80" />
 }

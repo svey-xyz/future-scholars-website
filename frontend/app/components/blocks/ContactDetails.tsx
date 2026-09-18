@@ -68,7 +68,7 @@ export default function ContactDetails({block}: Props) {
         <Reveal className="flex flex-col gap-6">
           {addressLines.length > 0 && (
             <div>
-              <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Address
               </h3>
               <address className="mt-2 not-italic leading-7">
@@ -95,7 +95,7 @@ export default function ContactDetails({block}: Props) {
 
           {phone && (
             <div>
-              <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Phone
               </h3>
               <p className="mt-2">
@@ -108,7 +108,7 @@ export default function ContactDetails({block}: Props) {
 
           {fax && (
             <div>
-              <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Fax
               </h3>
               <p className="mt-2 leading-7">{fax}</p>
@@ -117,7 +117,7 @@ export default function ContactDetails({block}: Props) {
 
           {emails.length > 0 && (
             <div>
-              <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+              <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                 Email
               </h3>
               <ul className="mt-2 flex flex-col">
@@ -135,7 +135,7 @@ export default function ContactDetails({block}: Props) {
 
         {showHours !== false && hours && hours.length > 0 && (
           <Reveal i={1}>
-            <h3 className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
+            <h3 className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
               Hours
             </h3>
             <dl className="mt-2 flex flex-col gap-2">

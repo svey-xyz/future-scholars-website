@@ -70,8 +70,8 @@ async function DynamicPage({params}: Pick<Props, 'params'>) {
   return <CachedPage slug={slug} perspective={perspective} stega={stega} />
 }
 
-/** Draft-mode streaming fallback — mirrors the standard-height masthead every
-    seeded page opens with (S5), so streaming it in doesn't shift layout. */
+/** Draft-mode streaming fallback — mirrors the standard-height masthead, so
+    streaming it in doesn't shift layout. */
 function PageFallback() {
   return <Skeleton className="h-[34vh] min-h-60 w-full rounded-none lg:h-[48vh] lg:min-h-80" />
 }

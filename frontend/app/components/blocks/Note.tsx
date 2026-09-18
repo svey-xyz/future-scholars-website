@@ -91,9 +91,8 @@ export default function Note({block}: Props) {
         <Alert
           role="note"
           className={cn(
-            // Frosted, toned card. Surface uses translucent card + blur so an
-            // optional shader background shows through; border carries the tone.
-            'supports-[backdrop-filter]:bg-card/70 bg-card/90 backdrop-blur-md',
+            // Toned card: solid surface; the border carries the tone.
+            'bg-card',
             'p-5 shadow-sm [&>svg]:left-5 [&>svg]:top-5 [&>svg~*]:pl-8',
             surface,
           )}

@@ -20,8 +20,7 @@ type SideNavLinksProps = {
 
 /**
  * The vertical navigation list — one implementation shared by the desktop rail
- * and the mobile drawer, so the two can never drift (the same reason the
- * template shares `FooterContent`).
+ * and the mobile drawer, so the two can never drift.
  *
  * Client component only because active state needs `usePathname()`; everything
  * around it (the rail shell, the brand mark, the contact block) stays RSC.

@@ -2,10 +2,6 @@ import {person} from './documents/person'
 import {page} from './documents/page'
 import {program} from './documents/program'
 import {testimonial} from './documents/testimonial'
-import {post} from './documents/post'
-import {project} from './documents/project'
-import {category} from './documents/category'
-import {technology} from './documents/technology'
 import {callToAction} from './objects/callToAction'
 import {infoSection} from './objects/infoSection'
 import {settings} from './singletons/settings'
@@ -22,19 +18,13 @@ import {facultyGrid} from './objects/facultyGrid'
 import {social} from './objects/social'
 import {navLink} from './objects/navLink'
 import {navDropdown} from './objects/navDropdown'
-import {hero} from './objects/hero'
-import {postsArchive} from './objects/postsArchive'
-import {projectsArchive} from './objects/projectsArchive'
-import {authorsArchive} from './objects/authorsArchive'
 import {gallery} from './objects/gallery'
 import {galleryVideo} from './objects/galleryVideo'
 import {featuresGrid} from './objects/featuresGrid'
 import {testimonials} from './objects/testimonials'
 import {faq} from './objects/faq'
 import {stats} from './objects/stats'
-import {scores} from './objects/scores'
 import {note} from './objects/note'
-import {background} from './objects/background'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/studio/schema-types
 
@@ -45,11 +35,7 @@ export const schemaTypes = [
   page,
   program,
   testimonial,
-  post,
-  project,
   person,
-  category,
-  technology,
   // Objects
   button,
   blockContent,
@@ -63,12 +49,7 @@ export const schemaTypes = [
   social,
   navLink,
   navDropdown,
-  background,
   // Page builder blocks
-  hero,
-  postsArchive,
-  projectsArchive,
-  authorsArchive,
   gallery,
   galleryVideo,
   featuresGrid,
@@ -78,6 +59,5 @@ export const schemaTypes = [
   contactDetails,
   faq,
   stats,
-  scores,
   note,
 ]

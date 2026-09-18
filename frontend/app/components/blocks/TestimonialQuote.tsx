@@ -13,7 +13,6 @@ type Props = {
   /** False when the pull quote already *is* the whole quote — no control then. */
   expandable: boolean
   authorName?: string | null
-  cite?: string | null
 }
 
 /**
@@ -31,7 +30,7 @@ type Props = {
  * docs/A11Y.md; a real `<button aria-expanded aria-controls>` beside plain text
  * does not. The island is a leaf — `Testimonials` itself stays an RSC.
  */
-export default function TestimonialQuote({highlight, quote, expandable, authorName, cite}: Props) {
+export default function TestimonialQuote({highlight, quote, expandable, authorName}: Props) {
   const [expanded, setExpanded] = useState(false)
   const id = useId()
 
@@ -42,7 +41,6 @@ export default function TestimonialQuote({highlight, quote, expandable, authorNa
     <>
       <blockquote
         id={id}
-        cite={cite || undefined}
         className={cn(
           'space-y-4',
           expanded ? 'leading-7 text-pretty' : 'text-lg leading-8 font-medium text-pretty',
@@ -59,7 +57,7 @@ export default function TestimonialQuote({highlight, quote, expandable, authorNa
           onClick={() => setExpanded((v) => !v)}
           aria-expanded={expanded}
           aria-controls={id}
-          className="-mx-2 -my-1 inline-flex min-h-11 w-fit items-center gap-1 rounded-md px-2 py-1 font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
+          className="-mx-2 -my-1 inline-flex min-h-11 w-fit items-center gap-1 rounded-md px-2 py-1 font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
         >
           {expanded ? 'Read less' : 'Read more'}
           <ChevronDownIcon

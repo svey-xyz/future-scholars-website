@@ -20,9 +20,8 @@ const nextConfig: NextConfig = {
   // components). Wildcards match the IP as dotted segments. Covers the common
   // private IPv4 ranges; this setting has no effect on production builds.
   allowedDevOrigins: [
-    // Tailscale Serve origin (stable MagicDNS host) — primary on-device test URL,
-    // served over HTTPS so service workers register on the phone. The tailnet
-    // wildcard also covers any other machine/serve name on this tailnet.
+    // Tailscale Serve origin (stable MagicDNS host) — primary on-device test URL.
+    // The tailnet wildcard also covers any other machine/serve name on it.
     'scone.cormorant-bramble.ts.net',
     '*.cormorant-bramble.ts.net',
     // LAN-IP fallback (common private ranges) for direct http://<ip>:3000 access.
@@ -42,7 +41,7 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://cdn.sanity.io/**')],
   },
-  // Legacy URL map (build plan §6.3). The site it replaces is a ~2010 static
+  // Legacy URL map (build plan §6). The site it replaces is a ~2010 static
   // site with `.htm` extensions, and those URLs are what the web has indexed
   // and linked for fifteen years — every one of them has to land on its
   // successor rather than a 404, in one hop, permanently.
@@ -76,22 +75,10 @@ const nextConfig: NextConfig = {
     // and bookmarked since ~2010 and the long tail pointing at them — old
     // directory listings, link checkers, feed readers — predates 308 (RFC
     // 7538, 2015). 301 is what every one of them understands, and it is what
-    // build plan §6.3/§9 specify.
+    // build plan D3 specifies.
     return [
       ...legacy.map(({from, to}) => ({source: from, destination: to, statusCode: 301})),
       {source: '/home', destination: '/', statusCode: 301},
-    ]
-  },
-  async headers() {
-    return [
-      {
-        // Always revalidate the service worker so clients pick up new deployments.
-        source: '/sw.js',
-        headers: [
-          {key: 'Cache-Control', value: 'no-cache, no-store, must-revalidate'},
-          {key: 'Content-Type', value: 'application/javascript; charset=utf-8'},
-        ],
-      },
     ]
   },
 }

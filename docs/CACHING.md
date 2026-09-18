@@ -90,9 +90,9 @@ missing `includeDrafts`. Helpers in `frontend/sanity/lib/live.ts`:
 
 Existing cached building blocks: `CachedPage`
 (`app/components/blocks/CachedPage.tsx`, shared by `/` and `/[slug]`),
-`getSettings` (`app/components/layout/getSettings.ts`, shared by Header,
-Footer, and the homepage), `Header`/`Footer` (cached, branched per draft mode
-in `app/layout.tsx`), `MorePosts`/`AllPosts` (`app/components/posts/Posts.tsx`).
+`getSettings` (`app/components/layout/getSettings.ts`, shared by SideNav,
+Footer, and the homepage), `SideNav`/`Footer` (cached, branched per draft mode
+in `app/layout.tsx`), `CachedProgram` (`app/programs/[slug]/page.tsx`).
 
 ### Rules of thumb
 
@@ -107,9 +107,9 @@ in `app/layout.tsx`), `MorePosts`/`AllPosts` (`app/components/posts/Posts.tsx`).
 - Never call `sanityFetch` in a `'use server'` action — resolve
   `getDynamicFetchOptions()` inside the action, forward to a `'use cache'`
   helper.
-- The theme is applied by a static `getThemeScript()` inline script in
-  `<head>` (`app/layout.tsx`) — do NOT reintroduce `getTheme()` in the root
-  layout; its cookie read would force the whole shell dynamic.
+- The site is light-only (D14): there is no theme provider or theme cookie.
+  Don't add one to the root layout — a cookie read there would force the
+  whole shell dynamic.
 - Exactly one `<SanityLive>` and one `<VisualEditing>` in the tree.
 
 ## Deploy runbook (one-time)
@@ -117,7 +117,7 @@ in `app/layout.tsx`), `MorePosts`/`AllPosts` (`app/components/posts/Posts.tsx`).
 1. Generate a long random secret; set `SANITY_REVALIDATE_TAGS_SECRET` in the
    frontend's production env (Vercel) and redeploy.
 2. Connect + deploy the blueprint from the repo root (uses
-   `sanity.blueprint.ts`, project `h52u3jiw`, dataset `production`):
+   `sanity.blueprint.ts`, project `wzs9gcps`, dataset `production`):
 
    ```sh
    npx sanity blueprints init   # first time only — connects the local blueprint to a stack
@@ -142,7 +142,7 @@ regressions but does not prove Visual Editing works.
 ## Gotchas
 
 - Only ONE sync-tag-invalidate function may exist per dataset (race
-  conditions) — the blueprint scopes it to `h52u3jiw.production`.
+  conditions) — the blueprint scopes it to `wzs9gcps.production`.
 - The function must always call `done(syncTags)`, even when the revalidate
   POST fails — otherwise `waitFor="function"` clients never receive events.
 - `/api/revalidate-tags` prefixes tags with `sanity:` to match `sanityFetch`'s

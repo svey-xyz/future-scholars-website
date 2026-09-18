@@ -8,8 +8,6 @@ type Props = {
   subheading?: string | null
   /** Raw `page.titleDisplay` value (may be stega-encoded). Unset = auto. */
   display?: string | null
-  /** When a hero block leads the page it owns the visual headline. */
-  heroLeads?: boolean
 }
 
 /**
@@ -21,15 +19,14 @@ type Props = {
  *                   surface) for pages that need a stronger opening.
  * - `none`        — visually hidden; the `<h1>` stays sr-only (single H1 per
  *                   route, docs/A11Y.md).
- * - unset         — auto: `plain`, or `none` when a hero block leads the page.
+ * - unset         — `plain`.
  *
  * The mode drives *logic*, so it is stega-cleaned before branching
  * (CLAUDE.md stega discipline); heading/subheading stay un-cleaned so
  * click-to-edit overlays keep working.
  */
-export default function PageTitle({heading, subheading, display, heroLeads}: Props) {
-  const mode =
-    (stegaClean(display ?? undefined) as TitleDisplay | undefined) ?? (heroLeads ? 'none' : 'plain')
+export default function PageTitle({heading, subheading, display}: Props) {
+  const mode = (stegaClean(display ?? undefined) as TitleDisplay | undefined) ?? 'plain'
 
   if (mode === 'none') return <h1 className="sr-only">{heading}</h1>
 

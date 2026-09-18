@@ -2,12 +2,9 @@ import {CogIcon} from '@sanity/icons/Cog'
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import type {Link, Settings} from '../../../sanity.types'
 
-import * as demo from '../../lib/initialValues'
-import {mediaAssetSource} from 'sanity-plugin-media'
-
 /**
- * Settings schema Singleton.  Singletons are single documents that are displayed not in a collection, handy for things like site settings and other global configurations.
- * Learn more: https://www.sanity.io/docs/create-a-link-to-a-single-edit-page-in-your-main-document-type-list
+ * Site settings singleton (`_id: "settings"`): identity, contact, navigation,
+ * homepage and the site-wide share image.
  */
 
 export const settings = defineType({
@@ -27,18 +24,17 @@ export const settings = defineType({
   fields: [
     defineField({
       name: 'title',
-      description: 'This field is the title of your blog.',
+      description: 'The school name. Used in page titles, the logo alt text and structured data.',
       title: 'Title',
       type: 'string',
-      initialValue: demo.title,
       validation: (rule) => rule.required(),
     }),
     defineField({
       name: 'description',
-      description: 'Used on the Homepage',
+      description:
+        'About the school in a sentence or two. Used as the Organization description in structured data, and as the meta description when Blurb is empty.',
       title: 'Description',
       type: 'array',
-      initialValue: demo.description,
       of: [
         // Define a minified block content field for the description. https://www.sanity.io/docs/block-content
         defineArrayMember({
@@ -63,7 +59,6 @@ export const settings = defineType({
                       list: [
                         {title: 'URL', value: 'href'},
                         {title: 'Page', value: 'page'},
-                        {title: 'Post', value: 'post'},
                       ],
                       layout: 'radio',
                     },
@@ -98,21 +93,6 @@ export const settings = defineType({
                       }),
                   }),
                   defineField({
-                    name: 'post',
-                    title: 'Post',
-                    type: 'reference',
-                    to: [{type: 'post'}],
-                    hidden: ({parent}) => parent?.linkType !== 'post',
-                    validation: (Rule) =>
-                      Rule.custom((value, context) => {
-                        const parent = context.parent as Link
-                        if (parent?.linkType === 'post' && !value) {
-                          return 'Post reference is required when Link Type is Post'
-                        }
-                        return true
-                      }),
-                  }),
-                  defineField({
                     name: 'openInNewTab',
                     title: 'Open in new tab',
                     type: 'boolean',
@@ -124,59 +104,6 @@ export const settings = defineType({
           },
         }),
       ],
-    }),
-    defineField({
-      title: 'Logo',
-      name: 'logo',
-      type: 'file',
-      description:
-        'Site logo. Upload an SVG — it will be served as-is for crisp scaling at any size.',
-      options: {
-        accept: 'image/svg+xml',
-      },
-      validation: (Rule) =>
-        Rule.custom((value: any) => {
-          if (!value?.asset) return true
-          const mt: string | undefined = value?.asset?.mimeType ?? value?.asset?._ref
-          // asset._ref looks like `file-<hash>-svg`; check both mimeType (deref) and ref suffix
-          if (typeof mt === 'string' && (mt === 'image/svg+xml' || mt.endsWith('-svg'))) return true
-          return 'Logo must be an SVG (image/svg+xml).'
-        }),
-    }),
-    defineField({
-      title: 'Favicon',
-      name: 'favicon',
-      description:
-        'Browser tab icon. Should be square (e.g. 512×512 PNG). Served via Next.js metadata; no rebuild required.',
-      type: 'image',
-      options: {
-        sources: [mediaAssetSource],
-        hotspot: true,
-        metadata: ['lqip', 'palette', 'exif', 'location'],
-      },
-      fields: [
-        defineField({
-          name: 'alt',
-          title: 'Alternative text',
-          type: 'string',
-          description:
-            'Context-specific alt text. Falls back to the asset-level description when empty.',
-        }),
-      ],
-      preview: {
-        select: {
-          asset: 'asset',
-          title: 'asset.title',
-          description: 'asset.description',
-        },
-        prepare(value: any) {
-          return {
-            title: value.title ? value.title : 'Untitled Image',
-            subtitle: value.description,
-            media: value.asset,
-          }
-        },
-      },
     }),
     defineField({
       name: 'ogImage',
@@ -215,7 +142,10 @@ export const settings = defineType({
       title: 'Blurb',
       name: 'blurb',
       type: 'string',
-      description: 'Concise description of the site, used primarily for SEO and metadata.',
+      description:
+        'Default meta description (what search results show) for any page without its own. Aim for about 150 characters.',
+      validation: (Rule) =>
+        Rule.max(160).warning('Search engines truncate after about 160 characters.'),
     }),
     defineField({
       title: 'Contact',
@@ -275,66 +205,14 @@ export const settings = defineType({
       name: 'navigation',
       type: 'array',
       description:
-        'Header navigation. Add top-level links, or dropdowns that group several links under a disclosure label.',
+        'Side menu. Add top-level links, or groups that nest several links under a disclosure (e.g. Programs).',
       of: [defineArrayMember({type: 'navLink'}), defineArrayMember({type: 'navDropdown'})],
-    }),
-    defineField({
-      title: 'Mobile Navigation',
-      name: 'mobileNav',
-      type: 'object',
-      fields: [
-        defineField({
-          title: 'Show footer content',
-          name: 'showFooterContent',
-          type: 'boolean',
-          description: 'Show footer content (socials, legal) inside the mobile menu',
-          initialValue: true,
-        }),
-      ],
     }),
     defineField({
       title: 'Legal',
       name: 'legal',
       type: 'string',
-      description: 'Short legal disclaimer shown in the footer / mobile menu',
-    }),
-    defineField({
-      title: 'Built with',
-      name: 'builtWith',
-      type: 'array',
-      description:
-        'Tech / tools the site is built with, shown as chips in the footer. Items with a URL render as external links; name-only items render as plain labels.',
-      of: [
-        defineArrayMember({
-          name: 'builtWithItem',
-          title: 'Item',
-          type: 'object',
-          fields: [
-            defineField({
-              title: 'Name',
-              name: 'name',
-              type: 'string',
-              description: 'Display label, e.g. "Next.js" or "Sanity".',
-              validation: (Rule) => Rule.required(),
-            }),
-            defineField({
-              title: 'URL',
-              name: 'url',
-              type: 'url',
-              description: 'Optional. If set, the chip links here (opens in a new tab).',
-            }),
-            defineField({
-              title: 'Icon',
-              name: 'icon',
-              type: 'string',
-              description: 'Optional short icon hint or emoji shown before the name.',
-            }),
-          ],
-          preview: {
-            select: {title: 'name', subtitle: 'url'},
-          },
-        }),
-      ],
+      description: 'Short line shown in the footer, e.g. "© Future Scholars Montessori Academy".',
     }),
     defineField({
       name: 'homepage',

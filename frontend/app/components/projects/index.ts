@@ -1,7 +1,0 @@
-export {default as ProjectCard, type ProjectCardItem} from './ProjectCard'
-export {default as FeaturedProjectCard} from './FeaturedProjectCard'
-export {default as ProjectMeta} from './ProjectMeta'
-export {default as ProjectsList} from './ProjectsList'
-export {default as ProjectPagination} from './ProjectPagination'
-export {default as ProjectBackLink} from './ProjectBackLink'
-export type {ProjectNavEntry} from './nav-context'

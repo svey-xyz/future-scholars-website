@@ -4,12 +4,10 @@ import {UsersIcon} from '@sanity/icons/Users'
 import {anchorField, columnsField} from './shared'
 
 /**
- * Faculty grid (build plan S7) — `person` documents rendered as staff cards.
+ * Faculty grid — `person` documents rendered as staff cards.
  *
- * `person` is the template's own document type, widened in S3 with `role`,
- * `credentials`, `bio` and `order`. Referencing it rather than re-typing names
- * into a block means the directors' bios exist once and can also feed the
- * JSON-LD in S11.
+ * Referencing `person` rather than re-typing names into a block means the
+ * directors' bios exist once and can also feed the JSON-LD.
  */
 export const facultyGrid = defineType({
   name: 'facultyGrid',

@@ -1,38 +1,49 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
-import {TrendUpwardIcon} from '@sanity/icons/TrendUpward'
+import {NumberIcon} from '@sanity/icons/Number'
+
+import {anchorField} from './shared'
 
 /**
- * Stats — row of big-number metrics with labels and optional descriptions.
+ * Key facts — a row of short figures with labels, e.g. the classroom ratios
+ * (1:3 / 1:5 / 1:8), the age range, or the year the school opened. Rendered as
+ * a description list, so each figure is announced with its label.
+ *
+ * Only publish figures the school has confirmed (build plan §0 rule 6).
  */
 export const stats = defineType({
   name: 'stats',
-  title: 'Stats',
+  title: 'Key facts',
   type: 'object',
-  icon: TrendUpwardIcon,
+  icon: NumberIcon,
   fields: [
     defineField({name: 'heading', title: 'Heading', type: 'string'}),
     defineField({name: 'subheading', title: 'Subheading', type: 'string'}),
     defineField({
       name: 'items',
-      title: 'Stats',
+      title: 'Facts',
       type: 'array',
       validation: (Rule) => Rule.min(1),
       of: [
         defineArrayMember({
           type: 'object',
           name: 'stat',
+          title: 'Fact',
           fields: [
             defineField({
               name: 'value',
-              title: 'Value',
+              title: 'Figure',
               type: 'string',
-              description: 'e.g. "10k+", "99.9%", "$2.4M"',
-              validation: (Rule) => Rule.required(),
+              description: 'Short, e.g. "1:3", "6 months – 6 years" or "2013".',
+              validation: (Rule) => [
+                Rule.required(),
+                Rule.max(20).warning('Keep the figure short — it is set very large.'),
+              ],
             }),
             defineField({
               name: 'label',
               title: 'Label',
               type: 'string',
+              description: 'What the figure is, e.g. "Teacher-to-child ratio, Infants".',
               validation: (Rule) => Rule.required(),
             }),
             defineField({name: 'description', title: 'Description', type: 'string'}),
@@ -40,7 +51,7 @@ export const stats = defineType({
           preview: {
             select: {title: 'value', subtitle: 'label'},
             prepare({title, subtitle}) {
-              return {title: title || 'Stat', subtitle}
+              return {title: title || 'Fact', subtitle}
             },
           },
         }),
@@ -50,7 +61,7 @@ export const stats = defineType({
       name: 'columns',
       title: 'Columns',
       type: 'number',
-      initialValue: 4,
+      initialValue: 3,
       options: {
         list: [
           {title: 'Two', value: 2},
@@ -61,12 +72,13 @@ export const stats = defineType({
         direction: 'horizontal',
       },
     }),
+    anchorField,
   ],
   preview: {
     select: {heading: 'heading', count: 'items'},
     prepare({heading, count}) {
       const n = Array.isArray(count) ? count.length : 0
-      return {title: heading || 'Stats', subtitle: `Stats · ${n} metric${n === 1 ? '' : 's'}`}
+      return {title: heading || 'Key facts', subtitle: `Key facts · ${n} item${n === 1 ? '' : 's'}`}
     },
   },
 })

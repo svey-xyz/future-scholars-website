@@ -1,19 +1,29 @@
 import {
+  AcademicCapIcon,
   BeakerIcon,
-  BoltIcon,
-  ChartBarIcon,
+  BookOpenIcon,
+  CalculatorIcon,
+  CalendarDaysIcon,
+  ChatBubbleLeftRightIcon,
   CheckCircleIcon,
-  CloudIcon,
-  CodeBracketIcon,
-  CpuChipIcon,
-  CursorArrowRaysIcon,
-  GlobeAltIcon,
+  ClipboardDocumentCheckIcon,
+  ClockIcon,
+  DocumentTextIcon,
+  EnvelopeIcon,
+  FaceSmileIcon,
+  GlobeAmericasIcon,
+  HandRaisedIcon,
   HeartIcon,
-  LockClosedIcon,
-  RocketLaunchIcon,
+  HomeIcon,
+  LightBulbIcon,
+  MapPinIcon,
+  MusicalNoteIcon,
+  PaintBrushIcon,
+  PhoneIcon,
+  PuzzlePieceIcon,
   ShieldCheckIcon,
-  SparklesIcon,
-  StarIcon,
+  SunIcon,
+  UserGroupIcon,
 } from '@heroicons/react/24/outline'
 
 import {stegaClean} from '@sanity/client/stega'
@@ -30,22 +40,33 @@ type Props = {
   pageType: string
 }
 
+// Keys mirror the `icon` options list in studio/src/schemaTypes/objects/featuresGrid.ts.
 const icons = {
-  beaker: BeakerIcon,
-  bolt: BoltIcon,
-  chart: ChartBarIcon,
+  academic: AcademicCapIcon,
+  book: BookOpenIcon,
+  puzzle: PuzzlePieceIcon,
+  paint: PaintBrushIcon,
+  music: MusicalNoteIcon,
+  globe: GlobeAmericasIcon,
+  science: BeakerIcon,
+  math: CalculatorIcon,
+  idea: LightBulbIcon,
+  outdoors: SunIcon,
+  care: HeartIcon,
+  smile: FaceSmileIcon,
+  independence: HandRaisedIcon,
+  community: UserGroupIcon,
+  home: HomeIcon,
+  safety: ShieldCheckIcon,
+  schedule: ClockIcon,
+  calendar: CalendarDaysIcon,
+  apply: ClipboardDocumentCheckIcon,
+  document: DocumentTextIcon,
+  talk: ChatBubbleLeftRightIcon,
+  phone: PhoneIcon,
+  email: EnvelopeIcon,
+  location: MapPinIcon,
   check: CheckCircleIcon,
-  chip: CpuChipIcon,
-  cloud: CloudIcon,
-  code: CodeBracketIcon,
-  cursor: CursorArrowRaysIcon,
-  globe: GlobeAltIcon,
-  heart: HeartIcon,
-  lock: LockClosedIcon,
-  rocket: RocketLaunchIcon,
-  shield: ShieldCheckIcon,
-  sparkles: SparklesIcon,
-  star: StarIcon,
 } as const
 
 const colClass: Record<number, string> = {
@@ -81,16 +102,11 @@ export default function FeaturesGrid({block}: Props) {
           const iconName = stegaClean(feature.icon)
           const Icon = iconName ? icons[iconName] : null
           const link = feature.link
-          const hasLink = Boolean(link && (link.href || link.page || link.post))
+          const hasLink = Boolean(link && (link.href || link.page))
 
           const iconEl = Icon && (
-            <span className="relative inline-flex h-11 w-11 items-center justify-center rounded-lg bg-accent text-accent-foreground transition-[transform,background-color,color] duration-300 will-change-transform motion-safe:group-hover/feat:-rotate-6 motion-safe:group-hover/feat:scale-110 group-hover/feat:bg-primary group-hover/feat:text-primary-foreground">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-300 group-hover/feat:bg-primary group-hover/feat:text-primary-foreground">
               <Icon className="h-6 w-6" aria-hidden="true" />
-              {/* Soft glow ring blooms on hover. */}
-              <span
-                aria-hidden="true"
-                className="pointer-events-none absolute inset-0 rounded-lg bg-primary/30 opacity-0 blur-md transition-opacity duration-300 group-hover/feat:opacity-100"
-              />
             </span>
           )
 

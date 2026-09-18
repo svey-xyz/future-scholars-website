@@ -1,8 +1,6 @@
 import {defineField, defineType} from 'sanity'
 import {InfoOutlineIcon} from '@sanity/icons/InfoOutline'
 
-import {backgroundField} from './shared'
-
 /**
  * Note — a frosted, toned callout card (info / warning / danger) built on
  * Portable Text. `tone` drives the icon + token-based colors in
@@ -57,7 +55,6 @@ export const note = defineType({
       type: 'blockContentTextOnly',
       validation: (Rule) => Rule.required(),
     }),
-    backgroundField,
   ],
   preview: {
     select: {tone: 'tone', content: 'content'},

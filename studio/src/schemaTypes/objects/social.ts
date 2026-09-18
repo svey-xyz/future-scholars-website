@@ -7,8 +7,6 @@ const platforms = [
   {title: 'Facebook', value: 'facebook'},
   {title: 'Vimeo', value: 'vimeo'},
   {title: 'LinkedIn', value: 'linkedin'},
-  {title: 'GitHub', value: 'github'},
-  {title: 'Mastodon', value: 'mastodon'},
 ]
 
 export const social = defineType({

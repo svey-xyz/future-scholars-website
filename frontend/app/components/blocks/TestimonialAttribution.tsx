@@ -1,17 +1,16 @@
-import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
-
 import Image from '@/app/components/common/SanityImage'
 import {Avatar as AvatarRoot, AvatarFallback} from '@/components/ui/avatar'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 /**
- * The shape both testimonial layouts render, whichever source the block draws
- * from. The image sub-type is derived from the inline member rather than
- * hand-written so it stays whatever typegen says it is (asset ref, hotspot,
- * crop).
+ * The shape both testimonial layouts render. The image sub-type is derived
+ * from the query result rather than hand-written so it stays whatever typegen
+ * says it is (asset ref, hotspot, crop).
  */
-type InlineTestimonial = NonNullable<ExtractPageBuilderType<'testimonials'>['testimonials']>[number]
+type TestimonialDoc = NonNullable<
+  ExtractPageBuilderType<'testimonials'>['documentTestimonials']
+>[number]
 
 export type Quote = {
   key: string
@@ -19,8 +18,7 @@ export type Quote = {
   highlight?: string | null
   authorName: string | null
   authorRole?: string | null
-  sourceUrl?: string | null
-  authorImage?: InlineTestimonial['authorImage'] | null
+  authorImage?: TestimonialDoc['authorImage'] | null
 }
 
 /** Normalised for comparison only: whitespace, case and edge punctuation. */
@@ -91,20 +89,6 @@ export default function TestimonialAttribution({
         </Name>
         {t.authorRole && <span className="text-sm text-muted-foreground">{t.authorRole}</span>}
       </span>
-      {t.sourceUrl && (
-        <a
-          href={t.sourceUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="ml-auto inline-flex min-h-11 items-center gap-1 rounded-md font-mono text-xs uppercase tracking-widest text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-        >
-          Source
-          <ArrowTopRightOnSquareIcon aria-hidden="true" className="size-3.5" />
-          <span className="sr-only">
-            : original article for {t.authorName}&rsquo;s quote (opens in new tab)
-          </span>
-        </a>
-      )}
     </div>
   )
 }
