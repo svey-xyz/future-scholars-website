@@ -1,6 +1,6 @@
 'use client'
 
-import {useEffect, useState} from 'react'
+import {useCallback, useEffect, useState} from 'react'
 import {XMarkIcon} from '@heroicons/react/24/outline'
 
 import {
@@ -11,7 +11,13 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '@/components/ui/carousel'
-import {Dialog, DialogClose, DialogContent, DialogDescription, DialogTitle} from '@/components/ui/dialog'
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {Button} from '@/components/ui/button'
 import GalleryMedia from './GalleryMedia'
 import GalleryVideo from './GalleryVideo'
@@ -29,6 +35,16 @@ type Props = {
  * wrapping an Embla carousel opened at the clicked index. Prev/next, close, an
  * `n / total` counter (announced) and a caption region. Images render contained;
  * videos render the click-to-load facade.
+ *
+ * Arrow keys are handled here, at the dialog, not left to the shadcn
+ * `Carousel`: its own handler is an `onKeyDownCapture` on the carousel region,
+ * which has no `tabIndex`, so it only ever fires while focus is already inside
+ * the carousel — in practice only on the prev/next buttons. Radix moves focus
+ * to the dialog content on open, so the very first Left/Right press did
+ * nothing, while the sr-only description below told screen-reader users the
+ * arrow keys browse the gallery. Making the announced contract true is the
+ * point; `defaultPrevented` keeps the carousel's own handler from advancing
+ * twice when focus *is* inside it.
  */
 export default function GalleryLightbox({items, heading}: Props) {
   const {open, index, close, setIndex} = useLightbox()
@@ -54,6 +70,23 @@ export default function GalleryLightbox({items, heading}: Props) {
     if (open && api) api.scrollTo(index, true)
   }, [open, api, index])
 
+  const onKeyDown = useCallback(
+    (event: React.KeyboardEvent<HTMLDivElement>) => {
+      // Already handled by the carousel's own capture handler, or a browser
+      // shortcut the user meant (Alt+Left is Back).
+      if (event.defaultPrevented || event.altKey || event.ctrlKey || event.metaKey) return
+      if (!api) return
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault()
+        api.scrollPrev()
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault()
+        api.scrollNext()
+      }
+    },
+    [api],
+  )
+
   if (items.length === 0) return null
   const total = items.length
 
@@ -61,6 +94,7 @@ export default function GalleryLightbox({items, heading}: Props) {
     <Dialog open={open} onOpenChange={(next) => !next && close()}>
       <DialogContent
         showCloseButton={false}
+        onKeyDown={onKeyDown}
         className="flex h-dvh w-screen max-w-none flex-col gap-0 border-0 bg-background/30 p-0 backdrop-blur-lg sm:rounded-none"
       >
         <DialogTitle className="sr-only">{heading || 'Gallery'}</DialogTitle>
@@ -77,7 +111,12 @@ export default function GalleryLightbox({items, heading}: Props) {
             {current + 1} / {total}
           </span>
           <DialogClose asChild>
-            <Button variant="ghost" size="icon" aria-label="Close gallery" className="size-11 bg-background/20">
+            <Button
+              variant="ghost"
+              size="icon"
+              aria-label="Close gallery"
+              className="size-11 bg-background/20"
+            >
               <XMarkIcon />
             </Button>
           </DialogClose>

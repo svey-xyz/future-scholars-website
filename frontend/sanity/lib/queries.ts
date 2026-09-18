@@ -313,8 +313,14 @@ export const getPageQuery = defineQuery(`
   }
 `)
 
+// The designated homepage is excluded for the same reason as in `pagesSlugs`:
+// `app/sitemap.ts` already emits the site root, so listing the homepage's own
+// slug would advertise a second, redirecting URL for the same content.
 export const sitemapData = defineQuery(`
-  *[(_type == "page" || _type == "post" || _type == "project") && defined(slug.current) && !(_type == "project" && hidden == true)] | order(_type asc) {
+  *[(_type == "page" || _type == "post" || _type == "project")
+    && defined(slug.current)
+    && !(_type == "project" && hidden == true)
+    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {
     "slug": slug.current,
     _type,
     _updatedAt,
@@ -351,8 +357,17 @@ export const postPagesSlugs = defineQuery(`
   {"slug": slug.current}
 `)
 
+/**
+ * Page slugs for `app/[slug]`'s `generateStaticParams`.
+ *
+ * The designated homepage is excluded: `settings.homepage` points at a `page`
+ * document, and prerendering it here published the homepage a second time at
+ * `/<its slug>` alongside `/`. `next.config.ts` 301s that URL to `/`, and
+ * this keeps the route from being generated (and indexed) in the first place.
+ */
 export const pagesSlugs = defineQuery(`
-  *[_type == "page" && defined(slug.current)]
+  *[_type == "page" && defined(slug.current)
+    && slug.current != *[_type == "settings"][0].homepage->slug.current]
   {"slug": slug.current}
 `)
 

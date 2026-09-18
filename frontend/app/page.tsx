@@ -33,7 +33,7 @@ export async function generateMetadata(): Promise<Metadata> {
     perspective,
   })
 
-  return pageMetadata(page, {siteTitle: settings?.title})
+  return pageMetadata(page, {siteTitle: settings?.title, path: '/', settings})
 }
 
 /**

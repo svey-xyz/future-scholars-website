@@ -35,11 +35,20 @@ const SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
  * sit in a `<dl>` so a screen reader hears them as labelled pairs rather than
  * as loose fragments. Cards resolve to `/programs/<slug>` — those routes land
  * in S8; the side rail already links to them.
+ *
+ * Card headings track the block's own heading rather than being hard-coded:
+ * with a block heading the cards sit under it as `h3`, without one they are
+ * the section's top level and must be `h2`. Hard-coding `h3` skipped a level
+ * on every page whose grid has no heading (`/programs`, `/montessori` went
+ * h1 → h3), which fails WCAG 1.3.1 and the build plan's §9 heading bar.
  */
 export default function ProgramsGrid({block}: Props) {
   const {heading, subheading, programs, columns} = block
   const cols = columns ?? 3
   const items = programs ?? []
+  // See the note above: no block heading means the cards are this section's
+  // top level, so they step up to `h2`.
+  const CardHeading = heading ? 'h3' : 'h2'
 
   if (items.length === 0) return null
 
@@ -91,7 +100,7 @@ export default function ProgramsGrid({block}: Props) {
                   ) : null}
 
                   <div className="flex flex-1 flex-col gap-3 p-6">
-                    <h3 className="font-display text-xl">{program.name}</h3>
+                    <CardHeading className="font-display text-xl">{program.name}</CardHeading>
 
                     {facts.length > 0 && (
                       <dl className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">

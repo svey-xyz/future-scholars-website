@@ -13,7 +13,7 @@ import {Suspense} from 'react'
 
 import {Toaster} from '@/components/ui/sonner'
 import {BackToTop, Footer, SideNav} from '@/app/components/layout'
-import {SiteJsonLd} from '@/app/components/seo'
+import {SiteJsonLd, siteMetadataBase} from '@/app/components/seo'
 import {PageTransition, RevealObserver} from '@/app/components/motion'
 import {DraftModeToast} from '@/app/components/visual-editing'
 import * as demo from '@/sanity/lib/demo'
@@ -35,14 +35,10 @@ export async function generateMetadata(): Promise<Metadata> {
   const description = settings?.description || demo.description
 
   const ogImage = resolveOpenGraphImage(settings?.ogImage)
-  let metadataBase: URL | undefined = undefined
-  try {
-    metadataBase = settings?.ogImage?.metadataBase
-      ? new URL(settings.ogImage.metadataBase)
-      : undefined
-  } catch {
-    // ignore
-  }
+  // Settings first, then the deployment's own domain — see siteOrigin.ts.
+  // Without this the field was simply empty in the FSMA dataset and every
+  // route shipped with no canonical and unresolvable OG image URLs.
+  const metadataBase = siteMetadataBase(settings)
   return {
     metadataBase,
     applicationName: title,

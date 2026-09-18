@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S7 done · content + images seeded · production build passing · S0b outstanding (owner) · **Last updated:** 2026-09-14 (rev 13) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S7 done · most of S11 done in the 2026-09-17 audit · content + images seeded · production build passing **in an agent session** · S0b outstanding (owner) · **Last updated:** 2026-09-17 (rev 14) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -170,14 +170,16 @@ MCP `deploy_schema` tool — it creates a competing MCP-managed schema record al
 | Q9 | Vercel project creation + linking, and mirroring env vars into Preview/Production | svey | Deferred to S0b (2026-09-13) |
 | Q10 | Sanity CLI login on the dev machine (`npx sanity login`) — needed for `schema deploy` (S2) and `sanity deploy` | svey | Owner runs CLI deploys manually (2026-09-13) |
 | Q11 | ~~`*.sanity.io` is blocked by the egress allowlist~~ | svey | ✅ **Resolved 2026-09-13 (S4)** — the allowlist change was necessary but not sufficient: Node ignores `HTTPS_PROXY`. Run anything Node-side with **`NODE_USE_ENV_PROXY=1`** and every data-fetching route renders. See §12 |
-| Q18 | The mounted repo cannot `unlink`, so `git merge`/`checkout`/`reset --hard` and `next dev` all fail in place. Workarounds are recorded in §5.1 and §12 — is a standing delete grant for this folder acceptable, or do we keep working around it? | svey | **Opened 2026-09-13 (S4)** |
-| Q19 | `fonts.googleapis.com` is off the egress allowlist, so `next build` fails at compile time and no agent session can produce a production build or run Lighthouse. Allowlist it, or self-host Inter + Outfit with `next/font/local` (probably the better answer — see §12) | svey | **Opened 2026-09-13 (S4)** |
+| Q18 | The mounted repo cannot `unlink`, so `git merge`/`checkout`/`reset --hard` and `next dev`/`next build` all fail in place. Workarounds are recorded in §5.1 and §12 — is a standing delete grant for this folder acceptable, or do we keep working around it? | svey | **Still open. 2026-09-17: the grant was requested and refused by the sandbox's own auto-approval classifier, not by you** — an agent session may not be able to obtain it at all. The working answer is now the out-of-mount build recipe in §5.1, which needs no grant and costs one `rsync`. A `next build` *in* the mount still dies at the very end on `EPERM: rmdir .next/export/…`, after a successful compile and static generation |
+| Q19 | ~~`fonts.googleapis.com` is off the egress allowlist, so `next build` fails at compile time~~ | svey | ✅ **Resolved 2026-09-17 (audit)** — both `fonts.googleapis.com` and `fonts.gstatic.com` now return 200 through the proxy, and `next build` downloads and self-hosts all three faces (14 `.woff2` files emitted to `.next/static/media`). **An agent session can produce a production build again.** Note the diagnostic trap: `curl https://fonts.gstatic.com/` returns 403 because the *bare host root* is refused — a real asset path under `/s/…` returns 200. Test with an actual font URL, not the origin |
 | Q12 | ~~Logo source JPG~~ | svey | ✅ **Resolved 2026-09-13** — supplied in chat, archived at `docs/brand/logo-source.jpg` (not under `public/`, per §7.4) |
 | Q20 | ~~`next build` fails under Cache Components when a hidden content type has zero documents~~ | svey | ✅ **Resolved 2026-09-13 (S5)** — both routes now return a `__placeholder__` slug when the list is empty (the docs-sanctioned pattern; the pages already `notFound()` unmatched slugs, so the placeholder prerenders the 404). First full production build passes: 23 pages, all six routes static/PPR. **Backport candidate** — any template consumer with an empty dataset hits this. Two pre-existing build warnings logged in §11: `Unknown block type "undefined"` from PortableText during static generation (audit in S12's content proof), and a `next/dynamic` CSR bailout (template behaviour, pages still prerender) |
-| Q21 | `npm run format` reflows ~50 untouched files (repo is committed at `printWidth` 80; `@sanity/prettier-config@3.0.0` resolves to 100). Reverted in S6. Do we run one deliberate repo-wide reformat and commit it, or pin `printWidth: 80` in a local `.prettierrc` to match what is already on disk? Until it's settled, **never run `npm run format` repo-wide on a feature branch** | svey | **Opened 2026-09-14 (S6)** |
+| Q21 | ~~`npm run format` reflows ~50 untouched files because the repo is committed at `printWidth` 80~~ | svey | ✅ **Resolved 2026-09-17 (audit) — and the premise was backwards.** Measured: at width **80** the repo needs **174** files reformatted, at the config's real **100** it needs **58**. The repo was never formatted at 80, so pinning 80 would have tripled the churn. Of the 58, 21 were markdown and 8 were generated shadcn components. Fixed by narrowing `.prettierignore` (prose and vendored code are not Prettier's to own) and reformatting the remaining 29 files in one deliberate pass. `npm run format` is now a no-op on untouched files. Config also moved out of the package.json `prettier` key, which Prettier resolves *before* any config file. See §12 |
 | Q22 | ~~Sanity CLI cannot load its config in the Cowork VM~~ | svey | ✅ **Resolved 2026-09-14 (S6)** — `node_modules` is macOS-built and needs two linux-arm64 natives beyond the three §5.1 lists: `@esbuild/linux-arm64` and `@rolldown/binding-linux-arm64-gnu`. Documented in §5.1 |
 | Q23 | The About page now publishes an accessibility statement committing FSMA to WCAG 2.2 AA and to providing information in accessible formats on request. The website half is built and verifiable; the *organisational* half is the school's to make. Confirm they are happy to publish it, and that the office is the right contact route for accessibility feedback | Client | **Opened 2026-09-14 (S7)** |
 | Q24 | The template's `featuresGrid` icon list is developer-flavoured — rocket, chip, beaker, code, cursor — and none of it belongs on a Montessori school's admissions steps, which therefore ship iconless. Either re-theme the list for FSMA (fork divergence) or leave the steps as numbered text, which reads fine. Cosmetic, not blocking | svey | **Opened 2026-09-14 (S7)** |
+| Q26 | **The site has no canonical origin.** `settings.ogImage.metadataBase` is empty, which silently cost every route its canonical URL, made Open Graph image URLs unresolvable and dropped the `Organization` node from the JSON-LD graph entirely (every `@id` is built from it). The audit added a fallback chain so a Vercel deploy resolves its own production domain (`components/seo/siteOrigin.ts`), but **the real answer is the domain decision** — apex or `www` (§10 step 5). Set `settings.ogImage.metadataBase` in Studio, or `NEXT_PUBLIC_SITE_URL` in Vercel, before launch | svey + client | **Opened 2026-09-17 (audit)** |
+| Q27 | Title separator: §11's S11 task specifies `Page · Future Scholars Montessori Academy`, the template's `title.template` emits `Page \| …`. Cosmetic, one character, client-visible — left as the pipe rather than changed silently | svey | **Opened 2026-09-17 (audit)** |
 | Q25 | An admissions FAQ was specified for S7 but not built: the legacy site has no FAQ, so writing the answers would be inventing client facts (§0 rule 8). If the client supplies real questions and answers the `faq` block already exists and it is a short follow-up session | Client | **Opened 2026-09-14 (S7)** |
 
 ---
@@ -243,13 +245,16 @@ don't "fix" the template for them.
   **inside one call**. `pgrep`/`pkill` only see that call's own processes — and `pkill -f "npm install"`
   will match the wrapper and kill your own shell.
 - **Typegen is `npm run typegen` from the root** (a root-owned pipeline landed with S5 — `schema:extract`
-  then `typegen:frontend` + `typegen:studio` in parallel). There is no `sanity:typegen` script any more,
-  in any workspace; earlier sections of this document that name one are stale. The `--force` flag the new
+  then `typegen:frontend` + `typegen:studio` in parallel). Use that one. A `sanity:typegen` script does
+  still exist in both workspaces — this note previously claimed it had been removed, which is wrong —
+  but it is the old two-step and earlier sections that name it are stale regardless. The `--force` flag the new
   pipeline passes also settles the old SIGABRT-on-teardown problem, so the two-step workaround previously
   documented here is no longer needed.
-- **Google Fonts is blocked** (`fonts.googleapis.com` → proxy refusal), so `next/font/google` falls back
-  to system fonts locally. Type will look wrong in local dev; it is fine on Vercel. Relevant to S1 — judge
-  typography from a deployed preview, not from localhost.
+- ~~**Google Fonts is blocked**~~ — **no longer true (2026-09-17, Q19).** Both `fonts.googleapis.com`
+  and `fonts.gstatic.com` resolve through the proxy, `next/font/google` downloads and self-hosts all
+  three faces at build time, and local type is correct. Diagnose it with a real asset URL
+  (`https://fonts.gstatic.com/s/inter/…​.woff2` → 200), never the bare origin (`https://fonts.gstatic.com/`
+  → 403, which is what made this look blocked for four sessions).
 - **`sanity-cdn.com` is blocked**, so the Studio's auto-update version check logs a 403. Harmless; the
   Studio still starts.
 - **Deleting files needs explicit permission** in the mounted folder. A stale `.git/index.lock` will wedge
@@ -259,10 +264,9 @@ don't "fix" the template for them.
   which is what made the dataset look blocked long after it was allowlisted. Node 22.23 honours
   `NODE_USE_ENV_PROXY=1` (undici's `EnvHttpProxyAgent`). Prefix any Node process that talks to the network
   with it: `NODE_USE_ENV_PROXY=1 npx next dev`. It prints an experimental-API warning; ignore that.
-- **`fonts.googleapis.com` is refused at the proxy** (curl returns `000`, not a 403). `next dev` warns and
-  falls back to system fonts, so local type looks wrong but pages render; **`next build` fails outright**
-  with three `next/font` errors. No production build, and therefore no local Lighthouse, until Q19 is
-  settled.
+- ~~**`fonts.googleapis.com` is refused at the proxy**~~ — superseded by the corrected note above. A
+  production build now succeeds in an agent session; the only thing still standing between a session and
+  a Lighthouse run is a browser binary (`cdn.playwright.dev` is off the allowlist).
 - **Git cannot update the working tree in the mount, and `next dev` cannot run in it** (Q18). The mount
   refuses `unlink` without a per-session delete grant, and git implements worktree updates as
   unlink-then-create. Consequences and the two workarounds that do work:
@@ -281,6 +285,18 @@ don't "fix" the template for them.
     `NODE_USE_ENV_PROXY=1 npx next dev --webpack` there. **`--webpack` is required**: Turbopack refuses a
     `node_modules` symlink that points outside the project root. In the mount itself, Turbopack fails on
     its persistence directory and webpack fails unlinking its dev log.
+  - **To run `next build` and `next start`** (verified 2026-09-17, needs no delete grant — this is the
+    recipe to reach for first, since the grant may not be obtainable at all):
+    ```bash
+    SRC=$HOME/mnt/future-scholars-website; DST=$HOME/build
+    rsync -a --delete --exclude node_modules --exclude .next --exclude .git "$SRC/" "$DST/"
+    for d in "" frontend/ studio/; do ln -sfn $SRC/${d}node_modules $DST/${d}node_modules; done
+    cp $SRC/frontend/.env.local $DST/frontend/.env.local
+    cd $DST/frontend && NODE_USE_ENV_PROXY=1 npx next build --webpack   # then `next start -p 32xx`
+    ```
+    Re-run the `rsync` after every edit — the copy is a snapshot, and it is very easy to spend ten
+    minutes verifying a build of the previous version. **Background servers do not survive a shell
+    call** (§5.1 above), so `next start` and every `curl` against it must be in the *same* call.
 - **`node_modules` is installed for macOS, not for this VM.** The native binaries are `*-darwin-arm64`, so
   anything that loads one fails — through Node, which can't reach the registry to self-heal. Fetch the
   linux-arm64 equivalents with `npm pack` (which *does* use the proxy) and unpack them into `node_modules`
@@ -774,7 +790,10 @@ maps links correct, one `<address>`, zero missing `alt`, zero unknown blocks; pr
       schema and is honest, but a vision or human pass over the 107 would make it good. Do before launch
 - [ ] Re-encode: everything is still the legacy 720×480 original. Fine for a gallery grid; revisit if
       any of these are ever used larger
-- [ ] Lightbox a11y: Esc, arrow keys, focus restore, `aria-modal`, captions announced
+- [x] Lightbox a11y: Esc, arrow keys, focus restore, `aria-modal`, captions announced — **the arrow
+      keys did not work** and the lightbox's sr-only description told screen-reader users they did
+      (audit 2026-09-17). Fixed at the dialog; see §12. Esc / focus trap / focus restore / `aria-modal`
+      are Radix's and were already right; captions are a `<figcaption>` inside the slide
 - [x] ~~Gate on photo consent~~ — removed: client confirmed releases cover web use (D17, 2026-09-13)
 - [x] ~~Cut anything under ~1000px~~ — **reversed by the client 2026-09-13**: preserve everything
       regardless of resolution. The 115 legacy thumbnails are still excluded (Sanity derives its own);
@@ -786,17 +805,36 @@ maps links correct, one `<address>`, zero missing `alt`, zero unknown blocks; pr
 
 ### S11 — SEO, metadata, structured data, redirects
 
-- [ ] Per-page metadata via the S6 `seo` object; titles follow `Page · Future Scholars Montessori Academy`
-- [ ] `metadataBase`, canonical URLs, OG/Twitter images (brand OG template)
-- [ ] JSON-LD: `Preschool`/`ChildCare` + `Organization` with address, geo, `openingHours`, `areaServed`,
-      `sameAs` (socials); `WebSite`; `BreadcrumbList` on nested routes
-- [ ] `sitemap.ts` covers all real routes and excludes drafts; `robots.ts` allows all, points at sitemap
-- [ ] Implement the full §6.3 redirect table in `next.config.ts`; crawl the live site for stragglers
+**Most of this session was done out of order by the 2026-09-17 audit**, because the items below were
+not future work — they were live defects on a site the client is being shown. What remains is content
+and post-deploy validation.
+
+- [x] Per-page metadata via the S6 `seo` object — wired in S6. Titles render `Page | Site`, not the
+      `Page · Site` this line specifies (Q27, cosmetic, left alone rather than changed silently)
+- [x] `metadataBase`, canonical URLs — `components/seo/siteOrigin.ts` resolves an origin from Settings,
+      then `NEXT_PUBLIC_SITE_URL`, then the Vercel production domain; `pageMetadata` emits
+      `alternates.canonical` and `og:url` on both routes. **The origin is still unset in content**
+      (Q26) — until it is, canonicals are relative, which is valid but not ideal
+- [ ] OG/Twitter images (brand OG template) — still to build. A page-level `seo.ogImage` and the
+      site-wide `settings.ogImage` both work and now correctly fall back to each other (the page used
+      to *discard* the site-wide one — see §12); neither is uploaded yet
+- [x] JSON-LD: `Preschool`/`ChildCare` with address, `openingHours`, `areaServed`, `foundingDate`,
+      `telephone`, `sameAs`, and `geo`/`priceRange` when set; `WebSite`. Verified in the rendered HTML
+- [ ] `BreadcrumbList` on nested routes — nothing is nested until S8 lands `/programs/[slug]`
+- [x] `sitemap.ts` covers all real routes and excludes drafts; `robots.ts` allows all, points at sitemap.
+      Both now prefer the configured origin over the request host, so an alias-served deploy does not
+      advertise itself. The sitemap no longer lists the homepage twice (see the redirect note below)
+- [x] Implement the full §6.3 redirect table in `next.config.ts` — all 13, plus `/index.htm` and
+      `/home`, as **301** (`statusCode: 301`, not `permanent: true`, which emits 308 — §12). Verified:
+      15/15 return 301 to a route that returns 200, no chains
+- [ ] Crawl the live site for stragglers — still owed, and belongs immediately before cutover
 - [ ] Preserve the legacy keyword intent (Ottawa Montessori / childcare / daycare) in real copy — no meta
       keyword stuffing, it does nothing
-- [ ] Validate with Rich Results Test; check every redirect returns 301 to a 200
+- [ ] Validate with Rich Results Test — needs a public URL, so it follows S0b
 
-**Acceptance:** zero broken internal links, zero redirect chains, structured data validates.
+**Acceptance:** zero broken internal links ⬜ — the three `/programs/<slug>` links (side rail + every
+programs grid) still 404 until S8; zero redirect chains ✅; structured data validates ⬜ (needs the
+public URL).
 
 ---
 
@@ -870,6 +908,7 @@ Append one row per session. Keep it terse.
 | 2026-09-13 | Q20 fix | opencode/kimi | `feat/fsma-s5-masthead-socials` | **Done.** `__placeholder__` guard in both hidden-type detail routes; **first full production build passes** (23 pages; `/`, `/[slug]` + all six routes static/PPR with 1y tags; placeholder paths prerender the 404). type-check/lint/format clean | **Q20 closed; backport candidate for the template.** Two pre-existing build warnings to audit later: `[@portabletext/react] Unknown block type "undefined"` during static generation (add to S12's content proof) and `Bail out to client-side rendering: next/dynamic` (template behaviour, pages still prerender) |
 | 2026-09-14 | S6 | cowork/opus | `feat/fsma-s6-home` (local, unpushed) | **Done, screenshots carried.** The homepage's content was already seeded (S3); this session built the code under it: `ProgramsGrid` renderer + GROQ resolution, document-sourced testimonials, and an optional page-level `seo` object wired through a shared `pageMetadata()`. Fixed two real bugs the wiring exposed — a seeded `callToAction.body` stored as a string instead of Portable Text on `/` and `/programs` (this was S5's `Unknown block type \"undefined\"` build warning, now closed), and a bare `<title>Home</title>` on the homepage. All six routes 200 against `production`, zero unknown blocks, one h1 each, zero missing alt; production build passes (23 pages) | **New Q21**: `npm run format` rewrites ~50 untouched files in the Cowork VM — reverted, needs a deliberate clean-up commit. **New Q22**: `node_modules` needs two *more* linux-arm64 natives than §5.1 lists (`@esbuild`, `@rolldown/binding`) or the Sanity CLI cannot even load its config. Q19 unchanged and now blocks screenshots too |
 | 2026-09-14 | S7 | cowork/opus | `feat/fsma-s6-home` (local, unpushed — same branch as S6) | **Done, one item deliberately not built.** `/about` now carries five anchors, a faculty grid from the `person` documents, a four-step admissions process, a Book-a-tour CTA, a settings-driven contact block and an AODA-aware accessibility statement. New: `anchorField` (+ `id`/`scroll-mt` in `BlockRenderer`), `contactDetails` and `facultyGrid` blocks, `contact.fax`, shared `telHref()`. **The admissions FAQ was not built** — no source content exists and inventing it breaks §0 rule 8 (see §8 S7). Verified in the rendered HTML against `production`; build passes (23 pages) | **New Q23**: the accessibility statement commits FSMA publicly — client must confirm. **New Q24**: the `featuresGrid` icon set is developer-flavoured (rocket, chip, beaker) and unusable on a school site, so the process steps ship without icons. Anchors cannot be tested end-to-end until S11 writes the redirect table |
+| 2026-09-17 | Audit (repo vs plan) | cowork/opus | `feat/fsma-s6-home` (local, unpushed — same branch as S6/S7) | **Done.** Read the whole repo against §§1–12 and against the rendered HTML of every route, then fixed what was actually broken rather than what was next. Seven real defects: a heading-level skip on `/programs` (h1 → h3); `/home` serving the homepage a second time, prerendered *and* in the sitemap; the entire §6.3 redirect table missing, so every legacy `.htm` URL 404'd; no canonical on any route and no `metadataBase` resolution, which also silently deleted the `Organization` node from the JSON-LD; `pageMetadata` discarding the site-wide OG image on every page (Next drops a parent's `openGraph` once a child sets one); the gallery lightbox announcing arrow-key navigation it did not implement; and Prettier's config being both misdiagnosed and unreachable. Also extended the JSON-LD to `Preschool`/`ChildCare` with the address, hours, areaServed and foundingDate the S2 `schoolInfo` fields were added for and had never been read. Gate: typegen regenerated, type-check clean, lint clean (same 3 template warnings), `prettier --check` clean, production build passes (22 pages, down one — `/home` is gone), all 15 redirects 301 → 200 with no chains, every route one `h1` with no skipped levels, zero unknown blocks, zero missing `alt` | **Q19 and Q21 closed** (both had the wrong diagnosis on file — see §4). **Q18 still open and possibly unobtainable**: the delete grant was refused by the sandbox classifier, not by the owner; the out-of-mount build recipe in §5.1 replaces it. **New Q26** (no canonical origin — needs the apex-vs-`www` decision) and **Q27** (title separator). Most of S11 landed here; S8 is now the biggest live gap, since the side rail and every programs grid link to three URLs that 404 |
 
 ---
 
@@ -921,6 +960,20 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-14 | **No admissions FAQ** | S7 specified one. The legacy site has no FAQ anywhere, so there is no source material, and an FAQ is precisely the format where invented answers look most authoritative — "What is the deposit?", "Is there a waiting list?" are questions a parent acts on. §0 rule 8 forbids guessing them. Logged as Q25 with the `faq` block already available, so it is a short session once the client answers | S7's "Admissions: FAQ block" task |
 | 2026-09-14 | The faculty grid ships with **no heading** | Rendered, "Directors" (the existing prose block) followed immediately by "Meet the directors" (the grid) was two `h2`s saying the same thing — a heading-hierarchy smell and a reading annoyance. The grid now reads as the continuation of the Directors section it follows. Caught only by looking at the rendered `h2` sequence, which is worth doing on every content assembly | — |
 | 2026-09-14 | Admissions steps are labelled by me; every fact in them is the legacy site's | "1. Book a tour", "2. Tour and observe", "3. Apply", "4. Placement" are my labels for prose the legacy page runs together as four paragraphs. The distinction that matters under §0 rule 8: a *label* is presentation, an assertion about deposits or sibling preference is a client fact — and every one of those is `admissions.md` verbatim or near-verbatim | — |
+
+### Audit session, 2026-09-17
+
+| Date | Decision | Rationale | Supersedes |
+|---|---|---|---|
+| 2026-09-17 | **Q19's diagnosis was wrong: Google Fonts is reachable and `next build` works in an agent session** | Four sessions recorded `next build` as impossible here. It is not, and may not have been for a while: `fonts.googleapis.com` and `fonts.gstatic.com` both return 200 through the proxy and the build emits 14 self-hosted `.woff2` files. The misdiagnosis came from testing the wrong URL — `curl https://fonts.gstatic.com/` is refused at the *origin*, while any real asset path under `/s/…` succeeds, so a host-level "blocked" conclusion was drawn from a request no one ever makes. **Generalisable:** probe an allowlist with the exact URL the tool will fetch | Q19, OWNER-TODO item A, and every "owner-side only" note that followed from them |
+| 2026-09-17 | **Q21's diagnosis was also backwards, and pinning `printWidth: 80` would have made it worse** | The open question offered a choice between "pin 80 to match what is on disk" and "reformat once at 100". Measured, the first premise is false: at 80 the repo needs **174** files reformatted, at 100 it needs **58**. The repo was never at 80. Resolved a third way: 21 of the 58 were markdown and 8 were generated shadcn components, and neither is Prettier's to own — `.prettierignore` now excludes `*.md`, `.agents/skills/**`, `frontend/components/ui/**` and the machine-written JSON, leaving 29 files, which were formatted in one pass. Config also moved from the package.json `prettier` key to `prettier.config.mjs`, because Prettier resolves the package.json key first and would have ignored any config file beside it. **The lesson worth keeping is procedural:** both Q19 and Q21 were carried forward across sessions as facts when they were one command away from being checked | Q21 |
+| 2026-09-17 | **Redirects use `statusCode: 301`, not `permanent: true`** | Next's `permanent: true` emits **308**, not 301, which is easy to miss because the config key reads as if it means 301. Modern crawlers treat them alike, but these URLs have been indexed and linked since ~2010 and the long tail pointing at them — directory listings, link checkers, feed readers — predates 308 (RFC 7538, 2015). §6.3 and §9 both say 301, so 301 is what ships. Verified: 15/15 return 301 to a 200 | — |
+| 2026-09-17 | **`/home` was a second live copy of the homepage** | `settings.homepage` designates a `page` document whose slug is `home`, and `app/[slug]` served it — prerendered, returning 200, and listed in `sitemap.xml` alongside `/`. S4's decisions log predicted this ("S11 still needs a 301 `/home` → `/`") and then it sat unfixed for four sessions while the client was being shown the site. Closed on three fronts rather than one: a 301 in `next.config.ts`, and exclusion of the designated homepage from both `pagesSlugs` (so the route is not generated) and `sitemapData` (so it is not advertised). A redirect alone would have left the duplicate in the sitemap | — |
+| 2026-09-17 | **A page's `openGraph` silently replaced the site's, rather than extending it** | `pageMetadata` always returns an `openGraph` object. Next inherits a parent segment's `openGraph` **only when the child sets none at all** (`generate-metadata.md` → Inheriting fields), so the root layout's site-wide share image was being discarded on every route. It has no visible symptom today only because `settings.ogImage` is empty — it would have become "why do our shared links have no image" the day someone uploaded one. `pageMetadata` now takes `settings` and falls back explicitly | — |
+| 2026-09-17 | **Site origin resolved through a fallback chain, not just the Settings field** (`components/seo/siteOrigin.ts`) | The only source was `settings.ogImage.metadataBase`, which is empty and stays empty until the apex-vs-`www` decision (§10 step 5). An empty `metadataBase` is quietly expensive: no canonical link on any route, unresolvable Open Graph image URLs, and — least obvious — the whole `Organization` node dropped out of the JSON-LD graph, because every `@id` in it is built from that value. The chain is Settings → `NEXT_PUBLIC_SITE_URL` → `VERCEL_PROJECT_PRODUCTION_URL` → `VERCEL_URL`, deliberately preferring the *production* domain over the current deployment so a preview's canonicals point at production rather than at themselves. **Backport candidate.** The content-side fix is still owed (Q26) | §2's assumption that `metadataBase` is purely an editor concern |
+| 2026-09-17 | **JSON-LD organisation typed `['Preschool', 'ChildCare']`, and fed the `schoolInfo` fields** | S2 added `foundingDate`, `areaServed`, `priceRange` and `geo` "for JSON-LD", and S6 seeded them — and nothing had ever read them. Neither had the address or the opening hours. The graph is now a real local-business record: address, `openingHours`, `telephone` in E.164, `areaServed`, `foundingDate`, `sameAs`, plus `geo`/`priceRange` when set. `openingHours` takes **only** rows with an explicit `schemaOrg` value — inferring a machine-readable range from "Montessori day / 8:30 am – 3:30 pm" would publish an opening-hours claim nobody verified (§0 rule 8), which is exactly what that field exists to prevent. The two types are hard-coded rather than made an editor setting: what kind of institution this is does not change, and a fork should not carry a setting with one possible value | the template's plain `Organization` |
+| 2026-09-17 | **Grid blocks derive their item heading level instead of hard-coding `h3`** | `/programs` rendered `h1 Programs` → `h3 Infants`, skipping `h2` — a WCAG 1.3.1 failure and a §9 bar miss — because `ProgramsGrid` hard-coded `h3` while that page's grid has no heading of its own. The rule is now: with a block heading the items sit under it as `h3`, without one the items *are* the section and step up to `h2`. Applied to `FacultyGrid` too, which has the same shape. **This does change `/about`'s outline**: the two directors move from `h3` under "Directors" to `h2` beside it. Considered leaving `FacultyGrid` alone, since §12 deliberately ships it headingless as a continuation of the Directors prose — but in a flat block model nothing actually says it belongs to that section, so `h3` was relying on the block above it and would skip the moment it moved. Both outlines are valid; the content-independent one is the one that keeps being valid | S7's faculty-grid markup |
+| 2026-09-17 | **The gallery lightbox announced arrow-key navigation it did not have** | Its sr-only `DialogDescription` says "use the left and right arrow keys to browse". The only arrow handler is shadcn's `onKeyDownCapture` on the carousel region — which has no `tabIndex`, so it fires only when focus is already inside the carousel, i.e. on the prev/next buttons. Radix moves focus to the dialog content on open, so the first press did nothing while assistive tech had been told otherwise. Handled at the dialog now, guarded on `defaultPrevented` so the carousel's own handler cannot double-advance. **Worth generalising:** an sr-only instruction is a contract, and this one had never been exercised because it is invisible to sighted testing | S10's unticked lightbox line, which listed the arrow keys as pending rather than as claimed-and-absent |
 
 ### S1 contrast audit (light theme, 2026-09-13)
 

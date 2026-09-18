@@ -29,11 +29,17 @@ const colClass: Record<number, string> = {
  *
  * Portraits are the legacy 156×192 originals (see IMAGE-MANIFEST.md), so they
  * are rendered small and square-cropped; asking the CDN for more would upscale.
+ *
+ * Name headings track the block's own heading, for the same reason
+ * `ProgramsGrid` does: this block deliberately ships headingless on /about
+ * (it continues the "Directors" section), and a hard-coded `h3` would skip a
+ * level the moment it is used on a page that has no `h2` above it.
  */
 export default function FacultyGrid({block}: Props) {
   const {heading, subheading, people, columns, showBio} = block
   const cols = columns ?? 3
   const items = people ?? []
+  const NameHeading = heading ? 'h3' : 'h2'
 
   if (items.length === 0) return null
 
@@ -76,7 +82,7 @@ export default function FacultyGrid({block}: Props) {
                   ) : null}
 
                   <figcaption className="flex flex-1 flex-col gap-2">
-                    <h3 className="font-display text-lg">{name}</h3>
+                    <NameHeading className="font-display text-lg">{name}</NameHeading>
                     {person.role && (
                       <p className="font-mono text-xs uppercase tracking-widest text-muted-foreground">
                         {person.role}
@@ -85,8 +91,11 @@ export default function FacultyGrid({block}: Props) {
 
                     {credentials.length > 0 && (
                       <ul className="mt-1 flex flex-col gap-1 text-sm text-muted-foreground">
-                        {credentials.map((credential) => (
-                          <li key={credential}>{credential}</li>
+                        {credentials.map((credential, c) => (
+                          // Index-keyed on purpose: credentials are a plain
+                          // string array with no stable id, and two people can
+                          // legitimately hold the same one.
+                          <li key={`${person._id}-${c}`}>{credential}</li>
                         ))}
                       </ul>
                     )}

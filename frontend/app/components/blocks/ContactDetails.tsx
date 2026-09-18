@@ -121,10 +121,10 @@ export default function ContactDetails({block}: Props) {
                 Email
               </h3>
               <ul className="mt-2 flex flex-col">
-                {emails.map((address) => (
-                  <li key={address}>
-                    <a href={`mailto:${address}`} className={`${linkClass} break-all`}>
-                      {address}
+                {emails.map((emailAddress) => (
+                  <li key={emailAddress}>
+                    <a href={`mailto:${emailAddress}`} className={`${linkClass} break-all`}>
+                      {emailAddress}
                     </a>
                   </li>
                 ))}
