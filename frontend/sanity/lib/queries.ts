@@ -318,7 +318,7 @@ export const getPageQuery = defineQuery(`
 // `app/sitemap.ts` already emits the site root, so listing the homepage's own
 // slug would advertise a second, redirecting URL for the same content.
 export const sitemapData = defineQuery(`
-  *[(_type == "page" || _type == "post" || _type == "project")
+  *[(_type == "page" || _type == "post" || _type == "project" || _type == "program")
     && defined(slug.current)
     && !(_type == "project" && hidden == true)
     && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {
@@ -326,6 +326,38 @@ export const sitemapData = defineQuery(`
     _type,
     _updatedAt,
   }
+`)
+
+// FSMA fork (build plan S8): a `program` document for `/programs/[slug]`.
+// `siblings` feeds the "other programs" links at the foot of the page, and
+// `parentName` the breadcrumb — the index is the `page` whose slug is
+// `programs` (the route segment is fixed, the page's display name is not).
+export const programQuery = defineQuery(`
+  *[_type == "program" && slug.current == $slug][0]{
+    ${programCardFields},
+    scheduleNote,
+    masthead,
+    body[]{
+      ...,
+      markDefs[]{
+        ...,
+        ${linkReference}
+      }
+    },
+    "parentName": *[_type == "page" && slug.current == "programs"][0].name,
+    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]
+      | order(coalesce(order, 99) asc, name asc){
+        _id,
+        name,
+        "slug": slug.current,
+        ageRange
+      }
+  }
+`)
+
+export const programSlugsQuery = defineQuery(`
+  *[_type == "program" && defined(slug.current)]
+  {"slug": slug.current}
 `)
 
 export const allPostsQuery = defineQuery(`

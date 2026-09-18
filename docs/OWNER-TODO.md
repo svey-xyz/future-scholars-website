@@ -5,7 +5,7 @@ Items 1–6 are done. **A, E and F are now closed too** — the 2026-09-17 audit
 wrong diagnosis on file and fixed both. What remains is client answers, one domain decision (J), and
 one build gap that is real work rather than a question (K).
 
-Last updated: 2026-09-17 (after the repo-vs-plan audit, then the S5 contact-hub / masthead-imagery session).
+Last updated: 2026-09-18 (after S8).
 
 ---
 
@@ -137,7 +137,12 @@ Last updated: 2026-09-17 (after the repo-vs-plan audit, then the S5 contact-hub 
       (or the `www` form), or set `NEXT_PUBLIC_SITE_URL` in Vercel. Note the legacy site answers on the
       apex and 403s on `www`, which is a hint but not a decision.
 
-- [ ] **K. `/programs/infants`, `/programs/toddlers` and `/programs/casa` are 404s on the live preview.**
+- [x] **K. ~~Program pages 404~~ — fixed in S8 (2026-09-18).** All three render, with breadcrumbs, an
+      "At a glance" box, a tour CTA and sibling links; zero broken internal links site-wide. **Merge order:**
+      `feat/fsma-contact-hub` (an earlier session's work I found uncommitted on `main` and parked, unreviewed)
+      → `feat/fsma-s8-programs`, which is stacked on it. Also check a program page in draft mode while doing
+      item 7. The Hours line shows the seeded `TODO(client): confirm.` on purpose — covered by item 10.
+      Original note: `/programs/infants`, `/programs/toddlers` and `/programs/casa` were 404s on the live preview.
       Not new, but it is now the largest visible defect, and I want it stated plainly rather than left
       implied by an unticked S8 checkbox: the side rail links to all three on every page, and so does
       every programs grid — the homepage, `/programs` and `/montessori`. A client clicking around the

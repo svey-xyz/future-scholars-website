@@ -1932,7 +1932,7 @@ export type GetPageQueryResult = {
 
 // Source: sanity/lib/queries.ts
 // Variable: sitemapData
-// Query: *[(_type == "page" || _type == "post" || _type == "project")    && defined(slug.current)    && !(_type == "project" && hidden == true)    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
+// Query: *[(_type == "page" || _type == "post" || _type == "project" || _type == "program")    && defined(slug.current)    && !(_type == "project" && hidden == true)    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {    "slug": slug.current,    _type,    _updatedAt,  }
 export type SitemapDataResult = Array<
   | {
       slug: string
@@ -1946,10 +1946,86 @@ export type SitemapDataResult = Array<
     }
   | {
       slug: string
+      _type: 'program'
+      _updatedAt: string
+    }
+  | {
+      slug: string
       _type: 'project'
       _updatedAt: string
     }
 >
+
+// Source: sanity/lib/queries.ts
+// Variable: programQuery
+// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "post": post->slug.current  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
+export type ProgramQueryResult = {
+  _id: string
+  name: string
+  slug: string
+  ageRange: string
+  ratio: string | null
+  classroomName: string | null
+  summary: string
+  image: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  } | null
+  order: number
+  scheduleNote: string | null
+  masthead: Masthead | null
+  body: Array<
+    | {
+        children?: Array<{
+          marks?: Array<string>
+          text?: string
+          _type: 'span'
+          _key: string
+        }>
+        style?: 'blockquote' | 'h1' | 'h2' | 'h3' | 'h4' | 'h5' | 'h6' | 'normal'
+        listItem?: 'bullet' | 'number'
+        markDefs: Array<{
+          linkType?: 'href' | 'page' | 'post'
+          href?: string
+          page: string | null
+          post: string | null
+          openInNewTab?: boolean
+          _type: 'link'
+          _key: string
+        }> | null
+        level?: number
+        _type: 'block'
+        _key: string
+      }
+    | {
+        asset?: SanityImageAssetReference
+        media?: unknown
+        hotspot?: SanityImageHotspot
+        crop?: SanityImageCrop
+        _type: 'image'
+        _key: string
+        markDefs: null
+      }
+  > | null
+  parentName: string | null
+  siblings: Array<{
+    _id: string
+    name: string
+    slug: string
+    ageRange: string
+  }>
+} | null
+
+// Source: sanity/lib/queries.ts
+// Variable: programSlugsQuery
+// Query: *[_type == "program" && defined(slug.current)]  {"slug": slug.current}
+export type ProgramSlugsQueryResult = Array<{
+  slug: string
+}>
 
 // Source: sanity/lib/queries.ts
 // Variable: allPostsQuery
@@ -2230,7 +2306,9 @@ declare global {
   interface SanityQueries {
     '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tbuiltWith[]{\n\t\tname,\n\t\turl,\n\t\ticon\n\t},\n\tmobileNav,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "post": post->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "post": post->slug.current\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.post->title, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    archive,\n    masthead,\n    seo,\n    \n  background {\n    type,\n    preset,\n    speed,\n    intensity,\n    colorSource,\n    customColor,\n    opacity\n  }\n,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      \n  background {\n    type,\n    preset,\n    speed,\n    intensity,\n    colorSource,\n    customColor,\n    opacity\n  }\n,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "hero" => {\n        ...,\n        buttons[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": select(\n          source == "documents" => *[\n            _type == "testimonial" && (^.featuredOnly != true || featured == true)\n          ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n            \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n          },\n          []\n        )\n      },\n      _type == "facultyGrid" => {\n        ...,\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        }\n      },\n      _type == "scores" => {\n        ...,\n        heading,\n        caption[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n          }\n        },\n        items[]{\n          _key,\n          label,\n          value,\n          max,\n          asPercent\n        }\n      },\n      _type == "postsArchive" => {\n        ...,\n        category->{_id, title, "slug": slug.current},\n        "posts": select(\n          source == "picked" => posts[]->{ \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n },\n          source == "all" => *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc){\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n          },\n          *[_type == "post" && defined(slug.current) && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(date desc, _updatedAt desc)[0...24]{\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n          }\n        )\n      },\n      _type == "projectsArchive" => {\n        ...,\n        category->{_id, title, "slug": slug.current},\n        "projects": select(\n          source == "picked" => projects[]->{ \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n },\n          source == "all" => *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc){\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n          },\n          *[_type == "project" && defined(slug.current) && !hidden && (!defined(^.category) || ^.category._ref in categories[]._ref)] | order(coalesce(publishedAt, _createdAt) desc)[0...24]{\n            \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  website,\n  repo,\n  featured,\n  hidden,\n  "publishedAt": coalesce(publishedAt, _createdAt),\n  "updatedAt": coalesce(updatedAt, _updatedAt),\n  "categories": categories[]->{_id, title, "slug": slug.current},\n  "tech": tech[]->{_id, title, "slug": slug.current},\n\n          }\n        )\n      },\n      _type == "authorsArchive" => {\n        ...,\n        "authors": select(\n          source == "picked" => authors[]->{\n            _id, firstName, lastName, picture,\n            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])\n          },\n          *[_type == "person"] | order(lastName asc, firstName asc)[0...48]{\n            _id, firstName, lastName, picture,\n            "postCount": count(*[_type == "post" && defined(slug.current) && references(^._id)])\n          }\n        )\n      },\n    },\n  }\n': GetPageQueryResult
-    '\n  *[(_type == "page" || _type == "post" || _type == "project")\n    && defined(slug.current)\n    && !(_type == "project" && hidden == true)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
+    '\n  *[(_type == "page" || _type == "post" || _type == "project" || _type == "program")\n    && defined(slug.current)\n    && !(_type == "project" && hidden == true)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
+    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
+    '\n  *[_type == "program" && defined(slug.current)]\n  {"slug": slug.current}\n': ProgramSlugsQueryResult
     '\n  *[_type == "post" && defined(slug.current)] | order(date desc, _updatedAt desc) {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': AllPostsQueryResult
     '\n  *[_type == "post" && _id != $skip && defined(slug.current)] | order(date desc, _updatedAt desc) [0...$limit] {\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': MorePostsQueryResult
     '\n  *[_type == "post" && slug.current == $slug] [0] {\n    content[]{\n    ...,\n    markDefs[]{\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "post": post->slug.current\n  }\n\n    }\n  },\n    \n  _id,\n  "status": select(_originalId in path("drafts.**") => "draft", "published"),\n  "title": coalesce(title, "Untitled"),\n  "slug": slug.current,\n  excerpt,\n  coverImage,\n  "date": coalesce(date, _updatedAt),\n  "author": author->{firstName, lastName, picture},\n\n  }\n': PostQueryResult

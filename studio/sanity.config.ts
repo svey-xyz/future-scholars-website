@@ -42,6 +42,9 @@ function resolveHref(documentType?: string, slug?: string): string | undefined {
       return slug ? `/projects/${slug}` : undefined
     case 'page':
       return slug ? `/${slug}` : undefined
+    // FSMA fork (build plan S8)
+    case 'program':
+      return slug ? `/programs/${slug}` : undefined
     default:
       console.warn('Invalid document type:', documentType)
       return undefined
@@ -75,6 +78,11 @@ const deskPlugins = [
         {
           route: '/projects/:slug',
           filter: `_type == "project" && slug.current == $slug || _id == $slug`,
+        },
+        // FSMA fork (build plan S8)
+        {
+          route: '/programs/:slug',
+          filter: `_type == "program" && slug.current == $slug || _id == $slug`,
         },
       ]),
       // Locations Resolver API allows you to define where data is being used in your application. https://www.sanity.io/docs/visual-editing/presentation-resolver-api#8d8bca7bfcd7
@@ -123,6 +131,24 @@ const deskPlugins = [
                 href: '/',
               } satisfies DocumentLocation,
             ].filter(Boolean) as DocumentLocation[],
+          }),
+        }),
+        // FSMA fork (build plan S8): a program has its own detail route and
+        // is also carded on the /programs index and the homepage grid.
+        program: defineLocations({
+          select: {
+            name: 'name',
+            slug: 'slug.current',
+          },
+          resolve: (doc) => ({
+            locations: [
+              {
+                title: doc?.name || 'Untitled',
+                href: resolveHref('program', doc?.slug)!,
+              },
+              {title: 'Programs', href: '/programs'},
+              homeLocation,
+            ].filter((l) => Boolean(l.href)) as DocumentLocation[],
           }),
         }),
         project: defineLocations({
