@@ -12,7 +12,7 @@ type InfoProps = {
   pageType: string
 }
 
-export default function CTA({block}: InfoProps) {
+export default function InfoSectionBlock({block}: InfoProps) {
   return (
     <div className="container my-12">
       <div className="max-w-3xl">

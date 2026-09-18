@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S0–S8 done; most of S11 done; template leftovers removed. Next up: S9. · **Updated:** 2026-09-18 (rev 17) · **Owner:** Hayden Soule (svey)
+**Status:** S0–S9 done; most of S11 done; 404 page built. Next up: S10. · **Updated:** 2026-09-18 (rev 18) · **Owner:** Hayden Soule (svey)
 **Repo:** `github.com/svey-xyz/future-scholars-website` (started from `sanity-next-clean`; no longer synced with it)
 **Owner actions and client questions:** `docs/OWNER-TODO.md`
 
@@ -111,7 +111,7 @@ Client and owner questions are tracked in `OWNER-TODO.md`.
   `order`) and the `settings` singleton (with `schoolInfo`: `foundingDate`, `areaServed`, `priceRange`,
   and `geo` as a plain `{lat, lng}`). Page fields `masthead` and `seo`. Blocks: `callToAction`,
   `infoSection`, `featuresGrid`, `stats` (Key facts), `testimonials`, `programsGrid`, `facultyGrid`,
-  `contactDetails`, `gallery`, `faq`, `note`.
+  `contactDetails`, `gallery`, `faq`, `note`, `pullQuote`.
 - **Anchors:** the `anchor` field is rendered as the block wrapper's `id` by `BlockRenderer`, with
   `scroll-mt` so the fixed bar doesn't cover the target.
 - **Grid headings:** grid items are `h3` under a block heading and `h2` when the block has no heading.
@@ -217,6 +217,8 @@ ship. The favicon is the cap alone on `--primary`, because "FSMA" is illegible b
 
 Heights are tall, standard or compact. Give each page a different combination. Home, About, Montessori
 and Programs currently use Unsplash placeholders; Gallery and Testimonials use brand panels.
+Image combos in use: Home tall/centre, Montessori tall/bottom-left, About standard/centre/strong,
+Programs standard/bottom-left.
 
 **7.7 ContactHub.** One component, fed by `settings.contact`:
 - From `lg` up: floating pills on the right edge.
@@ -232,14 +234,6 @@ and Programs currently use Unsplash placeholders; Gallery and Testimonials use b
 - [ ] Draft mode and Presentation round-trip, including a program page.
 - [ ] Masthead image ≤250KB at 1x and LCP <2.5s on throttled 4G. Measure once real photography
       replaces the placeholders.
-
-### S9 — Montessori page
-- [ ] Build `/montessori` from `maria.htm`: the method, the prepared environment, and Maria Montessori.
-- [ ] Break the old wall of text into infoSection/featuresGrid blocks with pull quotes.
-- [ ] Cross-link to Programs and About. Use a distinct masthead.
-- [ ] Check provenance of the Maria Montessori photo before using it (OWNER-TODO).
-
-**Acceptance:** 65–75 characters per line, a valid heading outline, and no leftover legacy markup.
 
 ### S10 — Testimonials + Gallery
 - [ ] `/testimonials` from testimonial documents. Attribution must match the legacy site exactly.
@@ -262,7 +256,6 @@ and Programs currently use Unsplash placeholders; Gallery and Testimonials use b
 - [ ] Keyboard and screen-reader pass on the rail, drawer and lightbox; reduced-motion pass.
 - [ ] Sanity webhook → `/api/revalidate-tags` using the secret; confirm publishing reaches the live
       site.
-- [ ] On-brand 404 page.
 - [ ] Content proof (spelling, "Casa"/"Montessori" capitalisation, ages and ratios). Grep for
       `TODO(client)`; none can ship.
 - [ ] Client review round, then cutover (§10).
@@ -322,6 +315,7 @@ One line per session.
 | 09-18 | S8 | `/programs/[slug]`, breadcrumbs, sitemap entries (PRs #6, #7 merged) |
 | 09-18 | Docs trim | Plan and OWNER-TODO cut to open work only |
 | 09-18 | Drop template | Detached from `sanity-next-clean`; template types, blocks, dark mode, PWA and docs removed; school icon set; blueprint pointed at `wzs9gcps` |
+| 09-18 | S9 + 404 | `pullQuote` block; `/montessori` restructured (saved as a **draft**, publish after deploy); themed `app/not-found.tsx`; prose capped at 58ch; Key facts top-aligned |
 
 ---
 
@@ -362,3 +356,16 @@ Only decisions that are still relevant and not already covered in §3–§7.
   the blueprint (OWNER-TODO).
 - Data left by removed fields is cleaned by `studio/migrations/drop-template-fields.ts`, run after
   the frontend deploy (OWNER-TODO).
+- **S9 (rev 18).** `/montessori` is built from `maria.htm` with every sentence verbatim (D4); only
+  headings, Key-facts labels and feature titles are ours, and each fact in them comes from the copy.
+  The programs grid was replaced by a "Three classrooms, one method" features grid that links each
+  class paragraph to its program page; the page links to `/programs` inline and ends on a brand CTA
+  to `/about#book-a-tour`. The Maria Montessori photo is **not** used (provenance still unchecked).
+- New `pullQuote` block (`figure` / `blockquote` / `figcaption`). `repeatsText` sets `aria-hidden`
+  on quotes lifted from the page's own copy so screen readers don't read them twice.
+- Content that renders a block type the deployed frontend doesn't know must be saved as a **draft**
+  and published after the deploy; otherwise the live site shows the "Unknown block" alert.
+- `PortableText` is capped at `max-w-[58ch]`: prose's 65ch ran ~82 characters per line in Inter.
+- 404: root `app/not-found.tsx` (not `global-not-found`), so the rail, ContactHub and footer stay.
+  Static, no fetch; links to `/`, `/programs` (D17) and `/about#contact` (redirect target). Its
+  illustration hops once on load (no loop, WCAG 2.2.2) and is static under reduced motion.

@@ -38,6 +38,15 @@ Things an agent session can't do: they need your credentials, a browser, or an a
 - [ ] **Old service worker:** the PWA is gone. The site hasn't launched, so only browsers that opened
       a preview before this change can still have the worker; clear site data once in those.
 
+## After merging `feat/fsma-s9-montessori`
+
+- [ ] **Deploy the schema and Studio** (adds the Pull quote block):
+      `cd studio && npx sanity schema deploy && npx sanity deploy`.
+- [ ] **Publish the Montessori page draft** once the new frontend is live. The restructured page is
+      saved as a draft because it uses the new Pull quote block, which the current live frontend
+      would show as "Unknown block". Review it in Presentation first.
+- [ ] **Check the 404** at any made-up URL on the preview, including on a phone.
+
 ## Repo housekeeping (on your Mac, as its own commit)
 
 - [ ] Remove `react-dom` from the root `package.json`; it conflicts with the `^19.2.7` in each
@@ -67,7 +76,10 @@ Things an agent session can't do: they need your credentials, a browser, or an a
 - [ ] **Testimonial photos:** three photos from the old page aren't labelled with who is in them.
       They're uploaded but not used.
 - [ ] **Maria Montessori photo** (`legacy-maria.gif`): check who owns it before it goes on the
-      Montessori page.
+      Montessori page. The rebuilt page doesn't use it.
+- [ ] **Montessori page copy** (ported verbatim, D4). Ask whether they want to fix these:
+      "mild retardation" (a dated term), "Casa De Bambini" (Casa dei Bambini), "Edoard Seguin"
+      (Édouard Séguin), and "she has been nominated" (she died in 1952).
 - [ ] **Mayor's recognition certificate:** keep it, and if so, on which page? It's uploaded but not
       placed.
 - [ ] **Tuition:** publish fees, or say "contact us for rates"?

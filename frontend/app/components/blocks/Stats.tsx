@@ -54,7 +54,7 @@ export default function Stats({block}: Props) {
           <Reveal
             key={stat._key}
             i={i}
-            className="flex flex-col-reverse gap-2 border-t-2 border-brand-accent-strong pt-4"
+            className="flex flex-col-reverse justify-end gap-2 border-t-2 border-brand-accent-strong pt-4"
           >
             <dt>
               <span className="block text-base font-medium">{stat.label}</span>

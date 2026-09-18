@@ -12,6 +12,7 @@ import ContactDetails from './ContactDetails'
 import Gallery from '@/app/components/blocks/gallery/Gallery'
 import Faq from './Faq'
 import Note from './Note'
+import PullQuote from './PullQuote'
 import {cn} from '@/lib/utils'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
@@ -40,6 +41,7 @@ const Blocks = {
   gallery: Gallery,
   faq: Faq,
   note: Note,
+  pullQuote: PullQuote,
   // Each block component narrows `block` to its own `_type` member of the
   // page-builder union, which is intentionally narrower than `BlockProps`'s
   // full union — hence the `unknown` hop (the registry is looked up by

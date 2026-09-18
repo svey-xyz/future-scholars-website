@@ -86,6 +86,7 @@ export const page = defineType({
         {type: 'gallery'},
         {type: 'faq'},
         {type: 'note'},
+        {type: 'pullQuote'},
       ],
     }),
   ],
