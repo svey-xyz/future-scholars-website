@@ -54,6 +54,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
           changeFrequency = 'never'
           url = `${origin}/posts/${p.slug}`
           break
+        // FSMA fork (build plan S8): program detail routes.
+        case 'program':
+          priority = 0.8
+          changeFrequency = 'monthly'
+          url = `${origin}/programs/${p.slug}`
+          break
         case 'project':
           priority = 0.6
           changeFrequency = 'monthly'

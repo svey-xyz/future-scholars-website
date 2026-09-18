@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S1–S7 done · most of S11 done in the 2026-09-17 audit · content + images seeded · production build passing **in an agent session** · S0b outstanding (owner) · **Last updated:** 2026-09-17 (rev 14) · **Owner:** Hayden Soule (svey)
+**Status:** S1–S8 done · most of S11 done in the 2026-09-17 audit · content + images seeded · production build passing **in an agent session** · S0b outstanding (owner) · **Last updated:** 2026-09-18 (rev 15) · **Owner:** Hayden Soule (svey)
 **Repo:** `git@github.com:svey-xyz/future-scholars-website.git` (fork of `sanity-next-clean`)
 
 ---
@@ -759,13 +759,30 @@ maps links correct, one `<address>`, zero missing `alt`, zero unknown blocks; pr
 
 ### S8 — Programs index + three detail routes
 
-- [ ] `app/programs/page.tsx` (index, cached pattern) and `app/programs/[slug]/page.tsx`
-- [ ] Seed Infants / Toddlers / Casa program documents from legacy copy (ages + ratios in §6.1)
-- [ ] Curriculum-enhancing programs (music, before/after care) as a section on the index
-- [ ] Add the three detail routes to `sitemap.ts`; breadcrumbs (visual + `BreadcrumbList` JSON-LD)
-- [ ] Redirects for `infant-class.htm` / `toddler-class.htm` / `casa-class.htm` verified
+- [x] ~~`app/programs/page.tsx` (index, cached pattern)~~ and `app/programs/[slug]/page.tsx` — **the
+      index is not a route.** `/programs` is already a `page` document served by `app/[slug]` (grid +
+      music + care + CTA); an `app/programs/page.tsx` would shadow it and take it away from the editor.
+      Only the dynamic segment was added, three-layer pattern, `__placeholder__` guard (Q20). See §12
+- [x] ~~Seed Infants / Toddlers / Casa program documents~~ — already seeded in S3 (bodies, ratios, ages,
+      classroom names, card images, per-program brand mastheads); verified against §6.1, nothing to do
+- [x] Curriculum-enhancing programs (music, before/after care) as a section on the index — already on
+      the `/programs` page document (`pmusic`, `pcare` infoSections), seeded in S3
+- [x] Detail routes in `sitemap.ts` (`program` branch in `sitemapData` + the switch); visual breadcrumbs
+      (`common/Breadcrumbs`, WAI-ARIA pattern) + `BreadcrumbList` JSON-LD (`breadcrumbJsonLd`) fed from
+      one `trail()` so they cannot drift. Presentation `mainDocuments` + `locations` + `resolveHref` for
+      `program` in `studio/sanity.config.ts`
+- [x] Redirects for `infant-class.htm` / `toddler-class.htm` / `casa-class.htm` verified — 301 → 200
 
-**Acceptance:** each program page has a distinct masthead, correct ratios/ages, and a tour CTA.
+**Acceptance:** each program page has a distinct masthead ✅ (compact brand panel in three tones —
+sky/blue/ink — with the room name as eyebrow; photography still Q5), correct ratios/ages ✅ (1:3 / 1:5 /
+1:8, rendered in an "At a glance" `<dl>`), and a tour CTA ✅ (→ `/about#book-a-tour`, which holds the
+real `mailto:`). Also: "Other programs" sibling links, canonical + description + OG image per program.
+Verified against a production build (26 pages): all three 200 with one `h1` and a clean `h1 → h2`
+outline, `/programs/nope` 404s, **zero non-200 internal links across all nine routes** (the S11 gap), and
+the `BreadcrumbList` validates structurally with absolute URLs. **Not verified here:** draft-mode /
+Presentation round-trip on the new route (owner-side, OWNER-TODO 7) and a visual check (no browser in
+the VM). The Hours row prints the seeded `scheduleNote` verbatim, including its `TODO(client): confirm.`
+marker — deliberate, same as `/about`, and S12's grep will catch it.
 
 ---
 
@@ -820,7 +837,7 @@ and post-deploy validation.
       to *discard* the site-wide one — see §12); neither is uploaded yet
 - [x] JSON-LD: `Preschool`/`ChildCare` with address, `openingHours`, `areaServed`, `foundingDate`,
       `telephone`, `sameAs`, and `geo`/`priceRange` when set; `WebSite`. Verified in the rendered HTML
-- [ ] `BreadcrumbList` on nested routes — nothing is nested until S8 lands `/programs/[slug]`
+- [x] `BreadcrumbList` on nested routes — landed with S8 on `/programs/[slug]`, the only nested route
 - [x] `sitemap.ts` covers all real routes and excludes drafts; `robots.ts` allows all, points at sitemap.
       Both now prefer the configured origin over the request host, so an alias-served deploy does not
       advertise itself. The sitemap no longer lists the homepage twice (see the redirect note below)
@@ -832,8 +849,8 @@ and post-deploy validation.
       keyword stuffing, it does nothing
 - [ ] Validate with Rich Results Test — needs a public URL, so it follows S0b
 
-**Acceptance:** zero broken internal links ⬜ — the three `/programs/<slug>` links (side rail + every
-programs grid) still 404 until S8; zero redirect chains ✅; structured data validates ⬜ (needs the
+**Acceptance:** zero broken internal links ✅ — closed by S8 (13 distinct internal hrefs across nine
+routes, all 200); zero redirect chains ✅; structured data validates ⬜ (needs the
 public URL).
 
 ---
@@ -909,7 +926,8 @@ Append one row per session. Keep it terse.
 | 2026-09-14 | S6 | cowork/opus | `feat/fsma-s6-home` (local, unpushed) | **Done, screenshots carried.** The homepage's content was already seeded (S3); this session built the code under it: `ProgramsGrid` renderer + GROQ resolution, document-sourced testimonials, and an optional page-level `seo` object wired through a shared `pageMetadata()`. Fixed two real bugs the wiring exposed — a seeded `callToAction.body` stored as a string instead of Portable Text on `/` and `/programs` (this was S5's `Unknown block type \"undefined\"` build warning, now closed), and a bare `<title>Home</title>` on the homepage. All six routes 200 against `production`, zero unknown blocks, one h1 each, zero missing alt; production build passes (23 pages) | **New Q21**: `npm run format` rewrites ~50 untouched files in the Cowork VM — reverted, needs a deliberate clean-up commit. **New Q22**: `node_modules` needs two *more* linux-arm64 natives than §5.1 lists (`@esbuild`, `@rolldown/binding`) or the Sanity CLI cannot even load its config. Q19 unchanged and now blocks screenshots too |
 | 2026-09-14 | S7 | cowork/opus | `feat/fsma-s6-home` (local, unpushed — same branch as S6) | **Done, one item deliberately not built.** `/about` now carries five anchors, a faculty grid from the `person` documents, a four-step admissions process, a Book-a-tour CTA, a settings-driven contact block and an AODA-aware accessibility statement. New: `anchorField` (+ `id`/`scroll-mt` in `BlockRenderer`), `contactDetails` and `facultyGrid` blocks, `contact.fax`, shared `telHref()`. **The admissions FAQ was not built** — no source content exists and inventing it breaks §0 rule 8 (see §8 S7). Verified in the rendered HTML against `production`; build passes (23 pages) | **New Q23**: the accessibility statement commits FSMA publicly — client must confirm. **New Q24**: the `featuresGrid` icon set is developer-flavoured (rocket, chip, beaker) and unusable on a school site, so the process steps ship without icons. Anchors cannot be tested end-to-end until S11 writes the redirect table |
 | 2026-09-17 | Audit (repo vs plan) | cowork/opus | `feat/fsma-s6-home` (local, unpushed — same branch as S6/S7) | **Done.** Read the whole repo against §§1–12 and against the rendered HTML of every route, then fixed what was actually broken rather than what was next. Seven real defects: a heading-level skip on `/programs` (h1 → h3); `/home` serving the homepage a second time, prerendered *and* in the sitemap; the entire §6.3 redirect table missing, so every legacy `.htm` URL 404'd; no canonical on any route and no `metadataBase` resolution, which also silently deleted the `Organization` node from the JSON-LD; `pageMetadata` discarding the site-wide OG image on every page (Next drops a parent's `openGraph` once a child sets one); the gallery lightbox announcing arrow-key navigation it did not implement; and Prettier's config being both misdiagnosed and unreachable. Also extended the JSON-LD to `Preschool`/`ChildCare` with the address, hours, areaServed and foundingDate the S2 `schoolInfo` fields were added for and had never been read. Gate: typegen regenerated, type-check clean, lint clean (same 3 template warnings), `prettier --check` clean, production build passes (22 pages, down one — `/home` is gone), all 15 redirects 301 → 200 with no chains, every route one `h1` with no skipped levels, zero unknown blocks, zero missing `alt` | **Q19 and Q21 closed** (both had the wrong diagnosis on file — see §4). **Q18 still open and possibly unobtainable**: the delete grant was refused by the sandbox classifier, not by the owner; the out-of-mount build recipe in §5.1 replaces it. **New Q26** (no canonical origin — needs the apex-vs-`www` decision) and **Q27** (title separator). Most of S11 landed here; S8 is now the biggest live gap, since the side rail and every programs grid link to three URLs that 404 |
-
+| 2026-09-17 | ContactHub / masthead imagery / testimonial cards | unknown (not logged) | none — **left uncommitted on `main`** | Found as an uncommitted working tree at the start of S8; its §12 rows (ContactHub, hub hover, stega-cleaned hrefs, Unsplash mastheads) were written but no §11 row was. type-check clean. **Committed as-is by the S8 session onto its own branch `feat/fsma-contact-hub` (`8c3ffaa`)** so S8 could branch cleanly; not otherwise reviewed | Owner: review/PR `feat/fsma-contact-hub` before `feat/fsma-s8-programs`, which is stacked on it |
+| 2026-09-18 | S8 | cowork/opus | `feat/fsma-s8-programs` (local, unpushed; stacked on `feat/fsma-contact-hub`) | **Done.** `/programs/[slug]` (three-layer, cached), breadcrumbs visual + JSON-LD, sitemap branch, Presentation wiring, "At a glance" facts, tour CTA, sibling links. Content needed nothing — S3 had seeded it all. Production build passes (26 pages); all three routes 200; zero broken internal links site-wide; legacy class redirects 301 → 200 | Upstream checked: not behind. Delete grant obtained on first ask this session (Q18). No new blockers. Draft-mode round-trip on the new route is owner-side with the rest of OWNER-TODO 7 |
 ---
 
 ## 12. Decisions log
@@ -974,6 +992,16 @@ Append anything that deviates from §3/§7, plus measurable results (contrast ta
 | 2026-09-17 | **JSON-LD organisation typed `['Preschool', 'ChildCare']`, and fed the `schoolInfo` fields** | S2 added `foundingDate`, `areaServed`, `priceRange` and `geo` "for JSON-LD", and S6 seeded them — and nothing had ever read them. Neither had the address or the opening hours. The graph is now a real local-business record: address, `openingHours`, `telephone` in E.164, `areaServed`, `foundingDate`, `sameAs`, plus `geo`/`priceRange` when set. `openingHours` takes **only** rows with an explicit `schemaOrg` value — inferring a machine-readable range from "Montessori day / 8:30 am – 3:30 pm" would publish an opening-hours claim nobody verified (§0 rule 8), which is exactly what that field exists to prevent. The two types are hard-coded rather than made an editor setting: what kind of institution this is does not change, and a fork should not carry a setting with one possible value | the template's plain `Organization` |
 | 2026-09-17 | **Grid blocks derive their item heading level instead of hard-coding `h3`** | `/programs` rendered `h1 Programs` → `h3 Infants`, skipping `h2` — a WCAG 1.3.1 failure and a §9 bar miss — because `ProgramsGrid` hard-coded `h3` while that page's grid has no heading of its own. The rule is now: with a block heading the items sit under it as `h3`, without one the items *are* the section and step up to `h2`. Applied to `FacultyGrid` too, which has the same shape. **This does change `/about`'s outline**: the two directors move from `h3` under "Directors" to `h2` beside it. Considered leaving `FacultyGrid` alone, since §12 deliberately ships it headingless as a continuation of the Directors prose — but in a flat block model nothing actually says it belongs to that section, so `h3` was relying on the block above it and would skip the moment it moved. Both outlines are valid; the content-independent one is the one that keeps being valid | S7's faculty-grid markup |
 | 2026-09-17 | **The gallery lightbox announced arrow-key navigation it did not have** | Its sr-only `DialogDescription` says "use the left and right arrow keys to browse". The only arrow handler is shadcn's `onKeyDownCapture` on the carousel region — which has no `tabIndex`, so it fires only when focus is already inside the carousel, i.e. on the prev/next buttons. Radix moves focus to the dialog content on open, so the first press did nothing while assistive tech had been told otherwise. Handled at the dialog now, guarded on `defaultPrevented` so the carousel's own handler cannot double-advance. **Worth generalising:** an sr-only instruction is a contract, and this one had never been exercised because it is invisible to sighted testing | S10's unticked lightbox line, which listed the arrow keys as pending rather than as claimed-and-absent |
+
+### S8, 2026-09-18
+
+| Date | Decision | Rationale | Supersedes |
+|---|---|---|---|
+| 2026-09-18 | **No `app/programs/page.tsx`; the index stays a CMS page** | S8 specified a coded index route. `/programs` has been a `page` document since S3 — intro, grid, music, before/after care, CTA — served by `app/[slug]`. A static `programs/page.tsx` would win routing precedence and silently orphan that document, turning an editor-arranged page into hard-coded layout. An `app/programs/` folder holding only `[slug]` leaves `/programs` to `app/[slug]` | S8's first task |
+| 2026-09-18 | Breadcrumb trail defined once (`trail()`), rendered twice | The visible `<Breadcrumbs>` and `breadcrumbJsonLd` take the same `BreadcrumbItem[]`. The parent's *name* comes from the `programs` page document (`parentName`), the path is fixed by the route segment. `breadcrumbJsonLd` returns `null` without a site origin rather than emitting relative `item` URLs. `Breadcrumbs` lives in `common/` because S9+ nesting (if any) will want it; **backport candidate** | — |
+| 2026-09-18 | Tour CTA links to `/about#book-a-tour` rather than repeating the `mailto:` | The About anchor already holds the real booking route and its copy; three program pages each carrying a hard-coded email and invitation would be three more places for the contact facts (Q2, still unconfirmed) to drift. CTA copy is generic ("See the Violet room in person…") — no new client facts | — |
+| 2026-09-18 | Program detail uses the card `image` in the aside, not the masthead | Every program masthead is a brand panel (Q5), so the legacy 720×480 card photo is the only photograph a program page has. At 20rem in the aside it is shown well under native size; it is lazy (not LCP). When real photography lands it goes in `masthead.image`, and the aside photo can stay or go | — |
+| 2026-09-18 | Committed a previous session's uncommitted work on its own branch | `main` carried 21 modified/new files from an unlogged 2026-09-17 session. Branching S8 off a dirty `main` would have folded that work into the S8 PR. Parked verbatim on `feat/fsma-contact-hub` after a clean type-check; S8 is stacked on it. Not reviewed beyond type-check — it is the owner's to review | §0 rule 4 (one session = one PR), restored rather than broken |
 
 ### S1 contrast audit (light theme, 2026-09-13)
 

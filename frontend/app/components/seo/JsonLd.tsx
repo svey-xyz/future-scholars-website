@@ -200,3 +200,30 @@ export function blogPostingJsonLd(
     ...(base ? {publisher: {'@id': `${base}/#organization`}} : {}),
   }
 }
+
+/** One rung of a breadcrumb trail: a display name and a site-relative path. */
+export type BreadcrumbItem = {name: string; path: string}
+
+/**
+ * `BreadcrumbList` for a nested route (build plan S8/S11). Built from the same
+ * items the visual `<Breadcrumbs>` renders, so the two cannot disagree.
+ *
+ * Returns `null` without a site origin: `item` must be an absolute URL for
+ * Google to use it, and emitting relative ones would publish a list that
+ * validates but resolves against nothing. `siteOrigin`'s fallback chain means
+ * this is only ever null in a local run with no origin configured.
+ */
+export function breadcrumbJsonLd(items: BreadcrumbItem[], settings: SettingsQueryResult) {
+  const base = siteUrl(settings)
+  if (!base || items.length === 0) return null
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    'itemListElement': items.map((item, i) => ({
+      '@type': 'ListItem',
+      'position': i + 1,
+      'name': clean(item.name) ?? item.name,
+      'item': `${base}${item.path}`,
+    })),
+  }
+}
