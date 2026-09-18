@@ -60,7 +60,17 @@ function easeOutCubic(t: number): number {
  * `aria-label` carries the true final figure, and a visually-hidden `<span>`
  * mirrors it so AT never reads the mid-count value. The SVG is `aria-hidden`.
  */
-function ScoreGauge({item, i, active, reduced}: {item: ScoreItem; i: number; active: boolean; reduced: boolean}) {
+function ScoreGauge({
+  item,
+  i,
+  active,
+  reduced,
+}: {
+  item: ScoreItem
+  i: number
+  active: boolean
+  reduced: boolean
+}) {
   const max = item.max && item.max > 0 ? item.max : 100
   const target = Math.min(Math.max(item.value, 0), max)
   const progress = max > 0 ? target / max : 0

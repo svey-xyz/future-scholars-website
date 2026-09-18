@@ -127,12 +127,48 @@ async function run() {
       subheading: 'Composable sections you can rearrange without touching code.',
       columns: 3,
       features: [
-        {_type: 'feature', _key: key('f'), icon: 'bolt', heading: 'Fast by default', text: 'Server-rendered sections keep the client bundle small and TTFB low.'},
-        {_type: 'feature', _key: key('f'), icon: 'shield', heading: 'Accessible', text: 'Semantic markup and AA/AAA contrast tokens baked into every block.'},
-        {_type: 'feature', _key: key('f'), icon: 'sparkles', heading: 'Visual editing', text: 'Click any element in Presentation to edit it in place.'},
-        {_type: 'feature', _key: key('f'), icon: 'code', heading: 'Typed end to end', text: 'GROQ queries generate TypeScript types automatically.'},
-        {_type: 'feature', _key: key('f'), icon: 'globe', heading: 'Edge ready', text: 'Streamed, cacheable, and happy on the edge runtime.'},
-        {_type: 'feature', _key: key('f'), icon: 'cloud', heading: 'Content Lake', text: 'Structured content with real-time collaboration out of the box.'},
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'bolt',
+          heading: 'Fast by default',
+          text: 'Server-rendered sections keep the client bundle small and TTFB low.',
+        },
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'shield',
+          heading: 'Accessible',
+          text: 'Semantic markup and AA/AAA contrast tokens baked into every block.',
+        },
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'sparkles',
+          heading: 'Visual editing',
+          text: 'Click any element in Presentation to edit it in place.',
+        },
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'code',
+          heading: 'Typed end to end',
+          text: 'GROQ queries generate TypeScript types automatically.',
+        },
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'globe',
+          heading: 'Edge ready',
+          text: 'Streamed, cacheable, and happy on the edge runtime.',
+        },
+        {
+          _type: 'feature',
+          _key: key('f'),
+          icon: 'cloud',
+          heading: 'Content Lake',
+          text: 'Structured content with real-time collaboration out of the box.',
+        },
       ],
     },
 
@@ -144,10 +180,34 @@ async function run() {
       subheading: 'Illustrative metrics — swap in your own.',
       columns: 4,
       items: [
-        {_type: 'stat', _key: key('st'), value: '99.9%', label: 'Uptime', description: 'Across all regions'},
-        {_type: 'stat', _key: key('st'), value: '<50ms', label: 'TTFB', description: 'Median, cached'},
-        {_type: 'stat', _key: key('st'), value: '10k+', label: 'Builds / mo', description: 'And counting'},
-        {_type: 'stat', _key: key('st'), value: '4.9/5', label: 'Satisfaction', description: 'From 1,200 reviews'},
+        {
+          _type: 'stat',
+          _key: key('st'),
+          value: '99.9%',
+          label: 'Uptime',
+          description: 'Across all regions',
+        },
+        {
+          _type: 'stat',
+          _key: key('st'),
+          value: '<50ms',
+          label: 'TTFB',
+          description: 'Median, cached',
+        },
+        {
+          _type: 'stat',
+          _key: key('st'),
+          value: '10k+',
+          label: 'Builds / mo',
+          description: 'And counting',
+        },
+        {
+          _type: 'stat',
+          _key: key('st'),
+          value: '4.9/5',
+          label: 'Satisfaction',
+          description: 'From 1,200 reviews',
+        },
       ],
     },
 
@@ -162,7 +222,8 @@ async function run() {
         {
           _type: 'testimonial',
           _key: key('t'),
-          quote: 'We shipped our marketing site in a week and editors stopped filing tickets. The page builder just works.',
+          quote:
+            'We shipped our marketing site in a week and editors stopped filing tickets. The page builder just works.',
           authorName: 'Avery Chen',
           authorRole: 'Head of Marketing, Northwind',
           authorImage: imageValue(avatars[0].assetId, {alt: avatars[0].alt}),
@@ -170,7 +231,8 @@ async function run() {
         {
           _type: 'testimonial',
           _key: key('t'),
-          quote: 'Visual Editing changed how our writers work. They see exactly what readers see, instantly.',
+          quote:
+            'Visual Editing changed how our writers work. They see exactly what readers see, instantly.',
           authorName: 'Jordan Patel',
           authorRole: 'Content Lead, Lumen',
           authorImage: imageValue(avatars[1].assetId, {alt: avatars[1].alt}),
@@ -178,7 +240,8 @@ async function run() {
         {
           _type: 'testimonial',
           _key: key('t'),
-          quote: 'Type-safe queries caught bugs before they shipped. Our Lighthouse scores have never been higher.',
+          quote:
+            'Type-safe queries caught bugs before they shipped. Our Lighthouse scores have never been higher.',
           authorName: 'Sam Rivera',
           authorRole: 'Staff Engineer, Aperture',
           authorImage: imageValue(avatars[2].assetId, {alt: avatars[2].alt}),
@@ -239,10 +302,44 @@ async function run() {
       heading: 'Frequently asked questions',
       subheading: 'The short version.',
       items: [
-        {_type: 'faqItem', _key: key('q'), question: 'Can I reorder these blocks?', answer: [para('Yes — drag them in the page builder. Order is preserved on the frontend.')]},
-        {_type: 'faqItem', _key: key('q'), question: 'Do the archives update automatically?', answer: [para('The Posts and Authors archives pull live content, so new posts and people appear without editing this page.')]},
-        {_type: 'faqItem', _key: key('q'), question: 'Is this accessible?', answer: [para('Each block targets WCAG AA at minimum; the FAQ uses native <details> for keyboard and screen-reader support with zero JavaScript.')]},
-        {_type: 'faqItem', _key: key('q'), question: 'How do I add my own images?', answer: [para('Open any image field in the Studio and upload — these placeholders came from picsum.photos.')]},
+        {
+          _type: 'faqItem',
+          _key: key('q'),
+          question: 'Can I reorder these blocks?',
+          answer: [
+            para('Yes — drag them in the page builder. Order is preserved on the frontend.'),
+          ],
+        },
+        {
+          _type: 'faqItem',
+          _key: key('q'),
+          question: 'Do the archives update automatically?',
+          answer: [
+            para(
+              'The Posts and Authors archives pull live content, so new posts and people appear without editing this page.',
+            ),
+          ],
+        },
+        {
+          _type: 'faqItem',
+          _key: key('q'),
+          question: 'Is this accessible?',
+          answer: [
+            para(
+              'Each block targets WCAG AA at minimum; the FAQ uses native <details> for keyboard and screen-reader support with zero JavaScript.',
+            ),
+          ],
+        },
+        {
+          _type: 'faqItem',
+          _key: key('q'),
+          question: 'How do I add my own images?',
+          answer: [
+            para(
+              'Open any image field in the Studio and upload — these placeholders came from picsum.photos.',
+            ),
+          ],
+        },
       ],
     },
 
@@ -251,7 +348,10 @@ async function run() {
       _type: 'postsArchive',
       _key: key('parc'),
       heading: 'From the blog',
-      subheading: postCount > 0 ? 'Latest posts, pulled live.' : 'Import sample data to populate this section.',
+      subheading:
+        postCount > 0
+          ? 'Latest posts, pulled live.'
+          : 'Import sample data to populate this section.',
       source: 'latest',
       limit: 6,
       columns: 3,
@@ -262,7 +362,10 @@ async function run() {
       _type: 'authorsArchive',
       _key: key('aarc'),
       heading: 'Meet the authors',
-      subheading: personCount > 0 ? 'Everyone who contributes.' : 'Import sample data to populate this section.',
+      subheading:
+        personCount > 0
+          ? 'Everyone who contributes.'
+          : 'Import sample data to populate this section.',
       source: 'all',
       limit: 12,
       columns: 3,
@@ -285,7 +388,9 @@ async function run() {
   console.log('\n✅ Published. The page is live at /demo')
   console.log(`   Studio: edit it under "Page" → "${doc.name}" (project ${base}).`)
   if (postCount === 0 || personCount === 0) {
-    console.log('   Tip: run `npm run import-sample-data` from the repo root to fill the archive blocks.')
+    console.log(
+      '   Tip: run `npm run import-sample-data` from the repo root to fill the archive blocks.',
+    )
   }
 }
 

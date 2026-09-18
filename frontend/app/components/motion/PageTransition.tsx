@@ -32,12 +32,12 @@ export default function PageTransition({children}: {children: React.ReactNode}) 
       enter={{
         'nav-forward': 'nav-forward',
         'nav-back': 'nav-back',
-        default: 'page-fade',
+        'default': 'page-fade',
       }}
       exit={{
         'nav-forward': 'nav-forward',
         'nav-back': 'nav-back',
-        default: 'page-fade',
+        'default': 'page-fade',
       }}
     >
       {children}

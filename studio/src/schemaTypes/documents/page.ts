@@ -69,6 +69,13 @@ export const page = defineType({
     // D13/S2), so the designation field has nothing to point at. Hidden rather
     // than removed, and spread rather than edited in `shared.ts`, so the
     // template's definition stays the single source of truth on merge.
+    defineField({
+      name: 'seo',
+      title: 'SEO',
+      type: 'seo',
+      description:
+        'Optional. Overrides the title, description and share image search engines and social apps use for this page.',
+    }),
     {...archiveField, hidden: true},
     backgroundField,
     defineField({
@@ -84,6 +91,8 @@ export const page = defineType({
         {type: 'scores'},
         {type: 'testimonials'},
         {type: 'programsGrid'},
+        {type: 'facultyGrid'},
+        {type: 'contactDetails'},
         {type: 'gallery'},
         {type: 'faq'},
         {type: 'note'},

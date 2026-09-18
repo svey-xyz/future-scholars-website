@@ -1,7 +1,7 @@
 import {EnvelopeIcon, PhoneIcon} from '@heroicons/react/24/outline'
 
 import {SocialIcon, socialLabel} from '@/app/components/icons'
-import {cn} from '@/lib/utils'
+import {cn, telHref} from '@/lib/utils'
 import type {SettingsContact} from '@/sanity/lib/types'
 
 type NavContactProps = {
@@ -43,7 +43,7 @@ export default function NavContact({contact, className, showSocials = true}: Nav
       {phone && (
         // `formatDetection: {telephone: false}` in the root layout stops iOS
         // auto-linking numbers, so the explicit tel: link is the only one.
-        <a href={`tel:${phone.replace(/[^+\d]/g, '')}`} className={row}>
+        <a href={`tel:${telHref(phone)}`} className={row}>
           <PhoneIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
           <span>{phone}</span>
         </a>

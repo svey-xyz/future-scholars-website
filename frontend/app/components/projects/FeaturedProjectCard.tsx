@@ -1,6 +1,10 @@
 import {ViewTransition} from 'react'
 import Link from 'next/link'
-import {ArrowLongRightIcon, ArrowTopRightOnSquareIcon, CodeBracketIcon} from '@heroicons/react/24/outline'
+import {
+  ArrowLongRightIcon,
+  ArrowTopRightOnSquareIcon,
+  CodeBracketIcon,
+} from '@heroicons/react/24/outline'
 
 import Image from '@/app/components/common/SanityImage'
 import {dataAttr} from '@/sanity/lib/utils'
@@ -62,7 +66,10 @@ export default function FeaturedProjectCard({
           </div>
         </ViewTransition>
       ) : (
-        <div aria-hidden="true" className="absolute inset-0 h-full -z-1 w-full bg-muted md:aspect-auto md:h-full" />
+        <div
+          aria-hidden="true"
+          className="absolute inset-0 h-full -z-1 w-full bg-muted md:aspect-auto md:h-full"
+        />
       )}
 
       <div className="flex flex-col gap-4 p-6 lg:p-8">

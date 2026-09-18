@@ -60,7 +60,11 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
     >
       <CarouselContent>
         {items.map((item, i) => (
-          <CarouselItem key={item._key} aria-label={`Slide ${i + 1} of ${items.length}`} className="flex flex-col items-center justify-center">
+          <CarouselItem
+            key={item._key}
+            aria-label={`Slide ${i + 1} of ${items.length}`}
+            className="flex flex-col items-center justify-center"
+          >
             <GalleryTile
               item={item}
               index={i}

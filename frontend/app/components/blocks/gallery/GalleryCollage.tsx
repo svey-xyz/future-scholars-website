@@ -44,16 +44,76 @@ const SIZES_MD = '(min-width: 768px) 38vw, 66vw'
 const SIZES_LG = '(min-width: 768px) 50vw, 90vw'
 
 const SLOTS: Slot[] = [
-  {className: 'col-span-4 md:col-span-5 md:col-start-1', rot: -2.2, drift: 18, z: 10, sizes: SIZES_MD},
-  {className: 'col-span-2 col-start-5 mt-12 md:col-span-3 md:col-start-8 md:mt-28', rot: 1.8, drift: 52, z: 20, sizes: SIZES_SM},
-  {className: 'col-span-4 col-start-2 -mt-6 md:col-span-4 md:col-start-4 md:-mt-12', rot: 0.9, drift: -36, z: 30, sizes: SIZES_MD},
-  {className: 'col-span-3 col-start-4 mt-10 md:col-span-3 md:col-start-10 md:mt-16', rot: -1.7, drift: 60, z: 10, sizes: SIZES_SM},
-  {className: 'col-span-5 md:col-span-6 md:col-start-2 md:-mt-8', rot: 1.3, drift: 12, z: 20, sizes: SIZES_LG},
-  {className: 'col-span-3 col-start-4 -mt-8 md:col-span-3 md:col-start-9 md:-mt-24', rot: -2.6, drift: 44, z: 30, sizes: SIZES_SM},
-  {className: 'col-span-4 col-start-2 mt-6 md:col-span-4 md:col-start-2 md:mt-14', rot: 2.1, drift: 26, z: 10, sizes: SIZES_MD},
-  {className: 'col-span-3 mt-4 md:col-span-3 md:col-start-7 md:-mt-10', rot: -1.1, drift: -48, z: 20, sizes: SIZES_SM},
-  {className: 'col-span-4 col-start-3 md:col-span-5 md:col-start-8 md:mt-20', rot: 1.6, drift: 22, z: 30, sizes: SIZES_MD},
-  {className: 'col-span-4 -mt-8 md:col-span-4 md:col-start-3 md:-mt-16', rot: -2, drift: -20, z: 10, sizes: SIZES_MD},
+  {
+    className: 'col-span-4 md:col-span-5 md:col-start-1',
+    rot: -2.2,
+    drift: 18,
+    z: 10,
+    sizes: SIZES_MD,
+  },
+  {
+    className: 'col-span-2 col-start-5 mt-12 md:col-span-3 md:col-start-8 md:mt-28',
+    rot: 1.8,
+    drift: 52,
+    z: 20,
+    sizes: SIZES_SM,
+  },
+  {
+    className: 'col-span-4 col-start-2 -mt-6 md:col-span-4 md:col-start-4 md:-mt-12',
+    rot: 0.9,
+    drift: -36,
+    z: 30,
+    sizes: SIZES_MD,
+  },
+  {
+    className: 'col-span-3 col-start-4 mt-10 md:col-span-3 md:col-start-10 md:mt-16',
+    rot: -1.7,
+    drift: 60,
+    z: 10,
+    sizes: SIZES_SM,
+  },
+  {
+    className: 'col-span-5 md:col-span-6 md:col-start-2 md:-mt-8',
+    rot: 1.3,
+    drift: 12,
+    z: 20,
+    sizes: SIZES_LG,
+  },
+  {
+    className: 'col-span-3 col-start-4 -mt-8 md:col-span-3 md:col-start-9 md:-mt-24',
+    rot: -2.6,
+    drift: 44,
+    z: 30,
+    sizes: SIZES_SM,
+  },
+  {
+    className: 'col-span-4 col-start-2 mt-6 md:col-span-4 md:col-start-2 md:mt-14',
+    rot: 2.1,
+    drift: 26,
+    z: 10,
+    sizes: SIZES_MD,
+  },
+  {
+    className: 'col-span-3 mt-4 md:col-span-3 md:col-start-7 md:-mt-10',
+    rot: -1.1,
+    drift: -48,
+    z: 20,
+    sizes: SIZES_SM,
+  },
+  {
+    className: 'col-span-4 col-start-3 md:col-span-5 md:col-start-8 md:mt-20',
+    rot: 1.6,
+    drift: 22,
+    z: 30,
+    sizes: SIZES_MD,
+  },
+  {
+    className: 'col-span-4 -mt-8 md:col-span-4 md:col-start-3 md:-mt-16',
+    rot: -2,
+    drift: -20,
+    z: 10,
+    sizes: SIZES_MD,
+  },
 ]
 
 type Props = {

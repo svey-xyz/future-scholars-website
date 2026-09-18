@@ -94,7 +94,10 @@ export default function ProjectCard({
           <ul className="flex flex-wrap gap-1.5">
             {tech.map((t) => (
               <li key={t._id}>
-                <Badge variant="secondary" className="font-mono text-[0.65rem] uppercase tracking-tight">
+                <Badge
+                  variant="secondary"
+                  className="font-mono text-[0.65rem] uppercase tracking-tight"
+                >
                   {t.title}
                 </Badge>
               </li>

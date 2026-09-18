@@ -2,6 +2,8 @@ import {stegaClean} from '@sanity/client/stega'
 import {toPlainText, type PortableTextBlock} from 'next-sanity'
 
 import {resolveOpenGraphImage} from '@/sanity/lib/utils'
+import {telHref} from '@/lib/utils'
+import {resolveSiteOrigin} from './siteOrigin'
 import type {PostQueryResult, SettingsQueryResult} from '@/sanity.types'
 
 /**
@@ -41,15 +43,67 @@ export function collectSameAs(settings: SettingsQueryResult): string[] {
   return out
 }
 
-/** Site base URL (Settings → ogImage.metadataBase), normalised without trailing slash. */
+/**
+ * Site base URL, normalised without trailing slash.
+ *
+ * Delegates to `resolveSiteOrigin`, which falls back from the editor-entered
+ * `Settings → ogImage.metadataBase` to the deployment's own domain. Before
+ * that fallback existed an unset field silently dropped the whole
+ * `Organization` node from the graph, since every `@id` here is built from
+ * this value.
+ */
 export function siteUrl(settings: SettingsQueryResult): string | undefined {
-  const raw = clean(settings?.ogImage?.metadataBase)
-  if (!raw) return undefined
-  try {
-    return new URL(raw).origin
-  } catch {
-    return undefined
+  return resolveSiteOrigin(settings)
+}
+
+/**
+ * The organisation's schema.org type(s).
+ *
+ * **FSMA fork divergence.** Upstream this is a plain `Organization`, which is
+ * true but says nothing a search engine can act on. FSMA is a Montessori
+ * school for 6 months – 6 years, so it is both a `Preschool` (an
+ * `EducationalOrganization`) and a `ChildCare` (a `LocalBusiness`) — the two
+ * together are what make a "Montessori daycare near me" query resolvable, and
+ * they are what let the address, opening hours and geo below mean anything.
+ * Both inherit from `Organization`, so every `publisher` reference to
+ * `#organization` stays valid.
+ *
+ * Hard-coded rather than an editor field on purpose: what kind of institution
+ * this is, is not content that changes. A template backport would make it
+ * configurable; a fork should not carry a setting with exactly one possible
+ * value (build plan §0 rule 6).
+ */
+const ORGANIZATION_TYPE = ['Preschool', 'ChildCare']
+
+/** `PostalAddress` from Settings → Contact → Address, or undefined. */
+function postalAddress(settings: SettingsQueryResult) {
+  const a = settings?.contact?.address
+  const street = clean(a?.street)
+  const city = clean(a?.city)
+  if (!street && !city) return undefined
+  return {
+    '@type': 'PostalAddress',
+    ...(street ? {streetAddress: street} : {}),
+    ...(city ? {addressLocality: city} : {}),
+    ...(clean(a?.region) ? {addressRegion: clean(a?.region)} : {}),
+    ...(clean(a?.postalCode) ? {postalCode: clean(a?.postalCode)} : {}),
+    ...(clean(a?.country) ? {addressCountry: clean(a?.country)} : {}),
   }
+}
+
+/**
+ * `openingHours` strings from Settings → Contact → Hours.
+ *
+ * Only rows with an explicit `schemaOrg` value are included. The display rows
+ * are human prose ("Montessori day" / "8:30 am – 3:30 pm") and guessing a
+ * machine-readable equivalent from them would publish a claim about when the
+ * school is open that no one verified — the field exists precisely so an
+ * editor opts a row in.
+ */
+function openingHours(settings: SettingsQueryResult): string[] {
+  return (settings?.contact?.hours ?? [])
+    .map((row) => clean(row?.schemaOrg))
+    .filter((v): v is string => Boolean(v))
 }
 
 /**
@@ -69,13 +123,34 @@ export function siteJsonLd(settings: SettingsQueryResult) {
     ? clean(toPlainText(settings.description as PortableTextBlock[]))
     : undefined
 
+  const phone = clean(settings.contact?.phone)
+  const address = postalAddress(settings)
+  const hours = openingHours(settings)
+  const areaServed = (settings.areaServed ?? [])
+    .map((a) => clean(a))
+    .filter((v): v is string => Boolean(v))
+  const geo = settings.geo
+  const foundingDate = clean(settings.foundingDate)
+  const priceRange = clean(settings.priceRange)
+
   const organization = {
-    '@type': 'Organization',
+    '@type': ORGANIZATION_TYPE,
     ...(url ? {'@id': `${url}/#organization`, url} : {}),
     name,
     ...(description ? {description} : {}),
     ...(image ? {logo: image, image} : {}),
     ...(email ? {email} : {}),
+    // E.164 for the same reason the rendered `tel:` links use it — a bare
+    // NANP number is ambiguous to anything that does not assume Ontario.
+    ...(phone ? {telephone: telHref(phone)} : {}),
+    ...(address ? {address} : {}),
+    ...(hours.length ? {openingHours: hours} : {}),
+    ...(areaServed.length ? {areaServed} : {}),
+    ...(typeof geo?.lat === 'number' && typeof geo?.lng === 'number'
+      ? {geo: {'@type': 'GeoCoordinates', 'latitude': geo.lat, 'longitude': geo.lng}}
+      : {}),
+    ...(foundingDate ? {foundingDate} : {}),
+    ...(priceRange ? {priceRange} : {}),
     ...(sameAs.length ? {sameAs} : {}),
   }
 
@@ -109,7 +184,7 @@ export function blogPostingJsonLd(
     post.author?.firstName && post.author?.lastName
       ? {
           '@type': 'Person',
-          name: `${clean(post.author.firstName)} ${clean(post.author.lastName)}`,
+          'name': `${clean(post.author.firstName)} ${clean(post.author.lastName)}`,
         }
       : undefined
 

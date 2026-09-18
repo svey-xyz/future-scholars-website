@@ -68,6 +68,44 @@ const projectFields = /* groq */ `
   "tech": tech[]->{_id, title, "slug": slug.current},
 `
 
+// FSMA fork (build plan S6): card-sized projection of a `program` document,
+// used by the programs grid. Deliberately excludes `body` and `masthead` —
+// those belong to the detail route (S8), not to a card.
+const programCardFields = /* groq */ `
+  _id,
+  name,
+  "slug": slug.current,
+  ageRange,
+  ratio,
+  classroomName,
+  summary,
+  image,
+  "order": coalesce(order, 99)
+`
+
+// FSMA fork (build plan S6): card-sized projection of a `testimonial` document.
+const testimonialCardFields = /* groq */ `
+  _id,
+  quote,
+  authorName,
+  authorRole,
+  authorImage
+`
+
+// FSMA fork (build plan S7): card-sized projection of a `person` document for
+// the faculty grid. `bio` is `blockContentTextOnly`, which carries no link
+// annotations, so it needs no markDefs resolution.
+const personCardFields = /* groq */ `
+  _id,
+  firstName,
+  lastName,
+  role,
+  credentials,
+  bio,
+  picture,
+  "order": coalesce(order, 99)
+`
+
 const linkReference = /* groq */ `
   _type == "link" => {
     "page": page->slug.current,
@@ -106,6 +144,7 @@ export const getPageQuery = defineQuery(`
     titleDisplay,
     archive,
     masthead,
+    seo,
     ${backgroundFields},
     "pageBuilder": pageBuilder[]{
       ...,
@@ -154,6 +193,39 @@ export const getPageQuery = defineQuery(`
             }
           }
         }
+      },
+      _type == "programsGrid" => {
+        ...,
+        "programs": select(
+          mode == "selected" => programs[]->{ ${programCardFields} },
+          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){
+            ${programCardFields}
+          }
+        )
+      },
+      _type == "testimonials" => {
+        ...,
+        "documentTestimonials": select(
+          source == "documents" => *[
+            _type == "testimonial" && (^.featuredOnly != true || featured == true)
+          ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{
+            ${testimonialCardFields}
+          },
+          []
+        )
+      },
+      _type == "facultyGrid" => {
+        ...,
+        "people": select(
+          mode == "selected" => people[]->{ ${personCardFields} },
+          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){
+            ${personCardFields}
+          }
+        )
+      },
+      _type == "contactDetails" => {
+        ...,
+        "contact": *[_type == "settings"][0].contact
       },
       _type == "faq" => {
         ...,
@@ -241,8 +313,14 @@ export const getPageQuery = defineQuery(`
   }
 `)
 
+// The designated homepage is excluded for the same reason as in `pagesSlugs`:
+// `app/sitemap.ts` already emits the site root, so listing the homepage's own
+// slug would advertise a second, redirecting URL for the same content.
 export const sitemapData = defineQuery(`
-  *[(_type == "page" || _type == "post" || _type == "project") && defined(slug.current) && !(_type == "project" && hidden == true)] | order(_type asc) {
+  *[(_type == "page" || _type == "post" || _type == "project")
+    && defined(slug.current)
+    && !(_type == "project" && hidden == true)
+    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {
     "slug": slug.current,
     _type,
     _updatedAt,
@@ -279,8 +357,17 @@ export const postPagesSlugs = defineQuery(`
   {"slug": slug.current}
 `)
 
+/**
+ * Page slugs for `app/[slug]`'s `generateStaticParams`.
+ *
+ * The designated homepage is excluded: `settings.homepage` points at a `page`
+ * document, and prerendering it here published the homepage a second time at
+ * `/<its slug>` alongside `/`. `next.config.ts` 301s that URL to `/`, and
+ * this keeps the route from being generated (and indexed) in the first place.
+ */
 export const pagesSlugs = defineQuery(`
-  *[_type == "page" && defined(slug.current)]
+  *[_type == "page" && defined(slug.current)
+    && slug.current != *[_type == "settings"][0].homepage->slug.current]
   {"slug": slug.current}
 `)
 

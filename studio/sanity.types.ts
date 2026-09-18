@@ -98,6 +98,38 @@ export type Faq = {
   }>
 }
 
+export type ContactDetails = {
+  _type: 'contactDetails'
+  heading?: string
+  intro?: string
+  showHours?: boolean
+  showMapLink?: boolean
+  secondaryEmail?: string
+  anchor?: string
+}
+
+export type PersonReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'person'
+}
+
+export type FacultyGrid = {
+  _type: 'facultyGrid'
+  heading?: string
+  subheading?: string
+  mode?: 'all' | 'selected'
+  people?: Array<
+    {
+      _key: string
+    } & PersonReference
+  >
+  showBio?: boolean
+  columns?: 2 | 3 | 4
+  anchor?: string
+}
+
 export type ProgramReference = {
   _ref: string
   _type: 'reference'
@@ -116,6 +148,7 @@ export type ProgramsGrid = {
     } & ProgramReference
   >
   columns?: 2 | 3 | 4
+  anchor?: string
 }
 
 export type Testimonials = {
@@ -165,6 +198,7 @@ export type FeaturesGrid = {
     _key: string
   }>
   columns?: 2 | 3 | 4
+  anchor?: string
 }
 
 export type GalleryVideo = {
@@ -205,13 +239,6 @@ export type Gallery = {
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
-}
-
-export type PersonReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'person'
 }
 
 export type AuthorsArchive = {
@@ -342,6 +369,21 @@ export type Social = {
   url: string
 }
 
+export type Seo = {
+  _type: 'seo'
+  metaTitle?: string
+  metaDescription?: string
+  ogImage?: {
+    asset?: SanityImageAssetReference
+    media?: unknown
+    hotspot?: SanityImageHotspot
+    crop?: SanityImageCrop
+    alt?: string
+    _type: 'image'
+  }
+  noIndex?: boolean
+}
+
 export type Masthead = {
   _type: 'masthead'
   variant: 'brand' | 'image'
@@ -366,6 +408,7 @@ export type Contact = {
   _type: 'contact'
   email?: string
   phone?: string
+  fax?: string
   address?: Address
   hours?: Array<{
     days: string
@@ -414,6 +457,7 @@ export type CallToAction = {
   theme?: 'light' | 'dark'
   contentAlignment?: 'textFirst' | 'imageFirst'
   background?: Background
+  anchor?: string
 }
 
 export type InfoSection = {
@@ -422,6 +466,7 @@ export type InfoSection = {
   subheading?: string
   content?: BlockContent
   background?: Background
+  anchor?: string
 }
 
 export type BlockContentTextOnly = Array<{
@@ -726,6 +771,7 @@ export type Page = {
   subheading?: string
   titleDisplay?: 'plain' | 'highlighted' | 'none'
   masthead?: Masthead
+  seo?: Seo
   archive?: 'postsArchive' | 'projectsArchive' | 'authorsArchive'
   background?: Background
   pageBuilder?: Array<
@@ -753,6 +799,12 @@ export type Page = {
     | ({
         _key: string
       } & ProgramsGrid)
+    | ({
+        _key: string
+      } & FacultyGrid)
+    | ({
+        _key: string
+      } & ContactDetails)
     | ({
         _key: string
       } & Gallery)
@@ -1074,13 +1126,15 @@ export type AllSanitySchemaTypes =
   | Scores
   | Stats
   | Faq
+  | ContactDetails
+  | PersonReference
+  | FacultyGrid
   | ProgramReference
   | ProgramsGrid
   | Testimonials
   | FeaturesGrid
   | GalleryVideo
   | Gallery
-  | PersonReference
   | AuthorsArchive
   | CategoryReference
   | ProjectReference
@@ -1092,6 +1146,7 @@ export type AllSanitySchemaTypes =
   | NavDropdown
   | NavLink
   | Social
+  | Seo
   | Masthead
   | Contact
   | PageReference

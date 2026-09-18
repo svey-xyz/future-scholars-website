@@ -3,13 +3,14 @@ import {draftMode} from 'next/headers'
 import {Suspense} from 'react'
 
 import {CachedPage} from '@/app/components/blocks'
+import {pageMetadata} from '@/app/components/seo'
 import {Skeleton} from '@/components/ui/skeleton'
 import {
   getDynamicFetchOptions,
   sanityFetchMetadata,
   sanityFetchStaticParams,
 } from '@/sanity/lib/live'
-import {getPageQuery, pagesSlugs} from '@/sanity/lib/queries'
+import {getPageQuery, pagesSlugs, settingsQuery} from '@/sanity/lib/queries'
 
 type Props = {
   params: Promise<{slug: string}>
@@ -30,12 +31,17 @@ export async function generateStaticParams() {
  */
 export async function generateMetadata(props: Props): Promise<Metadata> {
   const [params, {perspective}] = await Promise.all([props.params, getDynamicFetchOptions()])
-  const {data: page} = await sanityFetchMetadata({query: getPageQuery, params, perspective})
+  // `settings` is fetched for the site-wide Open Graph image only: Next drops
+  // a parent segment's `openGraph` as soon as a child defines one, so the
+  // fallback has to be passed in explicitly (see pageMetadata). It shares the
+  // cached `settingsQuery` entry the shell already holds, so it is not an
+  // extra round trip.
+  const [{data: page}, {data: settings}] = await Promise.all([
+    sanityFetchMetadata({query: getPageQuery, params, perspective}),
+    sanityFetchMetadata({query: settingsQuery, perspective}),
+  ])
 
-  return {
-    title: page?.name,
-    description: page?.heading,
-  } satisfies Metadata
+  return pageMetadata(page, {path: `/${params.slug}`, settings})
 }
 
 /**

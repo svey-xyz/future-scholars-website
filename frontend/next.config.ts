@@ -42,6 +42,46 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns: [new URL('https://cdn.sanity.io/**')],
   },
+  // Legacy URL map (build plan §6.3). The site it replaces is a ~2010 static
+  // site with `.htm` extensions, and those URLs are what the web has indexed
+  // and linked for fifteen years — every one of them has to land on its
+  // successor rather than a 404, in one hop, permanently.
+  //
+  // `/home` is not a legacy URL: `settings.homepage` designates the `page`
+  // document with that slug, so `app/[slug]` served the homepage a second
+  // time at `/home`. Two URLs for one page splits ranking signals and is the
+  // kind of thing that quietly survives to launch, so it is redirected here
+  // and excluded from `generateStaticParams`/`sitemap` in the GROQ
+  // (`pagesSlugs`, `sitemapData`).
+  async redirects() {
+    const legacy: {from: string; to: string}[] = [
+      {from: '/index.html', to: '/'},
+      {from: '/index.htm', to: '/'},
+      {from: '/maria.htm', to: '/montessori'},
+      {from: '/programs.htm', to: '/programs'},
+      {from: '/infant-class.htm', to: '/programs/infants'},
+      {from: '/toddler-class.htm', to: '/programs/toddlers'},
+      {from: '/casa-class.htm', to: '/programs/casa'},
+      {from: '/testamonials.htm', to: '/testimonials'}, // legacy spelling, sic
+      {from: '/pictures.htm', to: '/gallery'},
+      {from: '/about.htm', to: '/about'},
+      {from: '/admissions.htm', to: '/about#admissions'},
+      {from: '/contact.htm', to: '/about#contact'},
+      {from: '/parents.htm', to: '/about'},
+      {from: '/links.htm', to: '/'},
+    ]
+
+    // `statusCode: 301` rather than `permanent: true`, which emits **308**.
+    // Modern crawlers treat the two alike, but these URLs have been indexed
+    // and bookmarked since ~2010 and the long tail pointing at them — old
+    // directory listings, link checkers, feed readers — predates 308 (RFC
+    // 7538, 2015). 301 is what every one of them understands, and it is what
+    // build plan §6.3/§9 specify.
+    return [
+      ...legacy.map(({from, to}) => ({source: from, destination: to, statusCode: 301})),
+      {source: '/home', destination: '/', statusCode: 301},
+    ]
+  },
   async headers() {
     return [
       {

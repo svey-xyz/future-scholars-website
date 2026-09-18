@@ -1,9 +1,11 @@
 # FSMA — owner action list
 
 Everything here needs credentials, a network path, or a machine that an agent session doesn't have.
-Nothing in §8 of the build plan past S3 can be *verified* until items 1–3 are done.
+Items 1–6 are done. **A, E and F are now closed too** — the 2026-09-17 audit found A and E had the
+wrong diagnosis on file and fixed both. What remains is client answers, one domain decision (J), and
+one build gap that is real work rather than a question (K).
 
-Last updated: 2026-09-13 (after S4 — the side-nav shell).
+Last updated: 2026-09-17 (after the repo-vs-plan audit).
 
 ---
 
@@ -38,13 +40,22 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
 
 ## New from S4 — do these before the next session
 
-- [ ] **A. Allowlist `fonts.googleapis.com` and `fonts.gstatic.com`** (plan Q19), or say the word and I'll
-      self-host Inter + Outfit with `next/font/local` instead. Right now `next build` **fails outright**
-      with three `next/font` errors, so no agent session can produce a production build or run Lighthouse.
-      Self-hosting is arguably the better fix regardless: one less build-time dependency, and it removes a
-      third-party request from every page load.
+- [x] **A. ~~Allowlist Google Fonts~~ — nothing to do; it already works** (plan Q19). Both hosts return
+      200 through the proxy and `next build` downloads and self-hosts all three faces. Four sessions
+      recorded this as a hard blocker on the strength of `curl https://fonts.gstatic.com/` returning
+      403 — that is the bare origin being refused; a real font URL under `/s/…` has been fine. **An
+      agent session can produce a production build again**, which is how the rest of this audit got
+      verified. Lighthouse still needs a browser binary (`cdn.playwright.dev` is off the allowlist),
+      so that one is genuinely still yours.
 
-- [ ] **B. Decide on file deletion in the repo folder** (plan Q18). The Cowork mount refuses `unlink`, and
+- [ ] **B. Decide on file deletion in the repo folder** (plan Q18). **Update 2026-09-17: I asked for
+      the grant and the sandbox's own approval classifier refused it before it ever reached you**, so
+      this may not be something an agent session can obtain at all. It stopped mattering much: the
+      out-of-mount build recipe now in plan §5.1 (`rsync` to `$HOME`, symlink `node_modules`, build
+      with `--webpack`) needs no grant and costs about fifteen seconds. Worth granting if the desktop
+      app offers you a way to; not worth chasing.
+
+      Original note follows. The Cowork mount refuses `unlink`, and
       git updates working-tree files by unlinking and recreating them — so `git merge`, `git checkout -- .`
       and `reset --hard` all fail in place, as does `next dev`. I worked around both this session (merge in
       a scratch clone, dev server from a copy outside the mount; §5.1 has the recipes), but a standing
@@ -56,11 +67,94 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
       inside), press Esc (should close and put focus back on the hamburger). It is stock Radix modal
       Dialog, so it should be right; I just can't claim it.
 
-- [ ] **D. Heads-up: the homepage shows a red "Unknown block" box.** S3 added the `programsGrid` schema and
-      the homepage uses it, but the React renderer for it lands in S6/S8. Don't show the client the
-      homepage until then — `/about`, `/gallery` and `/testimonials` are clean.
+- [x] **D. ~~The homepage shows a red "Unknown block" box.~~** Fixed in S6 — the `programsGrid` renderer
+      now exists, and a second cause turned up alongside it (a seeded CTA body stored as a plain string
+      where the schema wants Portable Text, on `/` **and** `/programs`). Both fixed and republished.
+      **The homepage is now showable.** Every route renders clean: zero unknown blocks, one `h1` each,
+      no missing alt text.
 
 ---
+
+## New from S6 — decisions I need from you
+
+- [x] **E. ~~Prettier is misconfigured~~ — fixed, and the diagnosis in the old note was backwards**
+      (plan Q21). I measured it before acting: at `printWidth` **80** the repo needs **174** files
+      reformatted; at the config's real **100** it needs **58**. The repo was never formatted at 80, so
+      pinning 80 — the option I'd previously recommended to you — would have tripled the churn.
+
+      Of the 58, 21 were markdown and 8 were generated shadcn components, neither of which Prettier
+      should be reflowing. So: `.prettierignore` now excludes prose, `.agents/skills/**`,
+      `frontend/components/ui/**` and the machine-written JSON, and the remaining 29 files were
+      formatted in one deliberate pass (whitespace only — `git diff -w` is empty apart from a few
+      bracket-spacing changes). The config also moved out of the `prettier` key in package.json into
+      `prettier.config.mjs`, because Prettier resolves that key *first* and would have ignored any
+      config file sitting beside it. `npm run format` is now a no-op on untouched files.
+
+- [x] **F. ~~Client screenshots have to come from the Vercel preview~~** — this followed from A, which
+      was wrong. Local renders use the real Inter and Outfit now, so screenshots from a session would
+      show the right typefaces. The preview is still the better source (real network, real device
+      widths), but it is no longer a hard constraint. Original note follows.
+
+- [ ] **F-original. Client screenshots from the Vercel preview** (follows from A).
+      S6 asked for homepage screenshots at three breakpoints for the client thread. I can verify the
+      rendered HTML, and did — but local renders fall back to system fonts because of the Google Fonts
+      block, so any screenshot I produce shows the wrong typeface. Since item 9 below is literally
+      "show the client the heading typeface", sending them a screenshot in the wrong font would be
+      worse than sending none. Once the preview is up, three widths (360 / 768 / 1440) is all it needs.
+
+## New from S7 — three client questions
+
+- [ ] **G. The About page now publishes an accessibility statement** (plan Q23). It commits FSMA to
+      WCAG 2.2 Level AA and to providing information in accessible formats on request, and points
+      accessibility feedback at the office. The *website* half of that I have built and can evidence;
+      the organisational half is the school's to agree to. Please get a yes before launch — there is a
+      `TODO(client)` paragraph on the page saying so, and S12 greps for it.
+
+- [ ] **H. There is no admissions FAQ, on purpose** (plan Q25). S7 called for one, but the old site has
+      none, so writing the answers would have meant inventing things parents act on — deposit amounts,
+      waiting lists, that sort of thing. If you can get five real questions and answers out of the
+      client, the `faq` block already exists and it is a short follow-up.
+
+- [ ] **I. I added the fax number back** rather than quietly dropping it. It is on the old site, so it
+      is a contact method they currently advertise; worth asking whether they still want it published.
+
+## New from the 2026-09-17 audit
+
+- [ ] **J. Decide the canonical domain — apex or `www`** (plan Q26). This is the one item from the audit
+      that is genuinely blocked on a decision rather than on work. `settings.ogImage.metadataBase` is
+      empty, and an empty value costs more than it looks: no canonical URL on any route, Open Graph
+      image URLs that can't resolve, and — the one that surprised me — the entire `Organization` node
+      dropping out of the JSON-LD, because every `@id` in that graph is built from it.
+
+      I've added a fallback chain so a Vercel deploy resolves its own production domain and none of
+      that is broken in the meantime. But the real answer is one line, once you've settled §10 step 5:
+      set **Settings → ogImage → metadataBase** in Studio to `https://futurescholarsmontessori.com`
+      (or the `www` form), or set `NEXT_PUBLIC_SITE_URL` in Vercel. Note the legacy site answers on the
+      apex and 403s on `www`, which is a hint but not a decision.
+
+- [ ] **K. `/programs/infants`, `/programs/toddlers` and `/programs/casa` are 404s on the live preview.**
+      Not new, but it is now the largest visible defect, and I want it stated plainly rather than left
+      implied by an unticked S8 checkbox: the side rail links to all three on every page, and so does
+      every programs grid — the homepage, `/programs` and `/montessori`. A client clicking around the
+      preview will hit them. The three program documents exist, with bodies, images and mastheads; only
+      the routes are missing. S8 is a short session.
+
+- [ ] **L. `react-dom` is still in the root `package.json`** where it doesn't belong, and it disagrees
+      with the `^19.2.7` both workspaces pin. I left it alone rather than fix it: removing a dependency
+      means regenerating `package-lock.json`, and the sandbox's npm is 10.9.8 against a lockfile written
+      by a newer npm, which strips 36 `libc` fields every time it runs. That is exactly the churn that
+      has now ridden along in two commits. **One line to delete plus `npm install` on your Mac**, on a
+      commit of its own. Same commit is the right place to pin `next`, `sanity` and `next-sanity`
+      exactly (see Notes).
+
+- [ ] **M. Two small things I could have changed silently and didn't**, because both are visible to the
+      client and neither is mine to decide:
+      1. Page titles render `About Us | Future Scholars Montessori Academy`; the plan's S11 spec says
+         `About Us · Future Scholars…`. One character (plan Q27).
+      2. `/about`'s heading outline changed: the two directors are now `h2` beside "Directors" rather
+         than `h3` under it. That came out of fixing a real heading-level skip on `/programs`, and the
+         reasoning is in plan §12 — both outlines are valid, I picked the one that stays valid when a
+         block moves. Worth ten seconds of your opinion.
 
 ## Deploys and hosting (S0b)
 
@@ -131,6 +225,12 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
 
 ## Notes
 
+- **Two blockers in the plan had the wrong diagnosis and were carried forward for four sessions.**
+  Q19 (Google Fonts / `next build`) and Q21 (Prettier width) were each one command away from being
+  checked, and both were wrong in the direction that made things look worse than they were. Worth a
+  habit: when a session inherits a blocker it did not diagnose itself, re-run the check before
+  building around it.
+
 - **A lockfile bump slipped through again.** Commit `0cd10bc` ("gallery wiring results", a docs commit)
   also carries a 5,800-line `package-lock.json` rewrite and adds `react-dom: ^19.3.0` to the **root**
   package.json, where it doesn't belong and disagrees with the `^19.2.7` both workspaces pin. Type-check
@@ -147,3 +247,10 @@ Last updated: 2026-09-13 (after S4 — the side-nav shell).
 
 - **Disk:** `frontend/node_modules/.stale/` holds ~140 MB of caches and scratch I had to move aside rather
   than delete (see Q18). Safe to `rm -rf` whenever you like; it is gitignored.
+
+- **The Cowork VM needs five linux-arm64 native packages, not three.** `node_modules` is your macOS
+  install, so agent sessions have to hand-unpack linux builds. Two were missing from the notes and are
+  the reason `npm run typegen` looks broken in a fresh session: `@esbuild/linux-arm64` and
+  `@rolldown/binding-linux-arm64-gnu` (the Sanity CLI loads its config through jiti → Vite → rolldown,
+  and fails with an unhelpful `Class extends value undefined`). Plan §5.1 now has the full table.
+  Harmless to your Mac — they're gitignored and it picks its own platform packages.

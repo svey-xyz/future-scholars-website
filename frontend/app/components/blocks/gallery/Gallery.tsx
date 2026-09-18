@@ -59,9 +59,19 @@ export default function Gallery({block}: Props) {
     ) : layout === 'collage' ? (
       <GalleryCollage items={items} enableLightbox={enableLightbox} />
     ) : layout === 'masonry' ? (
-      <GalleryMasonry items={items} columns={columns} aspect={aspect} enableLightbox={enableLightbox} />
+      <GalleryMasonry
+        items={items}
+        columns={columns}
+        aspect={aspect}
+        enableLightbox={enableLightbox}
+      />
     ) : (
-      <GalleryGrid items={items} columns={columns} aspect={aspect} enableLightbox={enableLightbox} />
+      <GalleryGrid
+        items={items}
+        columns={columns}
+        aspect={aspect}
+        enableLightbox={enableLightbox}
+      />
     )
 
   return (

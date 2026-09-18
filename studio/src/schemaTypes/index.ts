@@ -15,7 +15,10 @@ import button from './objects/button'
 import {blockContentTextOnly} from './objects/blockContentTextOnly'
 import {contact} from './objects/contact'
 import {masthead} from './objects/masthead'
+import {seo} from './objects/seo'
 import {programsGrid} from './objects/programsGrid'
+import {contactDetails} from './objects/contactDetails'
+import {facultyGrid} from './objects/facultyGrid'
 import {social} from './objects/social'
 import {navLink} from './objects/navLink'
 import {navDropdown} from './objects/navDropdown'
@@ -56,6 +59,7 @@ export const schemaTypes = [
   link,
   contact,
   masthead,
+  seo,
   social,
   navLink,
   navDropdown,
@@ -70,6 +74,8 @@ export const schemaTypes = [
   featuresGrid,
   testimonials,
   programsGrid,
+  facultyGrid,
+  contactDetails,
   faq,
   stats,
   scores,

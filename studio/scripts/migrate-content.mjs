@@ -169,5 +169,7 @@ console.log(`\n▶ Importing into ${TARGET_PROJECT}/${TARGET_DATASET} (--replace
 sanity(['dataset', 'import', transformedTarball, TARGET_DATASET, '--replace'])
 
 console.log(`\n✔ Done. Artifacts in ${path.relative(REPO_DIR, runDir)}/`)
-console.log('  Rollback: sanity dataset import target-backup.tar.gz ' + TARGET_DATASET + ' --replace')
+console.log(
+  '  Rollback: sanity dataset import target-backup.tar.gz ' + TARGET_DATASET + ' --replace',
+)
 if (warnings.length) console.log(`  ${warnings.length} warning(s) — review above.`)

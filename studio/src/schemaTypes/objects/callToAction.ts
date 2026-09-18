@@ -5,7 +5,7 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
 import {ControlsIcon} from '@sanity/icons/Controls'
 
-import {backgroundField} from './shared'
+import {anchorField, backgroundField} from './shared'
 
 /**
  * Call to action schema object.  Objects are reusable schema structures document.
@@ -100,6 +100,7 @@ export const callToAction = defineType({
       group: 'designSystem',
     }),
     {...backgroundField, group: 'designSystem'},
+    {...anchorField, group: 'designSystem'},
   ],
   preview: {
     select: {

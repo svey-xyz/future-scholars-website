@@ -38,6 +38,28 @@ export const columnsField = defineField({
 })
 
 /**
+ * FSMA fork (build plan S7): optional anchor for a block, so a long page can be
+ * linked into — `/about#admissions`, which the legacy redirect map (§6.3) sends
+ * `admissions.htm` to. Rendered as the `id` on the block's wrapper in
+ * `BlockRenderer.tsx`, with `scroll-mt` there to clear the fixed mobile bar.
+ *
+ * **Backport candidate:** generally useful, and upstream it belongs on *every*
+ * page-builder block rather than the handful this fork needed first.
+ */
+export const anchorField = defineField({
+  name: 'anchor',
+  title: 'Anchor',
+  type: 'string',
+  description:
+    'Optional. Lets this section be linked to directly, e.g. "admissions" makes /about#admissions jump here. Lowercase letters, numbers and hyphens only.',
+  validation: (Rule) =>
+    Rule.regex(/^[a-z0-9]+(?:-[a-z0-9]+)*$/, {
+      name: 'anchor',
+      invert: false,
+    }).warning('Use lowercase letters, numbers and hyphens only — e.g. "book-a-tour".'),
+})
+
+/**
  * Optional animated `background` object, spread into page-builder blocks (and
  * the `page` document) so any block/page can opt into a shader background
  * without duplicating the field. Rendered by `BlockRenderer.tsx` (per block) and
