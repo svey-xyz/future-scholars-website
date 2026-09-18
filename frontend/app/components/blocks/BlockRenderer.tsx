@@ -12,6 +12,7 @@ import ContactDetails from './ContactDetails'
 import Gallery from '@/app/components/blocks/gallery/Gallery'
 import Faq from './Faq'
 import Note from './Note'
+import PullQuote from './PullQuote'
 import {cn} from '@/lib/utils'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
@@ -22,6 +23,7 @@ type BlockProps = {
   block: PageBuilderSection
   pageId: string
   pageType: string
+  className?: string
 }
 
 type BlocksType = {
@@ -40,6 +42,7 @@ const Blocks = {
   gallery: Gallery,
   faq: Faq,
   note: Note,
+  pullQuote: PullQuote,
   // Each block component narrows `block` to its own `_type` member of the
   // page-builder union, which is intentionally narrower than `BlockProps`'s
   // full union — hence the `unknown` hop (the registry is looked up by
@@ -49,7 +52,7 @@ const Blocks = {
 /**
  * Used by the <PageBuilder>, this component renders a the component that matches the block type.
  */
-export default function BlockRenderer({block, index, pageId, pageType}: BlockProps) {
+export default function BlockRenderer({block, index, pageId, pageType, className}: BlockProps) {
   // Block does exist
   if (typeof Blocks[block._type] !== 'undefined') {
     const rendered = React.createElement(Blocks[block._type], {
@@ -58,6 +61,7 @@ export default function BlockRenderer({block, index, pageId, pageType}: BlockPro
       index: index,
       pageId: pageId,
       pageType: pageType,
+      className: className,
     })
 
     // An optional `anchor` becomes the wrapper's `id`, so a long page can be

@@ -4,12 +4,14 @@ import {ChevronDownIcon} from '@heroicons/react/24/outline'
 import PortableText from '@/app/components/portable-text/PortableText'
 import Reveal from '@/app/components/motion/Reveal'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
+import {cn} from '@/lib/utils'
 
 type Props = {
   block: ExtractPageBuilderType<'faq'>
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 /**
@@ -17,12 +19,12 @@ type Props = {
  * screen-reader friendly out of the box (see docs/A11Y.md, "minimal client JS").
  * Reveal-on-scroll + an open-panel slide are pure CSS (globals.css).
  */
-export default function Faq({block}: Props) {
+export default function Faq({block, className}: Props) {
   const {heading, subheading, items} = block
   const list = items ?? []
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

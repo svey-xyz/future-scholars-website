@@ -81,7 +81,9 @@ export default function CustomPortableText({
   return (
     <div
       className={cn(
-        'prose prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40',
+        // `max-w-[58ch]`: prose's default 65ch runs ~82 characters in Inter; 58ch keeps
+        // body copy at ~70–75 characters per line (plan S9 acceptance, WCAG 1.4.8).
+        'prose max-w-[58ch] prose-a:text-foreground prose-a:underline prose-a:underline-offset-4 prose-a:decoration-foreground/40',
         className,
       )}
     >

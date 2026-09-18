@@ -136,7 +136,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
   return (
     <>
       {breadcrumbLd && <JsonLd data={breadcrumbLd} />}
-      <div className={program.masthead ? 'mb-12 lg:mb-24' : 'my-12 lg:my-24'}>
+      <div className={program.masthead ? 'pb-12 lg:pb-24' : 'my-12 lg:my-24'}>
         {/* The masthead owns the visual h1 (S5); without one, PageTitle does. */}
         {program.masthead ? (
           <Masthead

@@ -19,6 +19,16 @@ type PageData = {
 }
 
 /**
+ * End-of-page spacing, owned by the LAST block so a block background (brand
+ * CTA, panel pull quote) runs down to the footer instead of stopping short of
+ * a page-level margin. `mb-0` cancels the `my-*` rhythm margin content blocks
+ * carry (v4 emits `margin-bottom` after `margin-block`, so it wins without `!`);
+ * each block merges `className` last via `cn`, so `pb-*` also beats a panel's
+ * `py-*`. Net end spacing matches the old page wrapper (48px / 96px at lg).
+ */
+const PAGE_END = 'mb-0 pb-12 lg:mb-0 lg:pb-24'
+
+/**
  * The PageBuilder component is used to render the blocks from the `pageBuilder` field in the Page type in your Sanity Studio.
  */
 
@@ -47,6 +57,7 @@ function RenderSections({
           block={block}
           pageId={page._id}
           pageType={page._type}
+          className={index === pageBuilderSections.length - 1 ? PAGE_END : undefined}
         />
       ))}
     </div>
@@ -60,7 +71,7 @@ function RenderEmptyState({page}: {page: GetPageQueryResult}) {
 
   return (
     <div
-      className="container mt-10"
+      className="container mt-10 mb-12 lg:mb-24"
       data-sanity={dataAttr({
         id: page._id,
         type: 'page',

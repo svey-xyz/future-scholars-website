@@ -25,6 +25,7 @@ import {testimonials} from './objects/testimonials'
 import {faq} from './objects/faq'
 import {stats} from './objects/stats'
 import {note} from './objects/note'
+import {pullQuote} from './objects/pullQuote'
 
 // Export an array of all the schema types.  This is used in the Sanity Studio configuration. https://www.sanity.io/docs/studio/schema-types
 
@@ -60,4 +61,5 @@ export const schemaTypes = [
   faq,
   stats,
   note,
+  pullQuote,
 ]

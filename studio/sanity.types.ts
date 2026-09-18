@@ -23,6 +23,15 @@ export type Address = {
   country?: string
 }
 
+export type PullQuote = {
+  _type: 'pullQuote'
+  quote: string
+  attribution?: string
+  repeatsText?: boolean
+  tone?: 'plain' | 'panel'
+  anchor?: string
+}
+
 export type Note = {
   _type: 'note'
   tone: 'info' | 'warning' | 'danger'
@@ -38,6 +47,7 @@ export type Note = {
     | 'fire'
     | 'shield'
   content: BlockContentTextOnly
+  anchor?: string
 }
 
 export type Stats = {
@@ -65,6 +75,7 @@ export type Faq = {
     _type: 'faqItem'
     _key: string
   }>
+  anchor?: string
 }
 
 export type ContactDetails = {
@@ -128,6 +139,7 @@ export type Testimonials = {
   featuredOnly?: boolean
   limit?: number
   columns?: 1 | 2 | 3
+  anchor?: string
 }
 
 export type FeaturesGrid = {
@@ -216,6 +228,7 @@ export type Gallery = {
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
+  anchor?: string
 }
 
 export type NavDropdown = {
@@ -308,6 +321,7 @@ export type Link = {
   _type: 'link'
   linkType?: 'page' | 'href'
   page?: PageReference | ProgramReference
+  anchor?: string
   href?: string
   openInNewTab?: boolean
 }
@@ -371,6 +385,7 @@ export type BlockContent = Array<
       markDefs?: Array<{
         linkType?: 'page' | 'href'
         page?: PageReference | ProgramReference
+        anchor?: string
         href?: string
         openInNewTab?: boolean
         _type: 'link'
@@ -475,6 +490,7 @@ export type Settings = {
     markDefs?: Array<{
       linkType?: 'page' | 'href'
       page?: PageReference | ProgramReference
+      anchor?: string
       href?: string
       openInNewTab?: boolean
       _type: 'link'
@@ -561,6 +577,9 @@ export type Page = {
     | ({
         _key: string
       } & Note)
+    | ({
+        _key: string
+      } & PullQuote)
   >
 }
 
@@ -841,6 +860,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | Address
+  | PullQuote
   | Note
   | Stats
   | Faq

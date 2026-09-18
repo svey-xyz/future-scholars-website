@@ -25,7 +25,7 @@ export default function FooterContent({contact, legal, className}: FooterContent
         className,
       )}
     >
-      {hasSocials && (
+      {/* {hasSocials && (
         <ul className="flex flex-wrap gap-x-5 gap-y-2">
           {socials.map((social) => (
             <li key={social._key}>
@@ -34,17 +34,17 @@ export default function FooterContent({contact, legal, className}: FooterContent
                 target="_blank"
                 rel="noopener noreferrer"
                 className="group inline-flex items-center gap-1.5 rounded-md text-sm font-medium text-muted-foreground transition-colors hover:text-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring"
-              >
+              > */}
                 {/* SocialIcon stega-cleans the platform internally and falls
                     back to a generic external-link mark for unknown values. */}
-                <SocialIcon platform={social.platform} className="h-4 w-4 shrink-0" />
+                {/* <SocialIcon platform={social.platform} className="h-4 w-4 shrink-0" />
                 <span>{social.title}</span>
                 <span className="sr-only">(opens in new tab)</span>
               </a>
             </li>
           ))}
         </ul>
-      )}
+      )} */}
 
       {legal && <p className="text-sm text-muted-foreground">{legal}</p>}
     </div>

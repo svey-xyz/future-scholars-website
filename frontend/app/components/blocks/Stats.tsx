@@ -7,6 +7,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 const colClass: Record<number, string> = {
@@ -20,14 +21,14 @@ const colClass: Record<number, string> = {
  * (`dd`) in the DOM, so assistive tech reads "Infant ratio, 1:3"; the figure is
  * lifted above the label visually with `flex-col-reverse`.
  */
-export default function Stats({block}: Props) {
+export default function Stats({block, className}: Props) {
   const {heading, subheading, items, columns} = block
   const cols = columns ?? 3
   const list = items ?? []
   if (list.length === 0) return null
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       {(heading || subheading) && (
         <header className="max-w-3xl">
           {heading && (
@@ -54,7 +55,7 @@ export default function Stats({block}: Props) {
           <Reveal
             key={stat._key}
             i={i}
-            className="flex flex-col-reverse gap-2 border-t-2 border-brand-accent-strong pt-4"
+            className="flex flex-col-reverse justify-end gap-2 border-t-2 border-brand-accent-strong pt-4"
           >
             <dt>
               <span className="block text-base font-medium">{stat.label}</span>

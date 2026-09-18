@@ -23,6 +23,15 @@ export type Address = {
   country?: string
 }
 
+export type PullQuote = {
+  _type: 'pullQuote'
+  quote: string
+  attribution?: string
+  repeatsText?: boolean
+  tone?: 'plain' | 'panel'
+  anchor?: string
+}
+
 export type Note = {
   _type: 'note'
   tone: 'info' | 'warning' | 'danger'
@@ -568,6 +577,9 @@ export type Page = {
     | ({
         _key: string
       } & Note)
+    | ({
+        _key: string
+      } & PullQuote)
   >
 }
 
@@ -848,6 +860,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | Address
+  | PullQuote
   | Note
   | Stats
   | Faq
@@ -1034,6 +1047,9 @@ export type SettingsQueryResult = {
       | ({
           _key: string
         } & ProgramsGrid)
+      | ({
+          _key: string
+        } & PullQuote)
       | ({
           _key: string
         } & Stats)
@@ -1352,6 +1368,15 @@ export type GetPageQueryResult = {
           order: number
         }> | null
         columns?: 2 | 3 | 4
+        anchor?: string
+      }
+    | {
+        _key: string
+        _type: 'pullQuote'
+        quote: string
+        attribution?: string
+        repeatsText?: boolean
+        tone?: 'panel' | 'plain'
         anchor?: string
       }
     | {
