@@ -13,6 +13,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 const colClass: Record<number, string> = {
@@ -38,7 +39,7 @@ function leadSentences(quote: string): string {
   return lead.length > 240 ? `${lead.slice(0, 237).trimEnd()}\u2026` : lead || quote
 }
 
-export default function Testimonials({block}: Props) {
+export default function Testimonials({block, className}: Props) {
   const {heading, subheading, documentTestimonials, columns, limit} = block
   const cols = columns ?? 3
   // Presentation only — both layouts consume the same normalised items.
@@ -60,7 +61,7 @@ export default function Testimonials({block}: Props) {
   if (items.length === 0) return null
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

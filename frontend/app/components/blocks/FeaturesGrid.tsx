@@ -38,6 +38,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 // Keys mirror the `icon` options list in studio/src/schemaTypes/objects/featuresGrid.ts.
@@ -75,13 +76,13 @@ const colClass: Record<number, string> = {
   4: 'sm:grid-cols-2 lg:grid-cols-4',
 }
 
-export default function FeaturesGrid({block}: Props) {
+export default function FeaturesGrid({block, className}: Props) {
   const {heading, subheading, features, columns} = block
   const cols = columns ?? 3
   const items = features ?? []
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

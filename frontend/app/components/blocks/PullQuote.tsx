@@ -9,6 +9,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 /**
@@ -24,7 +25,7 @@ type Props = {
  * on the panel, measured in plan §7.2). The quote glyph is decorative and uses
  * `brand-accent-strong`, which is a UI-pass colour, never text.
  */
-export default function PullQuote({block}: Props) {
+export default function PullQuote({block, className}: Props) {
   const {quote, attribution} = block
   if (!quote) return null
 
@@ -32,12 +33,12 @@ export default function PullQuote({block}: Props) {
   const hidden = block.repeatsText === true
 
   return (
-    <div className={cn('my-12 lg:my-16', isPanel && 'bg-secondary py-12 lg:py-16')}>
+    <div className={cn('my-12 lg:my-16', isPanel && 'bg-secondary py-12 lg:py-16', className)}>
       <div className="container">
         <Reveal
           as="figure"
           aria-hidden={hidden || undefined}
-          className="relative mx-auto max-w-3xl pl-10 sm:pl-14"
+          className="relative max-w-3xl pl-10 sm:pl-14 sm:ml-14"
         >
           <span
             aria-hidden="true"

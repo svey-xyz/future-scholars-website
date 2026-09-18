@@ -16,9 +16,10 @@ type CtaProps = {
   // Needed if you want to createDataAttributes to do non-text overlays in Presentation (Visual Editing)
   pageType: string
   pageId: string
+  className?: string
 }
 
-export default function CTA({block}: CtaProps) {
+export default function CTA({block, className}: CtaProps) {
   const {heading, eyebrow, body = [], button, image, theme, contentAlignment} = block
 
   // `stegaClean`: enum values carry stega characters in draft mode.
@@ -32,6 +33,7 @@ export default function CTA({block}: CtaProps) {
         // Brand panel: the academy blue with the sunflower button — the one
         // place the bright accent may be a fill (§7.2).
         isBrand && 'bg-primary text-primary-foreground',
+        className,
       )}
     >
       <div className="container relative">

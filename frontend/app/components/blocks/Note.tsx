@@ -24,6 +24,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 type Tone = NonNullable<ExtractPageBuilderType<'note'>['tone']>
@@ -75,7 +76,7 @@ const iconOverrides = {
   shield: ShieldExclamationIcon,
 } as const
 
-export default function Note({block}: Props) {
+export default function Note({block, className}: Props) {
   // `stegaClean`: enum values arrive stega-encoded in draft mode — using them
   // raw as lookup keys returns `undefined` and crashes (tones[tone]).
   const tone = (stegaClean(block?.tone) ?? 'info') as Tone
@@ -86,7 +87,7 @@ export default function Note({block}: Props) {
   if (!block?.content?.length) return null
 
   return (
-    <div className="container my-12">
+    <div className={cn('container my-12', className)}>
       <Reveal variant="scale" i={0} className="max-w-3xl">
         <Alert
           role="note"

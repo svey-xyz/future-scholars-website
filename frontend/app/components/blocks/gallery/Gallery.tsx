@@ -9,12 +9,14 @@ import LightboxProvider from './LightboxProvider'
 import Reveal from '@/app/components/motion/Reveal'
 import {getVideoEmbed} from './utils'
 import type {ExtractPageBuilderType, GalleryAspect, GalleryItem} from '@/sanity/lib/types'
+import {cn} from '@/lib/utils'
 
 type Props = {
   block: ExtractPageBuilderType<'gallery'>
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 /** Drop items that can't render: images without an asset, videos without a parseable URL. */
@@ -33,7 +35,7 @@ function isRenderable(item: GalleryItem): boolean {
  * `layout`/`aspect` are stega-cleaned because they drive control flow; `heading`
  * keeps its stega markers so it stays click-to-edit in Presentation.
  */
-export default function Gallery({block}: Props) {
+export default function Gallery({block, className}: Props) {
   const {heading} = block
   const layout = stegaClean(block.layout) || 'grid'
   const aspect = (stegaClean(block.aspect) || 'square') as GalleryAspect
@@ -50,7 +52,9 @@ export default function Gallery({block}: Props) {
   ) : null
 
   if (items.length === 0) {
-    return headingEl ? <section className="container my-12 lg:my-16">{headingEl}</section> : null
+    return headingEl ? (
+      <section className={cn('container my-12 lg:my-16', className)}>{headingEl}</section>
+    ) : null
   }
 
   const layoutEl =
@@ -75,7 +79,7 @@ export default function Gallery({block}: Props) {
     )
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       {enableLightbox ? (
         <LightboxProvider>
           {headingEl}

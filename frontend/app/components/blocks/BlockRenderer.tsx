@@ -23,6 +23,7 @@ type BlockProps = {
   block: PageBuilderSection
   pageId: string
   pageType: string
+  className?: string
 }
 
 type BlocksType = {
@@ -51,7 +52,7 @@ const Blocks = {
 /**
  * Used by the <PageBuilder>, this component renders a the component that matches the block type.
  */
-export default function BlockRenderer({block, index, pageId, pageType}: BlockProps) {
+export default function BlockRenderer({block, index, pageId, pageType, className}: BlockProps) {
   // Block does exist
   if (typeof Blocks[block._type] !== 'undefined') {
     const rendered = React.createElement(Blocks[block._type], {
@@ -60,6 +61,7 @@ export default function BlockRenderer({block, index, pageId, pageType}: BlockPro
       index: index,
       pageId: pageId,
       pageType: pageType,
+      className: className,
     })
 
     // An optional `anchor` becomes the wrapper's `id`, so a long page can be

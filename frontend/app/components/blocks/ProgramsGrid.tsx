@@ -11,6 +11,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 const colClass: Record<number, string> = {
@@ -42,7 +43,7 @@ const SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
  * on every page whose grid has no heading (`/programs`, `/montessori` went
  * h1 → h3), which fails WCAG 1.3.1 and the build plan's §9 heading bar.
  */
-export default function ProgramsGrid({block}: Props) {
+export default function ProgramsGrid({block, className}: Props) {
   const {heading, subheading, programs, columns} = block
   const cols = columns ?? 3
   const items = programs ?? []
@@ -53,7 +54,7 @@ export default function ProgramsGrid({block}: Props) {
   if (items.length === 0) return null
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

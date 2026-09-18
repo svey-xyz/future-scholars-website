@@ -1,7 +1,7 @@
 import {ArrowTopRightOnSquareIcon} from '@heroicons/react/24/outline'
 
 import Reveal from '@/app/components/motion/Reveal'
-import {telHref} from '@/lib/utils'
+import {cn, telHref} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 type Props = {
@@ -9,6 +9,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 /**
@@ -26,7 +27,7 @@ type Props = {
  *   labelled pair, not a table and not two loose lines
  * - the map is a link, never an iframe (schema note, §7, D6)
  */
-export default function ContactDetails({block}: Props) {
+export default function ContactDetails({block, className}: Props) {
   const {heading, intro, showHours, showMapLink, secondaryEmail, contact} = block
   if (!contact) return null
 
@@ -50,7 +51,7 @@ export default function ContactDetails({block}: Props) {
     'inline-flex min-h-11 items-center rounded-md underline underline-offset-4 decoration-primary/40 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

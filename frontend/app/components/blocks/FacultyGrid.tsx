@@ -11,6 +11,7 @@ type Props = {
   index: number
   pageId: string
   pageType: string
+  className?: string
 }
 
 const colClass: Record<number, string> = {
@@ -35,7 +36,7 @@ const colClass: Record<number, string> = {
  * (it continues the "Directors" section), and a hard-coded `h3` would skip a
  * level the moment it is used on a page that has no `h2` above it.
  */
-export default function FacultyGrid({block}: Props) {
+export default function FacultyGrid({block, className}: Props) {
   const {heading, subheading, people, columns, showBio} = block
   const cols = columns ?? 3
   const items = people ?? []
@@ -44,7 +45,7 @@ export default function FacultyGrid({block}: Props) {
   if (items.length === 0) return null
 
   return (
-    <section className="container my-12 lg:my-16">
+    <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
           <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">

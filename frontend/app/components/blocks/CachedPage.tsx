@@ -21,8 +21,10 @@ export default async function CachedPage({
 
   if (!page?._id) notFound()
 
+  // Top spacing only when PageTitle opens the page; the masthead sits flush.
+  // Bottom spacing belongs to the last block (see PageBuilder `PAGE_END`).
   return (
-    <div className={page.masthead ? 'mb-12 lg:mb-24' : 'my-12 lg:my-24'}>
+    <div className={page.masthead ? undefined : 'mt-12 lg:mt-24'}>
       {/* When the page defines a masthead (D12) it opens the page flush to
           the shell chrome and owns the visual <h1> — PageTitle is skipped so
           the heading never duplicates. `titleDisplay: 'none'` still applies:
