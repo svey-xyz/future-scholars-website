@@ -9,7 +9,7 @@ import {getSettings} from './getSettings'
 
 /**
  * The app shell's navigation (D11): a fixed left rail from `lg` up, a fixed
- * top bar + left drawer below it.
+ * top bar + full-screen drop-down menu below it.
  *
  * Cached component, three-layer pattern (docs/CACHING.md): `perspective` and
  * `stega` are resolved by the layout and passed in as plain props. It shares
@@ -37,7 +37,7 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
         style={{viewTransitionName: 'site-rail'}}
         className="fixed inset-y-0 left-0 z-40 hidden w-68 flex-col border-r border-border bg-card lg:flex"
       >
-        <div className="px-6 pb-5 pt-7">
+        <div className="px-6 pb-6 pt-8">
           <Link
             href="/"
             aria-label={`${siteTitle} — home`}
@@ -53,7 +53,7 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
         {/* Own scroll (§7.5) so a long nav can't overflow a short viewport.
             Contact details no longer sit under it — phone, email and socials
             all live in the floating `ContactHub` now. */}
-        <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 pb-6">
+        <nav aria-label="Main" className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
           <SideNavLinks navigation={navigation} homepageSlug={homepageSlug} />
         </nav>
       </div>

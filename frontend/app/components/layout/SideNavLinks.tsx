@@ -16,7 +16,11 @@ type SideNavLinksProps = {
   homepageSlug?: string | null
   /** Called after an in-panel navigation, so the mobile drawer can close. */
   onNavigate?: () => void
+  /** `rail` — the compact desktop rail; `drawer` — larger, thumb-sized mobile type. */
+  variant?: Variant
 }
+
+type Variant = 'rail' | 'drawer'
 
 /**
  * The vertical navigation list — one implementation shared by the desktop rail
@@ -32,13 +36,18 @@ type SideNavLinksProps = {
  * - Groups open by default when they contain the current route, so the active
  *   item is never hidden behind a closed disclosure on load.
  */
-export default function SideNavLinks({navigation, homepageSlug, onNavigate}: SideNavLinksProps) {
+export default function SideNavLinks({
+  navigation,
+  homepageSlug,
+  onNavigate,
+  variant = 'rail',
+}: SideNavLinksProps) {
   const pathname = usePathname()
 
   if (navigation.length === 0) return null
 
   return (
-    <ul className="flex flex-col gap-0.5">
+    <ul className={cn('flex flex-col', variant === 'drawer' ? 'pt-4 gap-2' : 'gap-2')}>
       {navigation.map((item) =>
         item._type === 'navDropdown' ? (
           <li key={item._key}>
@@ -48,6 +57,7 @@ export default function SideNavLinks({navigation, homepageSlug, onNavigate}: Sid
               pathname={pathname}
               homepageSlug={homepageSlug}
               onNavigate={onNavigate}
+              variant={variant}
             />
           </li>
         ) : (
@@ -57,6 +67,7 @@ export default function SideNavLinks({navigation, homepageSlug, onNavigate}: Sid
               pathname={pathname}
               homepageSlug={homepageSlug}
               onNavigate={onNavigate}
+              variant={variant}
             />
           </li>
         ),
@@ -65,11 +76,31 @@ export default function SideNavLinks({navigation, homepageSlug, onNavigate}: Sid
   )
 }
 
-const leafBase =
-  'flex items-center justify-between gap-2 rounded-lg px-3 py-2.5 text-base font-medium ' +
-  'transition-colors hover:bg-secondary hover:text-secondary-foreground ' +
-  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1 ' +
+/**
+ * Shared row styling for leaves and group triggers. Flat and typographic (per
+ * the reference sites): muted ink at rest, a soft sky wash on hover, and a
+ * solid academy-blue pill for the current page.
+ *
+ * Contrast (docs/A11Y.md §12): muted-foreground on card/paper ≥ 7.6:1,
+ * secondary-foreground on secondary ≥ 9:1, white on primary ≈ 10:1 — all AAA.
+ * The sunflower is no longer used here: it can't carry state on a light ground
+ * (1.62:1) and the darker `--brand-accent-strong` read as a dull ochre.
+ */
+const rowBase =
+  'flex w-full items-center justify-between gap-2 rounded-lg px-3 text-muted-foreground ' +
+  'transition-colors duration-150 motion-reduce:transition-none ' +
+  'hover:bg-secondary hover:text-secondary-foreground ' +
+  'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' +
   'focus-visible:ring-offset-background'
+
+// ≥ 44px rows at the top level (SC 2.5.5, AAA); nested rows keep 44px too.
+const rowSize: Record<Variant, {top: string; nested: string}> = {
+  rail: {top: 'min-h-11 py-2 text-[0.9375rem] font-medium', nested: 'min-h-11 py-2 text-sm'},
+  drawer: {
+    top: 'min-h-13 py-3 font-display text-xl font-medium',
+    nested: 'min-h-12 py-2.5 text-base',
+  },
+}
 
 function NavLeaf({
   link,
@@ -77,12 +108,14 @@ function NavLeaf({
   homepageSlug,
   nested = false,
   onNavigate,
+  variant,
 }: {
   link: NavLinkItem
   pathname: string
   homepageSlug?: string | null
   nested?: boolean
   onNavigate?: () => void
+  variant: Variant
 }) {
   const {
     href,
@@ -103,19 +136,19 @@ function NavLeaf({
       transitionTypes={isExternal ? undefined : ['nav-forward']}
       onClick={onNavigate}
       className={cn(
-        leafBase,
-        'w-full',
-        // Active leaf: filled, with the brand accent as a left marker. The
-        // marker is decorative — `aria-current` carries the meaning.
-        'aria-[current=page]:bg-secondary aria-[current=page]:text-secondary-foreground',
-        'aria-[current=page]:shadow-[inset_3px_0_0_0_hsl(var(--brand-accent-strong))]',
-        nested && 'py-2 pl-6 text-sm font-normal',
+        rowBase,
+        nested ? rowSize[variant].nested : rowSize[variant].top,
+        // Current page: a solid pill. Styling keys off `aria-current`, so the
+        // visual and the announced state can't disagree.
+        'aria-[current=page]:bg-primary aria-[current=page]:font-semibold',
+        'aria-[current=page]:text-primary-foreground aria-[current=page]:shadow-sm',
+        'aria-[current=page]:hover:bg-primary aria-[current=page]:hover:text-primary-foreground',
       )}
     >
       <span>{label}</span>
       {isExternal && (
         <>
-          <ArrowTopRightOnSquareIcon className="h-4 w-4 shrink-0" aria-hidden="true" />
+          <ArrowTopRightOnSquareIcon className="size-4 shrink-0 opacity-70" aria-hidden="true" />
           {opensInNewTab && <span className="sr-only">(opens in new tab)</span>}
         </>
       )}
@@ -129,12 +162,14 @@ function NavGroup({
   pathname,
   homepageSlug,
   onNavigate,
+  variant,
 }: {
   title: string
   links: NavLinkItem[]
   pathname: string
   homepageSlug?: string | null
   onNavigate?: () => void
+  variant: Variant
 }) {
   const containsActive = links.some((child) =>
     isWithinHref(resolveNavLink(child, homepageSlug).href, pathname),
@@ -153,11 +188,18 @@ function NavGroup({
   return (
     <Collapsible open={open} onOpenChange={setOpen}>
       <CollapsibleTrigger
-        className={cn(leafBase, 'group w-full text-left', containsActive && 'text-primary')}
+        className={cn(
+          rowBase,
+          rowSize[variant].top,
+          'group text-left',
+          // Holds the current page: full-strength ink, so the section reads as
+          // "you are here" without competing with the active pill below it.
+          containsActive && 'font-semibold text-foreground',
+        )}
       >
         <span>{title}</span>
         <ChevronDownIcon
-          className="h-4 w-4 shrink-0 transition-transform duration-200 motion-reduce:transition-none group-data-[state=open]:rotate-180"
+          className="size-4 shrink-0 opacity-70 transition-transform duration-200 motion-reduce:transition-none group-data-[state=open]:rotate-180"
           aria-hidden="true"
         />
       </CollapsibleTrigger>
@@ -169,7 +211,7 @@ function NavGroup({
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
         {/* Indent rule ties the children to their group without relying on
             colour alone. */}
-        <ul className="mt-0.5 flex flex-col gap-0.5 border-l border-border pl-2 ml-3">
+        <ul className="mb-1 ml-4 mt-0.5 flex flex-col gap-0.5 border-l border-border pl-2">
           {links.map((child) => (
             <li key={child._key}>
               <NavLeaf
@@ -178,6 +220,7 @@ function NavGroup({
                 homepageSlug={homepageSlug}
                 nested
                 onNavigate={onNavigate}
+                variant={variant}
               />
             </li>
           ))}

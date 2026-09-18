@@ -80,7 +80,7 @@ Reopening one of these requires a line in §12.
 | D8 | Logo recreated as outlined SVG (Orbitron wordmark), with full, reversed and mark variants. |
 | D9 | Palette is a softened version of the logo colours (§7.2). |
 | D10 | WCAG 2.2 AA is the floor; aim for AAA where feasible. |
-| D11 | Desktop side rail from 1024px up; top bar + modal drawer below that. |
+| D11 | Desktop side rail from 1024px up; below that, a persistent top bar + full-screen menu that drops from under it (hamburger morphs to close). |
 | D12 | The masthead is a **page field**, not a page-builder block. When present, it owns the visual `<h1>`. |
 | D13 | Template-only features are **deleted**, not hidden: posts, projects, categories, technologies, archive blocks, hero, scores, shader backgrounds, starter/onboarding, built-with footer, the template top-bar nav and the PWA. |
 | D14 | Light theme only. No dark tokens, no theme provider, no `dark:` variants. |
@@ -333,7 +333,7 @@ Only decisions that are still relevant and not already covered in §3–§7.
 - The homepage title uses `{absolute}`, because the root layout's `title.template` doesn't apply to
   its own segment.
 - `linkType: 'href'` links are internal when the href starts with `/`.
-- The mobile drawer is a modal Radix Sheet, so Radix handles the focus trap and scroll lock.
+- The mobile menu is a non-modal Radix Sheet (the top bar stays live); `inert` on the rest of the page + an `<html>` scroll lock restore the modal contract — see docs/A11Y.md → Navigation.
 - Nav groups unmount when closed. Force-mounting put hidden links in the tab order.
 - The map is a link, not an iframe. With no `mapUrl` set, it falls back to a search on the Settings
   address.

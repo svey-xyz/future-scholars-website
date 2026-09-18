@@ -16,7 +16,7 @@ export default async function Footer({perspective, stega}: DynamicFetchOptions) 
     <footer className="bg-muted">
       <div className="container">
         {/* Socials + legal line. FooterContent renders null when both are empty. */}
-        <div className="flex flex-col gap-4 pb-12 pt-8 sm:flex-row sm:items-center">
+        <div className="flex flex-col gap-4 pb-18 pt-12 sm:flex-row sm:items-center">
           <FooterContent contact={contact} legal={legal} className="sm:flex-1" />
         </div>
       </div>
