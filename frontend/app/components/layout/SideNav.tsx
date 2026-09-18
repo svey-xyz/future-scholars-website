@@ -2,10 +2,9 @@ import Link from 'next/link'
 
 import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import BrandMark from './BrandMark'
-import NavContact from './NavContact'
+import ContactHub from './ContactHub'
 import SideNavLinks from './SideNavLinks'
 import SideNavMobile from './SideNavMobile'
-import SocialRail from './SocialRail'
 import {getSettings} from './getSettings'
 
 /**
@@ -51,17 +50,12 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
           </Link>
         </div>
 
-        {/* Own scroll (§7.5) so a long nav never pushes the contact block off
-            a short viewport. */}
-        <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 pb-4">
+        {/* Own scroll (§7.5) so a long nav can't overflow a short viewport.
+            Contact details no longer sit under it — phone, email and socials
+            all live in the floating `ContactHub` now. */}
+        <nav aria-label="Main" className="flex-1 overflow-y-auto px-3 pb-6">
           <SideNavLinks navigation={navigation} homepageSlug={homepageSlug} />
         </nav>
-
-        <div className="shrink-0 border-t border-border px-3 py-4">
-          {/* Socials live in the floating rail at ≥768px (S5) — repeating them
-              here would show the same links twice on desktop (§12). */}
-          <NavContact contact={contact} showSocials={false} />
-        </div>
       </div>
 
       {/* ---- Top bar + drawer (<1024px) ---- */}
@@ -72,8 +66,9 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
         siteTitle={siteTitle}
       />
 
-      {/* ---- Floating social rail (≥768px, §7.7) ---- */}
-      <SocialRail socials={contact?.socials} />
+      {/* ---- Floating contact hub (≥1024px, §7.7). Below `lg` the same hub
+          collapses into the foot of the drawer (see SideNavMobile). ---- */}
+      <ContactHub contact={contact} />
     </>
   )
 }

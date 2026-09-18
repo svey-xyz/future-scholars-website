@@ -895,6 +895,13 @@
                   },
                   "optional": false
                 },
+                "highlight": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "string"
+                  },
+                  "optional": true
+                },
                 "authorName": {
                   "type": "objectAttribute",
                   "value": {
@@ -4092,6 +4099,13 @@
           "type": "string"
         },
         "optional": false
+      },
+      "highlight": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "string"
+        },
+        "optional": true
       },
       "authorName": {
         "type": "objectAttribute",

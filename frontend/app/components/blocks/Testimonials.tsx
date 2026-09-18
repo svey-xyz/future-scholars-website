@@ -3,6 +3,7 @@ import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
+import TestimonialQuote from './TestimonialQuote'
 import {Avatar as AvatarRoot, AvatarFallback} from '@/components/ui/avatar'
 import {Card} from '@/components/ui/card'
 import {cn} from '@/lib/utils'
@@ -31,10 +32,35 @@ type InlineTestimonial = NonNullable<ExtractPageBuilderType<'testimonials'>['tes
 type Quote = {
   key: string
   quote: string | null
+  highlight?: string | null
   authorName: string | null
   authorRole?: string | null
   sourceUrl?: string | null
   authorImage?: InlineTestimonial['authorImage'] | null
+}
+
+/** Normalised for comparison only: whitespace, case and edge punctuation. */
+const normalise = (value: string): string =>
+  value
+    .replace(/\s+/g, ' ')
+    .replace(/^[\s"'\u201c\u201d\u2018\u2019.\u2026]+|[\s"'\u201c\u201d\u2018\u2019.\u2026]+$/g, '')
+    .toLowerCase()
+
+/**
+ * Fallback pull quote for a testimonial with no editorial `highlight`: the
+ * opening sentence, or the first two if the first is very short. Deliberately
+ * dumb — the Studio field is where a human picks the strongest line.
+ */
+function leadSentences(quote: string): string {
+  const first = quote.split(/\n{2,}/)[0]?.trim() ?? ''
+  const sentences = first.match(/[^.!?]+[.!?]*/g) ?? [first]
+  let lead = ''
+  for (const sentence of sentences) {
+    if (lead && lead.length >= 90) break
+    lead += sentence
+  }
+  lead = lead.trim()
+  return lead.length > 240 ? `${lead.slice(0, 237).trimEnd()}\u2026` : lead || quote
 }
 
 export default function Testimonials({block}: Props) {
@@ -54,6 +80,7 @@ export default function Testimonials({block}: Props) {
     ? (documentTestimonials ?? []).slice(0, limit ?? 3).map((t) => ({
         key: t._id,
         quote: t.quote,
+        highlight: t.highlight,
         authorName: t.authorName,
         authorRole: t.authorRole,
         authorImage: t.authorImage,
@@ -61,6 +88,7 @@ export default function Testimonials({block}: Props) {
     : (testimonials ?? []).map((t) => ({
         key: t._key,
         quote: t.quote,
+        highlight: t.highlight,
         authorName: t.authorName,
         authorRole: t.authorRole,
         sourceUrl: t.sourceUrl,
@@ -87,6 +115,13 @@ export default function Testimonials({block}: Props) {
       <ul className={cn('mt-8 grid grid-cols-1 gap-6', colClass[cols])}>
         {items.map((t, i) => {
           const ref = t.authorImage?.asset?._ref
+          // `stegaClean` before any comparison: in draft mode both strings
+          // carry invisible markers, so a raw `includes`/`!==` would always
+          // report the pull quote as different from the full quote.
+          const fullQuote = stegaClean(t.quote) ?? ''
+          const highlight = t.highlight?.trim() ? t.highlight : leadSentences(fullQuote)
+          const expandable = normalise(stegaClean(highlight) ?? '') !== normalise(fullQuote)
+          const authorNameText = stegaClean(t.authorName)
           const initials =
             t.authorName
               ?.split(' ')
@@ -96,18 +131,25 @@ export default function Testimonials({block}: Props) {
               .toUpperCase() || '?'
           return (
             <Reveal as="li" key={t.key} i={i} variant="scale">
-              <Card className="group/quote relative h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg">
-                {/* Decorative oversized quote mark, gently floating. */}
+              <Card className="testimonial-card group/quote relative h-full overflow-hidden transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg">
+                {/* Decorative quote mark. Sized to anchor the card rather than
+                    garnish it; the float only runs on hover/focus-within (see
+                    `.testimonial-card .quote-mark` in globals.css), so a grid of
+                    cards is static at rest. */}
                 <span
                   aria-hidden="true"
-                  className="animate-float pointer-events-none absolute -top-4 right-3 select-none font-serif text-8xl leading-none text-primary/10 transition-colors duration-300 group-hover/quote:text-primary/20"
+                  className="quote-mark pointer-events-none absolute -top-6 -right-2 select-none font-serif text-[15rem] leading-none text-primary/12 transition-colors duration-300 group-hover/quote:text-primary/25 md:-top-8 md:text-[18rem]"
                 >
                   &rdquo;
                 </span>
                 <figure className="relative flex h-full flex-col gap-4 p-6">
-                  <blockquote cite={t.sourceUrl || undefined} className="leading-7 text-pretty">
-                    {t.quote}
-                  </blockquote>
+                  <TestimonialQuote
+                    highlight={highlight}
+                    quote={t.quote ?? ''}
+                    expandable={expandable}
+                    authorName={authorNameText}
+                    cite={t.sourceUrl}
+                  />
                   <figcaption className="mt-auto flex items-center gap-3">
                     <AvatarRoot className="h-10 w-10 transition-transform duration-300 will-change-transform motion-safe:group-hover/quote:scale-110">
                       {ref ? (

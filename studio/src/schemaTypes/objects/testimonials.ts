@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 
-import {altField} from './shared'
+import {altField, isExcerptOf} from './shared'
 
 /**
  * Testimonials — quote cards with author name, role and optional avatar.
@@ -71,6 +71,15 @@ export const testimonials = defineType({
               type: 'text',
               rows: 4,
               validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'highlight',
+              title: 'Pull quote',
+              type: 'text',
+              rows: 3,
+              description:
+                'The strongest sentence or two, copied verbatim from the quote. This is what the card shows; the full quote sits behind \u201cRead more\u201d. Leave empty to fall back to the opening sentence.',
+              validation: (Rule) => Rule.max(240).custom(isExcerptOf('quote')),
             }),
             defineField({
               name: 'authorName',

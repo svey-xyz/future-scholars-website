@@ -160,6 +160,7 @@ export type Testimonials = {
   limit?: number
   testimonials?: Array<{
     quote: string
+    highlight?: string
     authorName: string
     authorRole?: string
     sourceUrl?: string
@@ -630,6 +631,7 @@ export type Testimonial = {
   _updatedAt: string
   _rev: string
   quote: string
+  highlight?: string
   authorName: string
   authorRole?: string
   authorImage?: {

@@ -14,7 +14,7 @@ import {
   SheetTrigger,
 } from '@/components/ui/sheet'
 import BrandMark from './BrandMark'
-import NavContact from './NavContact'
+import ContactHub from './ContactHub'
 import SideNavLinks from './SideNavLinks'
 import type {NavItem, SettingsContact} from '@/sanity/lib/types'
 
@@ -123,7 +123,7 @@ export default function SideNavMobile({
 
               <div className="shrink-0 px-3 pb-6">
                 <Separator className="mb-3" />
-                <NavContact contact={contact} />
+                <ContactHub contact={contact} variant="stacked" />
               </div>
             </SheetContent>
           </Sheet>
