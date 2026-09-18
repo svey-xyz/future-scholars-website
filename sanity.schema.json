@@ -133,6 +133,13 @@
             "name": "blockContentTextOnly"
           },
           "optional": false
+        },
+        "anchor": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
         }
       }
     }
@@ -315,6 +322,13 @@
                 }
               }
             }
+          },
+          "optional": true
+        },
+        "anchor": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
           },
           "optional": true
         }
@@ -716,6 +730,13 @@
                 "value": 3
               }
             ]
+          },
+          "optional": true
+        },
+        "anchor": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
           },
           "optional": true
         }
@@ -1269,6 +1290,13 @@
           "type": "objectAttribute",
           "value": {
             "type": "boolean"
+          },
+          "optional": true
+        },
+        "anchor": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
           },
           "optional": true
         }
@@ -1895,6 +1923,13 @@
           },
           "optional": true
         },
+        "anchor": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          },
+          "optional": true
+        },
         "href": {
           "type": "objectAttribute",
           "value": {
@@ -2431,6 +2466,13 @@
                               "name": "program.reference"
                             }
                           ]
+                        },
+                        "optional": true
+                      },
+                      "anchor": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string"
                         },
                         "optional": true
                       },
@@ -3100,6 +3142,13 @@
                               "name": "program.reference"
                             }
                           ]
+                        },
+                        "optional": true
+                      },
+                      "anchor": {
+                        "type": "objectAttribute",
+                        "value": {
+                          "type": "string"
                         },
                         "optional": true
                       },

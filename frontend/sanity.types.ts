@@ -38,6 +38,7 @@ export type Note = {
     | 'fire'
     | 'shield'
   content: BlockContentTextOnly
+  anchor?: string
 }
 
 export type Stats = {
@@ -65,6 +66,7 @@ export type Faq = {
     _type: 'faqItem'
     _key: string
   }>
+  anchor?: string
 }
 
 export type ContactDetails = {
@@ -128,6 +130,7 @@ export type Testimonials = {
   featuredOnly?: boolean
   limit?: number
   columns?: 1 | 2 | 3
+  anchor?: string
 }
 
 export type FeaturesGrid = {
@@ -216,6 +219,7 @@ export type Gallery = {
   columns?: 2 | 3 | 4
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
+  anchor?: string
 }
 
 export type NavDropdown = {
@@ -308,6 +312,7 @@ export type Link = {
   _type: 'link'
   linkType?: 'page' | 'href'
   page?: PageReference | ProgramReference
+  anchor?: string
   href?: string
   openInNewTab?: boolean
 }
@@ -371,6 +376,7 @@ export type BlockContent = Array<
       markDefs?: Array<{
         linkType?: 'page' | 'href'
         page?: PageReference | ProgramReference
+        anchor?: string
         href?: string
         openInNewTab?: boolean
         _type: 'link'
@@ -475,6 +481,7 @@ export type Settings = {
     markDefs?: Array<{
       linkType?: 'page' | 'href'
       page?: PageReference | ProgramReference
+      anchor?: string
       href?: string
       openInNewTab?: boolean
       _type: 'link'
@@ -920,6 +927,7 @@ export type SettingsQueryResult = {
     markDefs?: Array<{
       linkType?: 'href' | 'page'
       page?: PageReference | ProgramReference
+      anchor?: string
       href?: string
       openInNewTab?: boolean
       _type: 'link'
@@ -960,6 +968,7 @@ export type SettingsQueryResult = {
             _type: 'link'
             linkType?: 'href' | 'page'
             page: string | null
+            anchor?: string
             href?: string
             openInNewTab?: boolean
             pageType: 'page' | 'program' | null
@@ -975,6 +984,7 @@ export type SettingsQueryResult = {
           _type: 'link'
           linkType?: 'href' | 'page'
           page: string | null
+          anchor?: string
           href?: string
           openInNewTab?: boolean
           pageType: 'page' | 'program' | null
@@ -1061,6 +1071,7 @@ export type GetPageQueryResult = {
             _type: 'link'
             linkType?: 'href' | 'page'
             page: string | null
+            anchor?: string
             href?: string
             openInNewTab?: boolean
             pageType: 'page' | 'program' | null
@@ -1146,6 +1157,7 @@ export type GetPageQueryResult = {
           _type: 'faqItem'
           _key: string
         }> | null
+        anchor?: string
       }
     | {
         _key: string
@@ -1185,6 +1197,7 @@ export type GetPageQueryResult = {
             _type: 'link'
             linkType?: 'href' | 'page'
             page: string | null
+            anchor?: string
             href?: string
             openInNewTab?: boolean
             pageType: 'page' | 'program' | null
@@ -1233,6 +1246,7 @@ export type GetPageQueryResult = {
         columns?: 2 | 3 | 4
         aspect?: 'auto' | 'square' | 'video'
         enableLightbox?: boolean
+        anchor?: string
       }
     | {
         _key: string
@@ -1252,6 +1266,7 @@ export type GetPageQueryResult = {
               markDefs: Array<{
                 linkType?: 'href' | 'page'
                 page: string | null
+                anchor?: string
                 href?: string
                 openInNewTab?: boolean
                 _type: 'link'
@@ -1310,6 +1325,7 @@ export type GetPageQueryResult = {
           _type: 'block'
           _key: string
         }>
+        anchor?: string
       }
     | {
         _key: string
@@ -1362,6 +1378,7 @@ export type GetPageQueryResult = {
         featuredOnly?: boolean
         limit?: number
         columns?: 1 | 2 | 3
+        anchor?: string
         documentTestimonials: Array<{
           _id: string
           quote: string
@@ -1432,6 +1449,7 @@ export type ProgramQueryResult = {
         markDefs: Array<{
           linkType?: 'href' | 'page'
           page: string | null
+          anchor?: string
           href?: string
           openInNewTab?: boolean
           _type: 'link'
