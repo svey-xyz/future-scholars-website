@@ -87,6 +87,7 @@ const programCardFields = /* groq */ `
 const testimonialCardFields = /* groq */ `
   _id,
   quote,
+  highlight,
   authorName,
   authorRole,
   authorImage

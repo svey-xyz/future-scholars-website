@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 
-import {altField} from '../objects/shared'
+import {altField, isExcerptOf} from '../objects/shared'
 
 /**
  * Testimonial — a parent's own words, promoted to a document so the same quote
@@ -24,6 +24,15 @@ export const testimonial = defineType({
       rows: 8,
       description: "The parent's words, verbatim. Do not paraphrase or tidy.",
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'highlight',
+      title: 'Pull quote',
+      type: 'text',
+      rows: 3,
+      description:
+        'The strongest sentence or two, copied verbatim from the quote. This is what the card shows; the full quote sits behind \u201cRead more\u201d. Leave empty to fall back to the opening sentence.',
+      validation: (Rule) => Rule.max(240).custom(isExcerptOf('quote')),
     }),
     defineField({
       name: 'authorName',

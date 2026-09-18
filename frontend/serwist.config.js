@@ -19,5 +19,14 @@ const revision =
 export default serwist({
   swSrc: 'app/sw.ts',
   swDest: 'public/sw.js',
+  // Never precache prerendered HTML. Precache routes are matched BEFORE
+  // `runtimeCaching`, so a precached `/` is served cache-first and the
+  // NetworkFirst document rule in `app/sw.ts` never runs. That pins visitors to
+  // the build's HTML (stale Sanity content until the SW updates) and, on
+  // localhost, serves an old production shell to `next dev` — whose chunks and
+  // build ID don't match the dev server, so the router hard-reloads, the SW
+  // serves the same shell again, and the page loops. Documents go through the
+  // NetworkFirst rule instead; `/~offline` is the only precached page.
+  precachePrerendered: false,
   additionalPrecacheEntries: [{url: '/~offline', revision}],
 })

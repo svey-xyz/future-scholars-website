@@ -173,3 +173,30 @@ export const archiveField = defineField({
         : true
     }),
 })
+
+/**
+ * Validator for a "pull quote" field: the value must be a verbatim excerpt of a
+ * sibling long-form field. Comparison normalises whitespace, case and any
+ * leading/trailing ellipsis or quotation marks, so an editor can capitalise the
+ * first letter of a mid-sentence fragment without tripping the rule.
+ *
+ * Keeping the excerpt verbatim is what lets the frontend swap the card between
+ * the pull quote and the full quote without either version reading as a
+ * paraphrase (see frontend/app/components/blocks/Testimonials.tsx).
+ */
+const normaliseExcerpt = (value: string): string =>
+  value
+    .replace(/\s+/g, ' ')
+    .replace(/^[\s"'“”‘’.…]+|[\s"'“”‘’.…]+$/g, '')
+    .toLowerCase()
+
+export const isExcerptOf =
+  (sourceField: string) =>
+  (value: unknown, context: {parent?: unknown}): true | string => {
+    if (typeof value !== 'string' || !value.trim()) return true
+    const source = (context.parent as Record<string, unknown> | undefined)?.[sourceField]
+    if (typeof source !== 'string') return true
+    return normaliseExcerpt(source).includes(normaliseExcerpt(value))
+      ? true
+      : 'Must appear word-for-word in the quote above — copy and paste the sentences you want to lead with.'
+  }

@@ -247,15 +247,15 @@
   animation: none;
 }
 
-/* FSMA (S5): the floating social rail is fixed chrome too — same anchoring. */
-::view-transition-group(social-rail) {
+/* FSMA (S5): the floating contact hub is fixed chrome too — same anchoring. */
+::view-transition-group(contact-hub) {
   animation: none;
   z-index: 100;
 }
-::view-transition-old(social-rail) {
+::view-transition-old(contact-hub) {
   display: none;
 }
-::view-transition-new(social-rail) {
+::view-transition-new(contact-hub) {
   animation: none;
 }
 
@@ -494,6 +494,13 @@
   .animate-float {
     animation: a-float 6s ease-in-out infinite;
   }
+  /* Testimonial quote mark: ambient float, but only while the card is hovered
+     or holds focus — a grid of these floating at rest is restless, and the
+     motion is decorative either way (the glyph is aria-hidden). */
+  .testimonial-card:hover .quote-mark,
+  .testimonial-card:focus-within .quote-mark {
+    animation: a-float 6s ease-in-out infinite;
+  }
   .animate-float-slow {
     animation: a-float-slow 9s ease-in-out infinite;
   }
@@ -543,6 +550,27 @@
   .mobile-nav-item {
     animation: a-nav-item-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
     animation-delay: calc(min(var(--reveal-i, 0), 10) * 45ms);
+  }
+
+  /* ---- Floating contact hub: per-item entrance (§7.7) ----
+     The cluster fans in from the right edge on first paint so it reads as one
+     object arriving, not four pills popping. `--reveal-i` (set inline per item)
+     drives the stagger. Motion-safe via this gate — reduced-motion users get
+     the hub instantly, in place, with no transform. The hover/focus label
+     reveal itself is a Tailwind transition carrying `motion-reduce`. */
+  @keyframes a-contact-hub-in {
+    from {
+      opacity: 0;
+      transform: translateX(1.5rem);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .contact-hub-item {
+    animation: a-contact-hub-in 0.55s cubic-bezier(0.22, 1, 0.36, 1) both;
+    animation-delay: calc(400ms + min(var(--reveal-i, 0), 6) * 70ms);
   }
 
   /* ---- Gallery lightbox: gentle media entrance, layered under the Dialog's own

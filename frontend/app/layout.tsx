@@ -126,6 +126,17 @@ export default async function RootLayout({children}: {children: React.ReactNode}
               "try{if(!matchMedia('(prefers-reduced-motion: reduce)').matches&&!CSS.supports('animation-timeline: view()'))document.documentElement.setAttribute('data-reveal-js','')}catch(e){}",
           }}
         />
+        {/* Dev only: `disable` below stops registration but doesn't remove a
+            worker a local `next start` already installed on this origin. Drop
+            it (and its caches) so `next dev` is never served by a prod SW. */}
+        {process.env.NODE_ENV === 'development' && (
+          <script
+            dangerouslySetInnerHTML={{
+              __html:
+                "try{navigator.serviceWorker&&navigator.serviceWorker.getRegistrations().then(function(r){r.forEach(function(x){x.unregister()})});self.caches&&caches.keys().then(function(k){k.forEach(function(n){caches.delete(n)})})}catch(e){}",
+            }}
+          />
+        )}
         <SerwistProvider
           swUrl="/sw.js"
           disable={process.env.NODE_ENV === 'development'}

@@ -2,9 +2,8 @@ export {default as SideNav} from './SideNav'
 export {default as SideNavLinks} from './SideNavLinks'
 export {default as SideNavMobile} from './SideNavMobile'
 export {default as BrandMark} from './BrandMark'
-export {default as NavContact} from './NavContact'
+export {default as ContactHub} from './ContactHub'
 export {default as Masthead} from './Masthead'
-export {default as SocialRail} from './SocialRail'
 // Template header/nav — retained but unmounted (D13: hide, don't delete, so the
 // fork keeps merging cleanly from sanity-next-clean). Nothing imports these.
 export {default as Header} from './Header'
