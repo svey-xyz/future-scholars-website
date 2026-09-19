@@ -986,6 +986,13 @@
                   },
                   "optional": true
                 },
+                "showContact": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "boolean"
+                  },
+                  "optional": true
+                },
                 "link": {
                   "type": "objectAttribute",
                   "value": {

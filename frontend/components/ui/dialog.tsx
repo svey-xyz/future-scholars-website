@@ -34,10 +34,13 @@ const DialogContent = React.forwardRef<
   React.ComponentPropsWithoutRef<typeof DialogPrimitive.Content> & {
     /** Render the built-in top-right close button. Disable for fully custom chromes (e.g. the lightbox). */
     showCloseButton?: boolean
+    /** Extra classes / ref for the backdrop overlay (e.g. the lightbox fades it on swipe-down). */
+    overlayClassName?: string
+    overlayRef?: React.Ref<HTMLDivElement>
   }
->(({className, children, showCloseButton = true, ...props}, ref) => (
+>(({className, children, showCloseButton = true, overlayClassName, overlayRef, ...props}, ref) => (
   <DialogPortal>
-    <DialogOverlay />
+    <DialogOverlay ref={overlayRef} className={overlayClassName} />
     <DialogPrimitive.Content
       ref={ref}
       className={cn(

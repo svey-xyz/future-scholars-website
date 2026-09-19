@@ -177,6 +177,7 @@ export type FeaturesGrid = {
       | 'check'
     heading: string
     text?: string
+    showContact?: boolean
     link?: Link
     _type: 'feature'
     _key: string

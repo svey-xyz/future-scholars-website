@@ -249,6 +249,16 @@
    the view-transition posture above. See docs/A11Y.md + docs/TRANSITIONS.md.
    ========================================================================= */
 
+/* Gallery lightbox swipe-down progress (0–1), written by useSwipeToDismiss on
+   the dialog root + overlay. Registered so the snap-back can *transition* it
+   (unregistered custom properties can't animate); inherits so the chrome,
+   caption and backdrop inside the dialog all read the same value. */
+@property --lb-drag {
+  syntax: '<number>';
+  inherits: true;
+  initial-value: 0;
+}
+
 @property --reveal-i {
   syntax: '<integer>';
   inherits: false;

@@ -28,9 +28,9 @@ import {
 
 import {stegaClean} from '@sanity/client/stega'
 
-import ResolvedLink from '@/app/components/common/ResolvedLink'
+import {ResolvedLink} from '@/app/components/common'
 import Reveal from '@/app/components/motion/Reveal'
-import {cn} from '@/lib/utils'
+import {cn, telHref} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
 type Props = {
@@ -77,7 +77,7 @@ const colClass: Record<number, string> = {
 }
 
 export default function FeaturesGrid({block, className}: Props) {
-  const {heading, subheading, features, columns} = block
+  const {heading, subheading, features, columns, contact} = block
   const cols = columns ?? 3
   const items = features ?? []
 
@@ -116,8 +116,10 @@ export default function FeaturesGrid({block, className}: Props) {
               {iconEl}
               <h3 className="mt-4 text-lg font-medium">{feature.heading}</h3>
               {feature.text && (
-                <p className="mt-2 leading-7 text-muted-foreground">{feature.text}</p>
+                <p className="mt-2 leading-7 text-muted-foreground wrap-anywhere">{feature.text}</p>
               )}
+              {/* Skipped on linked cards: an <a> can't nest inside the card <a>. */}
+              {feature.showContact && !hasLink && <ContactLinks contact={contact} />}
             </>
           )
 
@@ -127,7 +129,7 @@ export default function FeaturesGrid({block, className}: Props) {
               key={feature._key}
               i={i}
               className={cn(
-                'group/feat rounded-xl',
+                'group/feat min-w-0 rounded-xl',
                 hasLink &&
                   'transition-transform duration-300 will-change-transform motion-safe:hover:-translate-y-1',
               )}
@@ -156,5 +158,45 @@ export default function FeaturesGrid({block, className}: Props) {
         })}
       </ul>
     </section>
+  )
+}
+
+/**
+ * Phone + email from Settings → Contact (D16 — the only source of contact
+ * data), as tap targets (D6 — no forms, so these links are the contact
+ * mechanism). Values arrive stega-encoded in draft mode: hrefs are cleaned,
+ * visible text is not, so click-to-edit lands on the settings fields.
+ */
+function ContactLinks({contact}: {contact: Props['block']['contact']}) {
+  const phone = contact?.phone
+  const email = contact?.email
+  if (!phone && !email) return null
+
+  const linkClass =
+    'inline-flex min-h-11 min-w-0 items-center gap-2 rounded-md text-foreground underline decoration-primary/40 underline-offset-4 hover:decoration-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2'
+
+  return (
+    <ul className="mt-2 flex flex-col">
+      {phone && (
+        <li>
+          <a href={`tel:${telHref(stegaClean(phone))}`} className={linkClass}>
+            <PhoneIcon className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">Phone: </span>
+            {phone}
+          </a>
+        </li>
+      )}
+      {email && (
+        <li>
+          <a href={`mailto:${stegaClean(email)}`} className={linkClass}>
+            <EnvelopeIcon className="h-5 w-5 shrink-0 text-muted-foreground" aria-hidden="true" />
+            <span className="sr-only">Email: </span>
+            {/* `wrap-anywhere` lets the address wrap in a narrow column
+                instead of overflowing into the next one. */}
+            <span className="min-w-0 wrap-anywhere">{email}</span>
+          </a>
+        </li>
+      )}
+    </ul>
   )
 }

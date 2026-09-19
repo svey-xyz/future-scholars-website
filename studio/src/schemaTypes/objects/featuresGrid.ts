@@ -69,6 +69,21 @@ export const featuresGrid = defineType({
             }),
             defineField({name: 'text', title: 'Text', type: 'text', rows: 3}),
             defineField({
+              name: 'showContact',
+              title: 'Show phone & email',
+              type: 'boolean',
+              description:
+                'Adds the school phone number and email (from Settings → Contact) under the text as tap-to-call / tap-to-email links. Use this instead of typing contact details into the text.',
+              initialValue: false,
+              validation: (Rule) =>
+                Rule.custom((value, context) => {
+                  const parent = context.parent as {link?: {href?: string; page?: unknown}}
+                  return value && (parent?.link?.href || parent?.link?.page)
+                    ? 'Contact links are hidden on a feature that has its own Link (links can’t be nested).'
+                    : true
+                }).warning(),
+            }),
+            defineField({
               name: 'link',
               title: 'Link',
               type: 'link',

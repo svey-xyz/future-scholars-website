@@ -1,0 +1,2 @@
+@import 'tailwindcss' source(none);
+@source inline("opacity-[calc(1-var(--lb-drag,0))] bg-[hsl(var(--background)/calc(0.3*(1-var(--lb-drag,0))))] backdrop-blur-[calc(16px*(1-var(--lb-drag,0)))]");
