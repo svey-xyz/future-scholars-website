@@ -118,9 +118,11 @@ export const getPageQuery = defineQuery(`
       },
       _type == "featuresGrid" => {
         ...,
-        count(features[showContact == true]) > 0 => {
-          "contact": *[_type == "settings"][0].contact{phone, email}
-        },
+        // Unconditional key (select → null) so TypeGen emits ONE featuresGrid
+        // shape; a "cond => {...}" spread yields a union where contact is absent.
+        "contact": select(
+          count(features[showContact == true]) > 0 => *[_type == "settings"][0].contact{phone, email}
+        ),
         features[]{
           ...,
           ${linkFields}
