@@ -315,17 +315,17 @@ Send it with the F2 screenshots.
 
 | Item | Session | Status |
 |---|---|---|
-| Email → gmail everywhere; info@ removed (FB1) | F1 | ☐ |
-| "non-refundable" removed (aa3, ap3) | F1 | ☐ |
-| Hours rows (school / office / core); prose and `scheduleNote` cleared (FB10) | F1 | ☐ |
-| Program mastheads → soft sky (FB5) | F1 | ☐ |
-| Toddlers copy (occupants, life skills, independence & critical thinking) | F1 | ☐ |
-| Agata bio + typo; Priyanka NAMC credential | F1 | ☐ |
-| Galleries last in nav + link titles (FB8) | F1 | ☐ |
-| Black cap on reversed logos (FB3) | F2 | ☐ |
-| Home logo large + bottom centre (FB9) | F2 | ☐ |
-| Room accents red / green / blue (FB5) | F2 | ☐ |
-| "At a glance" reads Core program from settings (FB10) | F2 | ☐ |
+| Email → gmail everywhere; info@ removed (FB1) | F1 | ☑ drafts, awaiting publish |
+| "non-refundable" removed (aa3, ap3) | F1 | ☑ drafts, awaiting publish |
+| Hours rows (school / office / core); prose and `scheduleNote` cleared (FB10) | F1 | ☑ drafts, awaiting publish |
+| Program mastheads → soft sky (FB5) | F1 | ☑ drafts, awaiting publish |
+| Toddlers copy (occupants, life skills, independence & critical thinking) | F1 | ☑ drafts, awaiting publish |
+| Agata bio + typo; Priyanka NAMC credential | F1 | ☑ drafts, awaiting publish |
+| Galleries last in nav + link titles (FB8) | F1 | ☑ drafts, awaiting publish |
+| Black cap on reversed logos (FB3) | F2 | ☑ code; drafts set |
+| Home logo large + bottom centre (FB9) | F2 | ☑ code; drafts set |
+| Room accents red / green / blue (FB5) | F2 | ☑ code; drafts set |
+| "At a glance" reads Core program from settings (FB10) | F2 | ☑ code; drafts set |
 | Map beside Facility (FB11) | F3 | ☐ |
 | Faculty split + circular headshots + bio dialog (FB6, FB7) | F3 | ☐ |
 | Mission, Faculty intro, Priyanka bio, teachers, infant photos, toddler curriculum | F4 | ☐ waiting on client |
