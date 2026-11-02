@@ -13,8 +13,6 @@ Things an agent session can't do: they need your credentials, a browser, or an a
       example `https://futurescholarsmontessori.com`) or `NEXT_PUBLIC_SITE_URL` in Vercel. The old site
       answers on the apex and returns 403 on `www`.
 - [ ] **Title separator:** `About Us | Future Scholars…` or `About Us · Future Scholars…`? (plan Q27)
-- [ ] **Heading levels on the About page:** the directors are now `h2` next to "Directors" rather than
-      `h3` under it. Both are valid; this version stays correct if the block is moved. Keep it?
 
 ## Checks on the preview
 
@@ -65,6 +63,24 @@ Things an agent session can't do: they need your credentials, a browser, or an a
       (`CLIENT-FEEDBACK-R1.md` §5). Ask them to approve the bigger home logo and the room colours.
 - [ ] **info@futurescholarsmontessori.com:** ask the client to keep it forwarding to gmail (old
       flyers and directories still list it).
+
+## Client feedback R1 — `feat/fsma-f3-about` (stacked on F2; merge F2 first)
+
+- [ ] **Deploy the schema and Studio** after merging F3:
+      `cd studio && npx sanity schema deploy && npx sanity deploy` (adds `infoSection.aside`,
+      `facultyGrid` `split` layout + `intro`).
+- [ ] **Review and publish the About draft** once the F3 frontend is live: Facility now has the map;
+      the old "Faculty" text section became the intro of the faculty grid (`split`), which moved up
+      under Facility; "Directors" stays after it with its `#directors` anchor (the home "Meet our
+      directors" link still lands there).
+- [ ] **Check on the preview (can't be done from the agent sandbox):** the map loads and the "Open in
+      Google Maps" link works; Lighthouse a11y ≥ 95 and no CLS from the map on `/about`; a VoiceOver
+      pass over a teacher card ("Agata Attersoll, Director: read bio", dialog title announced). The
+      keyboard flow (Tab → Enter → focus in dialog → Esc → focus back on the card) was checked in
+      Chromium.
+- [ ] **Reduced-motion gap elsewhere:** the gallery lightbox and the mobile menu Sheet still animate
+      under `prefers-reduced-motion` (same shadcn `data-[state]` issue fixed in the bio dialog). Small
+      follow-up.
 
 ## Repo housekeeping (on your Mac, as its own commit)
 

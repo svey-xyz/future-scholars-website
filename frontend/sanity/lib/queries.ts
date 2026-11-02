@@ -109,6 +109,16 @@ export const getPageQuery = defineQuery(`
         }
       },
       _type == "infoSection" => {
+        // FB11: the map aside reads the Settings address (D16) — projected
+        // here so the block needs no fetch of its own. Unconditional key
+        // (select → null) keeps ONE infoSection shape for TypeGen.
+        "map": select(
+          aside == "map" => *[_type == "settings"][0]{
+            "name": title,
+            "address": contact.address,
+            "mapUrl": contact.mapUrl
+          }
+        ),
         content[]{
           ...,
           markDefs[]{

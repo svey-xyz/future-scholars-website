@@ -523,8 +523,20 @@
               {
                 "type": "string",
                 "value": "highlight"
+              },
+              {
+                "type": "string",
+                "value": "split"
               }
             ]
+          },
+          "optional": true
+        },
+        "intro": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "blockContentTextOnly"
           },
           "optional": true
         },
@@ -2255,6 +2267,23 @@
           "value": {
             "type": "inline",
             "name": "blockContent"
+          },
+          "optional": true
+        },
+        "aside": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "none"
+              },
+              {
+                "type": "string",
+                "value": "map"
+              }
+            ]
           },
           "optional": true
         },
