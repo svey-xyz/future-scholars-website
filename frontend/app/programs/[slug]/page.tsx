@@ -7,7 +7,7 @@ import {stegaClean} from '@sanity/client/stega'
 import {Suspense} from 'react'
 
 import {Breadcrumbs, SanityImage as Image} from '@/app/components/common'
-import {Masthead, PageTitle} from '@/app/components/layout'
+import {Masthead, PageTitle, getSettings} from '@/app/components/layout'
 import {PortableText} from '@/app/components/portable-text'
 import {JsonLd, breadcrumbJsonLd, type BreadcrumbItem} from '@/app/components/seo'
 import {buttonVariants} from '@/components/ui/button'
@@ -37,6 +37,16 @@ import type {ProgramQueryResult} from '@/sanity.types'
 
 type Props = {
   params: Promise<{slug: string}>
+}
+
+type Fact = {term: string; value: string; note?: string | null}
+
+/* Room accent rule on the "At a glance" card (FB5). Decorative: the room name
+   is in the facts list as text. Full class strings so Tailwind sees them. */
+const ACCENT_TOP: Record<string, string> = {
+  roses: 'border-t-4 border-t-room-roses',
+  shamrock: 'border-t-4 border-t-room-shamrock',
+  violet: 'border-t-4 border-t-room-violet',
 }
 
 export async function generateStaticParams() {
@@ -114,6 +124,10 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
 
   if (!program?._id) return notFound()
 
+  // Hours live only in Settings → Contact → Hours (D16, FB10). `getSettings` is
+  // the shared cached helper, so this reuses the rail/footer's cache entry.
+  const siteSettings = await getSettings({perspective, stega})
+
   // Structured data is crawler-facing: published perspective, never stega.
   const [{data: settings}, {data: published}] = await Promise.all([
     sanityFetchMetadata({query: settingsQuery, perspective: 'published'}),
@@ -123,12 +137,17 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
   ])
   const breadcrumbLd = published?._id ? breadcrumbJsonLd(trail(published), settings) : null
 
+  // The Core program row is matched on its `key` enum, never its label (stega).
+  const coreRow = siteSettings?.contact?.hours?.find((row) => stegaClean(row.key) === 'core')
   const facts = [
     {term: 'Ages', value: program.ageRange},
     {term: 'Teacher-to-child ratio', value: program.ratio},
     {term: 'Classroom', value: program.classroomName && `${program.classroomName} room`},
-    {term: 'Hours', value: program.scheduleNote},
-  ].filter((f): f is {term: string; value: string} => Boolean(f.value))
+    coreRow?.time
+      ? {term: 'Montessori program', value: coreRow.time, note: program.scheduleNote}
+      : {term: 'Schedule', value: program.scheduleNote},
+  ].filter((f): f is Fact => Boolean(f.value))
+  const accent = stegaClean(program.accent) ?? ''
 
   const imageRef = program.image?.asset?._ref
   const siblings = program.siblings ?? []
@@ -143,6 +162,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
             masthead={program.masthead}
             heading={program.name}
             subheading={program.ageRange}
+            accent={program.accent}
           />
         ) : (
           <PageTitle heading={program.name} subheading={program.ageRange} />
@@ -181,7 +201,9 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
                   className="aspect-[3/2] w-full rounded-xl object-cover"
                 />
               ) : null}
-              <div className="rounded-xl border border-border bg-card p-6">
+              <div
+                className={cn('rounded-xl border border-border bg-card p-6', ACCENT_TOP[accent])}
+              >
                 <h2 id="program-facts" className="text-lg">
                   At a glance
                 </h2>
@@ -190,6 +212,11 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
                     <div key={fact.term}>
                       <dt className="text-sm font-medium text-muted-foreground">{fact.term}</dt>
                       <dd className="mt-0.5 text-base text-pretty">{fact.value}</dd>
+                      {fact.note ? (
+                        <dd className="mt-1 text-sm text-pretty text-muted-foreground">
+                          {fact.note}
+                        </dd>
+                      ) : null}
                     </div>
                   ))}
                 </dl>

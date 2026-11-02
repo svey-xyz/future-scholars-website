@@ -48,6 +48,26 @@ export const program = defineType({
       type: 'string',
       description: 'FSMA names its rooms — Roses, Shamrock, Violet.',
     }),
+    // FB5: an explicit enum rather than deriving the colour from
+    // `classroomName` — a rename (or stega in draft mode) would silently drop
+    // the accent. The colour is decorative; the room name is always in text.
+    defineField({
+      name: 'accent',
+      title: 'Room colour',
+      type: 'string',
+      description:
+        'Colours the banner rule, the "At a glance" card and the program card. Matches the room: Roses = red, Shamrock = green, Violet = blue.',
+      options: {
+        list: [
+          {title: 'Roses (red)', value: 'roses'},
+          {title: 'Shamrock (green)', value: 'shamrock'},
+          {title: 'Violet (blue)', value: 'violet'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      validation: (Rule) => Rule.required(),
+    }),
     defineField({
       name: 'summary',
       title: 'Summary',
@@ -73,7 +93,8 @@ export const program = defineType({
       name: 'scheduleNote',
       title: 'Schedule note',
       type: 'string',
-      description: 'Optional hours note specific to this program.',
+      description:
+        "Program-specific schedule note. Don't put hours here; they come from Settings → Contact → Hours.",
     }),
     defineField({
       name: 'order',

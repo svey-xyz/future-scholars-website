@@ -99,6 +99,24 @@ export const masthead = defineType({
         list: [
           {title: 'Centre', value: 'center'},
           {title: 'Bottom left', value: 'bottomLeft'},
+          {title: 'Bottom centre', value: 'bottomCenter'},
+        ],
+        layout: 'radio',
+        direction: 'horizontal',
+      },
+      hidden: ({parent}) => parent?.showLogo === false,
+    }),
+    defineField({
+      name: 'logoSize',
+      title: 'Logo size',
+      type: 'string',
+      initialValue: 'standard',
+      description:
+        'Large suits the home page, where the logo is the main element. Check the heading still fits on a phone.',
+      options: {
+        list: [
+          {title: 'Standard', value: 'standard'},
+          {title: 'Large', value: 'large'},
         ],
         layout: 'radio',
         direction: 'horizontal',

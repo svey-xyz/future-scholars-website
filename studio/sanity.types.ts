@@ -286,7 +286,8 @@ export type Masthead = {
   tone?: 'primary' | 'ink' | 'secondary'
   eyebrow?: string
   showLogo?: boolean
-  logoPlacement?: 'center' | 'bottomLeft'
+  logoPlacement?: 'center' | 'bottomLeft' | 'bottomCenter'
+  logoSize?: 'standard' | 'large'
   height?: 'tall' | 'standard' | 'compact'
   overlay?: 'none' | 'light' | 'medium' | 'strong'
   focalNote?: string
@@ -299,6 +300,7 @@ export type Contact = {
   fax?: string
   address?: Address
   hours?: Array<{
+    key?: 'school' | 'office' | 'core'
     days: string
     time: string
     schemaOrg?: string
@@ -597,6 +599,7 @@ export type Program = {
   ageRange: string
   ratio?: string
   classroomName?: string
+  accent: 'roses' | 'shamrock' | 'violet'
   summary: string
   body?: BlockContent
   image?: {

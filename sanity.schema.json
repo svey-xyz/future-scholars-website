@@ -1753,6 +1753,27 @@
               {
                 "type": "string",
                 "value": "bottomLeft"
+              },
+              {
+                "type": "string",
+                "value": "bottomCenter"
+              }
+            ]
+          },
+          "optional": true
+        },
+        "logoSize": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "union",
+            "of": [
+              {
+                "type": "string",
+                "value": "standard"
+              },
+              {
+                "type": "string",
+                "value": "large"
               }
             ]
           },
@@ -1863,6 +1884,27 @@
             "of": {
               "type": "object",
               "attributes": {
+                "key": {
+                  "type": "objectAttribute",
+                  "value": {
+                    "type": "union",
+                    "of": [
+                      {
+                        "type": "string",
+                        "value": "school"
+                      },
+                      {
+                        "type": "string",
+                        "value": "office"
+                      },
+                      {
+                        "type": "string",
+                        "value": "core"
+                      }
+                    ]
+                  },
+                  "optional": true
+                },
                 "days": {
                   "type": "objectAttribute",
                   "value": {
@@ -3859,6 +3901,27 @@
           "type": "string"
         },
         "optional": true
+      },
+      "accent": {
+        "type": "objectAttribute",
+        "value": {
+          "type": "union",
+          "of": [
+            {
+              "type": "string",
+              "value": "roses"
+            },
+            {
+              "type": "string",
+              "value": "shamrock"
+            },
+            {
+              "type": "string",
+              "value": "violet"
+            }
+          ]
+        },
+        "optional": false
       },
       "summary": {
         "type": "objectAttribute",
