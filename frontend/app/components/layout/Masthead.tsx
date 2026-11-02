@@ -19,13 +19,16 @@ type Props = {
 }
 
 /* Heights (schema `masthead.height`, §7.6): tall ≈ 60vh desktop / 42vh mobile,
-   standard ≈ 48/34vh, compact ≈ 34/26vh. Min-heights keep the logo lockup
-   legible on very short viewports. The fixed vh sizing also means no CLS —
-   the box never depends on image load. */
+   standard ≈ 48/34vh, compact ≈ 34/26vh, each with a rem floor for very short
+   viewports. These are MIN-heights: a fixed height clipped the top of the copy
+   (eyebrow + logo) whenever eyebrow + logo + h1 + subheading outgrew the box,
+   e.g. compact program banners on a 1366×700 laptop lost ~88px. Growing the
+   box adds no CLS — its contents are server-rendered text and a vector logo
+   with intrinsic dimensions, and the photograph is absolutely positioned. */
 const HEIGHTS: Record<string, string> = {
-  tall: 'h-[42vh] min-h-72 lg:h-[60vh] lg:min-h-96',
-  standard: 'h-[34vh] min-h-60 lg:h-[48vh] lg:min-h-80',
-  compact: 'h-[26vh] min-h-52 lg:h-[34vh] lg:min-h-64',
+  tall: 'min-h-[max(42vh,18rem)] lg:min-h-[max(60vh,24rem)]',
+  standard: 'min-h-[max(34vh,15rem)] lg:min-h-[max(48vh,20rem)]',
+  compact: 'min-h-[max(26vh,13rem)] lg:min-h-[max(34vh,16rem)]',
 }
 
 /* Brand panel tones (schema `masthead.tone`). `secondary` is a light surface,
