@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {BlockquoteIcon} from '@sanity/icons/Blockquote'
 
-import {anchorField} from './shared'
+import {anchorField, roomField} from './shared'
 
 /**
  * Pull quote — one short quotation set large between sections, to break up
@@ -59,6 +59,7 @@ export const pullQuote = defineType({
       },
     }),
     anchorField,
+    roomField,
   ],
   preview: {
     select: {quote: 'quote', attribution: 'attribution'},

@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {UsersIcon} from '@sanity/icons/Users'
 
-import {anchorField, columnsField} from './shared'
+import {anchorField, roomField, columnsField} from './shared'
 
 /**
  * Faculty grid — `person` documents rendered as staff cards.
@@ -95,6 +95,7 @@ export const facultyGrid = defineType({
         parent?.layout === 'highlight' || parent?.layout === 'split',
     },
     anchorField,
+    roomField,
   ],
   preview: {
     select: {heading: 'heading', mode: 'mode', layout: 'layout'},

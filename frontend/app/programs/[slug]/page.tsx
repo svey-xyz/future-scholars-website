@@ -12,6 +12,7 @@ import {PortableText} from '@/app/components/portable-text'
 import {JsonLd, breadcrumbJsonLd, type BreadcrumbItem} from '@/app/components/seo'
 import {buttonVariants} from '@/components/ui/button'
 import {Skeleton} from '@/components/ui/skeleton'
+import {roomStyle} from '@/lib/room'
 import {cn} from '@/lib/utils'
 import {
   getDynamicFetchOptions,
@@ -40,14 +41,6 @@ type Props = {
 }
 
 type Fact = {term: string; value: string; note?: string | null}
-
-/* Room accent rule on the "At a glance" card (FB5). Decorative: the room name
-   is in the facts list as text. Full class strings so Tailwind sees them. */
-const ACCENT_TOP: Record<string, string> = {
-  roses: 'border-t-4 border-t-room-roses',
-  shamrock: 'border-t-4 border-t-room-shamrock',
-  violet: 'border-t-4 border-t-room-violet',
-}
 
 export async function generateStaticParams() {
   const {data} = await sanityFetchStaticParams({query: programSlugsQuery})
@@ -92,17 +85,27 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   } satisfies Metadata
 }
 
-/** Layer 1 (docs/CACHING.md): branch on `draftMode()` only. */
+/**
+ * Layer 1 (docs/CACHING.md): branch on `draftMode()` only. `params` is read
+ * inside `<Suspense>` so client navigations between programs stay instant
+ * (the App Shell is shared by every slug — see `app/[slug]/page.tsx`).
+ */
 export default async function ProgramPage(props: Props) {
   const {isEnabled: isDraftMode} = await draftMode()
-  if (isDraftMode) {
-    return (
-      <Suspense fallback={<ProgramFallback />}>
+  return (
+    <Suspense fallback={<ProgramFallback />}>
+      {isDraftMode ? (
         <DynamicProgram params={props.params} />
-      </Suspense>
-    )
-  }
-  const {slug} = await props.params
+      ) : (
+        <PublishedProgram params={props.params} />
+      )}
+    </Suspense>
+  )
+}
+
+/** Layer 2 (published): resolve the slug inside the boundary. */
+async function PublishedProgram({params}: Pick<Props, 'params'>) {
+  const {slug} = await params
   return <CachedProgram slug={slug} perspective="published" stega={false} />
 }
 
@@ -147,7 +150,9 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
       ? {term: 'Montessori program', value: coreRow.time, note: program.scheduleNote}
       : {term: 'Schedule', value: program.scheduleNote},
   ].filter((f): f is typeof f & Fact => Boolean(f.value))
-  const accent = stegaClean(program.accent) ?? ''
+  // Room theme (FB5): `roomStyle()` on the page wrapper scopes the `room-*`
+  // utilities for everything below (lib/room.ts). Sibling links set their own.
+  const room = roomStyle(program.accent)
 
   const imageRef = program.image?.asset?._ref
   const siblings = program.siblings ?? []
@@ -155,7 +160,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
   return (
     <>
       {breadcrumbLd && <JsonLd data={breadcrumbLd} />}
-      <div className={program.masthead ? 'pb-12 lg:pb-24' : 'my-12 lg:my-24'}>
+      <div style={room} className={program.masthead ? 'pb-12 lg:pb-24' : 'my-12 lg:my-24'}>
         {/* The masthead owns the visual h1 (S5); without one, PageTitle does. */}
         {program.masthead ? (
           <Masthead
@@ -165,7 +170,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
             accent={program.accent}
           />
         ) : (
-          <PageTitle heading={program.name} subheading={program.ageRange} />
+          <PageTitle heading={program.name} subheading={program.ageRange} accent={program.accent} />
         )}
 
         <div className="container">
@@ -174,13 +179,15 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
           <div className="mt-8 grid gap-12 lg:mt-12 lg:grid-cols-[minmax(0,1fr)_20rem] lg:gap-16">
             <div className="min-w-0">
               {program.summary && (
-                <p className="max-w-[65ch] text-xl leading-9 text-pretty text-foreground">
+                <p className="max-w-[65ch] border-l-4 border-room pl-6 text-xl leading-9 text-pretty text-foreground">
                   {program.summary}
                 </p>
               )}
               {program.body?.length ? (
                 <PortableText
-                  className="mt-8 max-w-[65ch]"
+                  // List markers in the room's text tone — a quiet repeat of
+                  // the colour through the copy. Links stay brand blue.
+                  className="mt-8 max-w-[65ch] [&_li::marker]:text-room-strong"
                   value={program.body as PortableTextBlock[]}
                 />
               ) : null}
@@ -201,16 +208,14 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
                   className="aspect-[3/2] w-full rounded-xl object-cover"
                 />
               ) : null}
-              <div
-                className={cn('rounded-xl border border-border bg-card p-6', ACCENT_TOP[accent])}
-              >
+              <div className="rounded-xl border border-room/25 border-t-4 border-t-room bg-room-tint p-6">
                 <h2 id="program-facts" className="text-lg">
                   At a glance
                 </h2>
                 <dl className="mt-4 grid gap-4">
                   {facts.map((fact) => (
                     <div key={fact.term}>
-                      <dt className="text-sm font-medium text-muted-foreground">{fact.term}</dt>
+                      <dt className="text-sm font-medium text-room-strong">{fact.term}</dt>
                       <dd className="mt-0.5 text-base text-pretty">{fact.value}</dd>
                       {fact.note ? (
                         <dd className="mt-1 text-sm text-pretty text-muted-foreground">
@@ -226,9 +231,10 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
 
           <section
             aria-labelledby="program-tour"
-            className="mt-16 rounded-xl bg-secondary px-6 py-10 text-secondary-foreground sm:px-10 lg:mt-24"
+            className="relative mt-16 overflow-hidden rounded-xl bg-room-tint px-6 py-10 text-foreground sm:px-10 lg:mt-24"
           >
-            <h2 id="program-tour" className="text-2xl md:text-3xl">
+            <span aria-hidden="true" className="absolute inset-y-0 left-0 w-1.5 bg-room" />
+            <h2 id="program-tour" className="text-2xl text-room-strong md:text-3xl">
               Book a tour
             </h2>
             <p className="mt-3 max-w-[60ch] text-lg leading-8">
@@ -241,6 +247,12 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
               className={cn(
                 buttonVariants({size: 'lg'}),
                 'mt-6 min-h-11 focus-visible:ring-2 focus-visible:ring-offset-2',
+                // Room deep tone (FB5): white on it ≥ 7:1 for any pick
+                // (lib/room.ts). Hover darkens rather than the default /90
+                // fade, which would lighten toward the tint and eat that ratio.
+                // Ring in the same tone: ≥ 7:1 against the tint behind it.
+                'bg-room-strong text-primary-foreground focus-visible:ring-room-strong focus-visible:ring-offset-room-tint',
+                'hover:bg-[color-mix(in_oklab,hsl(var(--room-strong)),black_18%)]',
               )}
             >
               How to book a tour
@@ -254,13 +266,13 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
               </h2>
               <ul className="mt-6 grid gap-4 sm:grid-cols-2">
                 {siblings.map((s) => (
-                  <li key={s._id}>
+                  <li key={s._id} style={roomStyle(s.accent)}>
                     <Link
                       href={`/programs/${stegaClean(s.slug)}`}
                       transitionTypes={['nav-forward']}
-                      className="flex min-h-11 flex-col rounded-xl border border-border bg-card p-5 transition-colors hover:border-primary/40 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                      className="flex min-h-11 flex-col rounded-xl border border-border border-l-4 border-l-room bg-card p-5 transition-colors hover:border-room/40 hover:border-l-room hover:bg-room-tint focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
                     >
-                      <span className="font-display text-lg text-primary">{s.name}</span>
+                      <span className="font-display text-lg text-room-strong">{s.name}</span>
                       <span className="text-sm text-muted-foreground">{s.ageRange}</span>
                     </Link>
                   </li>

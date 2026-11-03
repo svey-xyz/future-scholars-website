@@ -30,6 +30,12 @@ const SIZES = '(min-width: 1024px) 66vw, 100vw'
  * WCAG 2.2.2, and the carousel is already fully operable by arrows / dots /
  * swipe / keyboard. (Autoplay was scoped as optional — see docs/A11Y.md.)
  */
+/* Prev/next. With a block room (FB5) they take the room's deep tone on a tint
+   hover — ≥ 7:1 for any pick (lib/room.ts); unset, the shadcn outline look. */
+const NAV =
+  'size-11 cursor-pointer room:border-room/40 room:text-room-strong room:hover:bg-room-tint room:hover:text-room-strong room:focus-visible:ring-room-strong'
+const NAV_RIGHT = 'right-2 sm:-right-16'
+
 export default function GalleryCarousel({items, aspect, enableLightbox}: Props) {
   const [api, setApi] = useState<CarouselApi>()
   const [selected, setSelected] = useState(0)
@@ -81,8 +87,8 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
 
       {multiple && (
         <>
-          <CarouselPrevious className="left-2 size-11 sm:-left-16 cursor-pointer" />
-          <CarouselNext className="right-2 size-11 sm:-right-16 cursor-pointer" />
+          <CarouselPrevious className={cn('left-2 sm:-left-16', NAV)} />
+          <CarouselNext className={cn(NAV_RIGHT, NAV)} />
           <div className="mt-4 flex justify-center gap-1">
             {Array.from({length: count}).map((_, i) => (
               <button
@@ -91,12 +97,14 @@ export default function GalleryCarousel({items, aspect, enableLightbox}: Props) 
                 aria-label={`Go to slide ${i + 1}`}
                 aria-current={i === selected}
                 onClick={() => api?.scrollTo(i)}
-                className="grid size-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring cursor-pointer"
+                className="grid size-6 place-items-center rounded-full focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring room:focus-visible:ring-room-strong cursor-pointer"
               >
                 <span
                   className={cn(
                     'size-2 rounded-full transition-colors',
-                    i === selected ? 'bg-foreground' : 'bg-foreground/40 hover:bg-foreground/60',
+                    i === selected
+                      ? 'bg-foreground room:bg-room-strong'
+                      : 'bg-foreground/40 hover:bg-foreground/60 room:bg-room-strong/40 room:hover:bg-room-strong/60',
                   )}
                 />
               </button>

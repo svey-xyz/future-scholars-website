@@ -54,7 +54,7 @@ export default function ContactDetails({block, className}: Props) {
     <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
-          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+          <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
             {heading}
           </Reveal>
         )}

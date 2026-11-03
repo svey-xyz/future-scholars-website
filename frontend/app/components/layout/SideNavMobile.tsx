@@ -17,7 +17,7 @@ import {cn} from '@/lib/utils'
 import BrandMark from './BrandMark'
 import ContactHub from './ContactHub'
 import SideNavLinks from './SideNavLinks'
-import type {NavItem, SettingsContact} from '@/sanity/lib/types'
+import type {NavItem, NavRooms, SettingsContact} from '@/sanity/lib/types'
 
 // Mount gate: a store that reads `false`
 // on the server and `true` on the client. An effect would be the obvious
@@ -30,6 +30,8 @@ const DESKTOP_QUERY = '(min-width: 64rem)'
 
 type SideNavMobileProps = {
   navigation: NavItem[]
+  /** Program links' room variables, from `SideNav` (FB5). */
+  rooms?: NavRooms
   contact: SettingsContact
   homepageSlug?: string | null
   siteTitle: string
@@ -58,6 +60,7 @@ type SideNavMobileProps = {
  */
 export default function SideNavMobile({
   navigation,
+  rooms,
   contact,
   homepageSlug,
   siteTitle,
@@ -183,6 +186,7 @@ export default function SideNavMobile({
               >
                 <SideNavLinks
                   navigation={navigation}
+                  rooms={rooms}
                   homepageSlug={homepageSlug}
                   onNavigate={() => setOpen(false)}
                   variant="drawer"

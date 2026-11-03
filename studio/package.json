@@ -21,6 +21,7 @@
     "@sanity/assist": "^6.2.6",
     "@sanity/cli": "^8.27.0",
     "@sanity/icons": "^5.2.3",
+    "@sanity/ui": "^4.4.10",
     "@sanity/vision": "^6.22.0",
     "pluralize-esm": "^9.0.5",
     "react": "^19.3.1",

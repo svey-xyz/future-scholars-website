@@ -23,12 +23,19 @@ import GalleryMedia from './GalleryMedia'
 import GalleryVideo from './GalleryVideo'
 import {useLightbox} from './LightboxProvider'
 import {useSwipeToDismiss} from './useSwipeToDismiss'
+import {cn} from '@/lib/utils'
+import type {CSSProperties} from 'react'
 import type {GalleryItem} from '@/sanity/lib/types'
 import {itemCaption} from './utils'
 
 type Props = {
   items: GalleryItem[]
   heading?: string
+  /**
+   * The block's room variables (`roomStyle()`, FB5). Passed explicitly because
+   * the dialog portals to <body>, outside the block wrapper that scopes them.
+   */
+  room?: CSSProperties
 }
 
 /**
@@ -56,7 +63,7 @@ type Props = {
  */
 const KEEP_OPEN = 'img, video, iframe, button, a, figcaption, [data-lightbox-keep]'
 const TAP_SLOP = 10
-export default function GalleryLightbox({items, heading}: Props) {
+export default function GalleryLightbox({items, heading, room}: Props) {
   const {open, index, close, setIndex} = useLightbox()
   const [api, setApi] = useState<CarouselApi>()
   const [current, setCurrent] = useState(index)
@@ -122,12 +129,19 @@ export default function GalleryLightbox({items, heading}: Props) {
   const counter = `${current + 1} / ${total}`
   // Chrome fades out as the stage is pulled down (`--lb-drag`, set by the swipe hook).
   const chromeFade = 'opacity-[calc(1-var(--lb-drag,0))]'
-  const pillButton = 'size-11 rounded-full text-foreground hover:bg-foreground/10 [&_svg]:size-5'
+  // Controls take the room's deep tone on a tint hover when the block has a
+  // room (≥ 7:1 for any pick, lib/room.ts); otherwise ink.
+  const pillButton =
+    'size-11 rounded-full text-foreground hover:bg-foreground/10 room:text-room-strong room:hover:bg-room-tint room:hover:text-room-strong [&_svg]:size-5'
+  const sideArrow =
+    'hidden size-11 sm:inline-flex room:border-room/40 room:text-room-strong room:hover:bg-room-tint room:hover:text-room-strong'
 
   return (
     <Dialog open={open} onOpenChange={(next) => !next && close()}>
       <DialogContent
         showCloseButton={false}
+        style={room}
+        data-room={room ? '' : undefined}
         onKeyDown={onKeyDown}
         onPointerDown={onPointerDown}
         onClick={onBackdropClick}
@@ -154,7 +168,7 @@ export default function GalleryLightbox({items, heading}: Props) {
             // Desktop only — below `sm` the counter lives in the bottom pill.
             <span
               aria-hidden="true"
-              className="hidden rounded-full bg-background/85 px-3 py-1 text-sm tabular-nums text-foreground shadow-sm ring-1 ring-foreground/10 sm:inline-block"
+              className="hidden rounded-full bg-background/85 px-3 py-1 text-sm tabular-nums text-foreground shadow-sm ring-1 ring-foreground/10 room:text-room-strong room:ring-room/30 sm:inline-block"
             >
               {counter}
             </span>
@@ -164,7 +178,7 @@ export default function GalleryLightbox({items, heading}: Props) {
               variant="ghost"
               size="icon"
               aria-label="Close gallery"
-              className="ml-auto size-11 rounded-full bg-background/85 text-foreground shadow-sm ring-1 ring-foreground/10 hover:bg-background [&_svg]:size-6"
+              className="ml-auto size-11 rounded-full bg-background/85 text-foreground shadow-sm ring-1 ring-foreground/10 hover:bg-background room:text-room-strong room:ring-room/30 room:hover:bg-room-tint [&_svg]:size-6"
             >
               <XMarkIcon aria-hidden="true" />
             </Button>
@@ -217,8 +231,8 @@ export default function GalleryLightbox({items, heading}: Props) {
 
             {total > 1 && (
               <>
-                <CarouselPrevious className="hidden size-11 sm:-left-12 sm:inline-flex" />
-                <CarouselNext className="hidden size-11 sm:-right-12 sm:inline-flex" />
+                <CarouselPrevious className={cn('sm:-left-12', sideArrow)} />
+                <CarouselNext className={cn('sm:-right-12', sideArrow)} />
               </>
             )}
           </Carousel>
@@ -230,7 +244,7 @@ export default function GalleryLightbox({items, heading}: Props) {
             data-lightbox-keep
             className={`flex justify-center px-3 pb-[max(1rem,env(safe-area-inset-bottom))] pt-3 sm:hidden ${chromeFade}`}
           >
-            <div className="flex items-center gap-1 rounded-full bg-background/85 p-1 shadow-lg ring-1 ring-foreground/10 backdrop-blur-md">
+            <div className="flex items-center gap-1 rounded-full bg-background/85 p-1 shadow-lg ring-1 ring-foreground/10 backdrop-blur-md room:ring-room/30">
               <Button
                 variant="ghost"
                 size="icon"
@@ -242,7 +256,7 @@ export default function GalleryLightbox({items, heading}: Props) {
               </Button>
               <span
                 aria-hidden="true"
-                className="min-w-14 text-center text-sm tabular-nums text-foreground"
+                className="min-w-14 text-center text-sm tabular-nums text-foreground room:text-room-strong"
               >
                 {counter}
               </span>

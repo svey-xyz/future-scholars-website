@@ -23,6 +23,13 @@ export type Address = {
   country?: string
 }
 
+export type ProgramReference = {
+  _ref: string
+  _type: 'reference'
+  _weak?: boolean
+  [internalGroqTypeReferenceTo]?: 'program'
+}
+
 export type PullQuote = {
   _type: 'pullQuote'
   quote: string
@@ -30,6 +37,7 @@ export type PullQuote = {
   repeatsText?: boolean
   tone?: 'plain' | 'panel'
   anchor?: string
+  room?: ProgramReference
 }
 
 export type Note = {
@@ -63,6 +71,7 @@ export type Stats = {
   }>
   columns?: 2 | 3 | 4
   anchor?: string
+  room?: ProgramReference
 }
 
 export type Faq = {
@@ -76,6 +85,7 @@ export type Faq = {
     _key: string
   }>
   anchor?: string
+  room?: ProgramReference
 }
 
 export type ContactDetails = {
@@ -86,6 +96,7 @@ export type ContactDetails = {
   showMapLink?: boolean
   secondaryEmail?: string
   anchor?: string
+  room?: ProgramReference
 }
 
 export type PersonReference = {
@@ -111,13 +122,7 @@ export type FacultyGrid = {
   button?: Button
   columns?: 2 | 3 | 4
   anchor?: string
-}
-
-export type ProgramReference = {
-  _ref: string
-  _type: 'reference'
-  _weak?: boolean
-  [internalGroqTypeReferenceTo]?: 'program'
+  room?: ProgramReference
 }
 
 export type ProgramsGrid = {
@@ -143,6 +148,7 @@ export type Testimonials = {
   limit?: number
   columns?: 1 | 2 | 3
   anchor?: string
+  room?: ProgramReference
 }
 
 export type FeaturesGrid = {
@@ -185,6 +191,7 @@ export type FeaturesGrid = {
   }>
   columns?: 2 | 3 | 4
   anchor?: string
+  room?: ProgramReference
 }
 
 export type SanityImageAssetReference = {
@@ -233,6 +240,7 @@ export type Gallery = {
   aspect?: 'square' | 'video' | 'auto'
   enableLightbox?: boolean
   anchor?: string
+  room?: ProgramReference
 }
 
 export type NavDropdown = {
@@ -349,6 +357,7 @@ export type CallToAction = {
   theme?: 'light' | 'brand'
   contentAlignment?: 'textFirst' | 'imageFirst'
   anchor?: string
+  room?: ProgramReference
 }
 
 export type InfoSection = {
@@ -358,6 +367,7 @@ export type InfoSection = {
   content?: BlockContent
   aside?: 'none' | 'map'
   anchor?: string
+  room?: ProgramReference
 }
 
 export type BlockContentTextOnly = Array<{
@@ -601,7 +611,7 @@ export type Program = {
   ageRange: string
   ratio?: string
   classroomName?: string
-  accent: 'roses' | 'shamrock' | 'violet'
+  accent: string
   summary: string
   body?: BlockContent
   image?: {
@@ -885,6 +895,7 @@ export type Geopoint = {
 
 export type AllSanitySchemaTypes =
   | Address
+  | ProgramReference
   | PullQuote
   | Note
   | Stats
@@ -892,7 +903,6 @@ export type AllSanitySchemaTypes =
   | ContactDetails
   | PersonReference
   | FacultyGrid
-  | ProgramReference
   | ProgramsGrid
   | Testimonials
   | FeaturesGrid

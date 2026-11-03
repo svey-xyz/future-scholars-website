@@ -1,17 +1,19 @@
 'use client'
 
-import {useState} from 'react'
+import {useState, type CSSProperties} from 'react'
 import {usePathname} from 'next/navigation'
 import {ArrowTopRightOnSquareIcon, ChevronDownIcon} from '@heroicons/react/24/outline'
 
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible'
 import ResolvedLink from '@/app/components/common/ResolvedLink'
 import {cn} from '@/lib/utils'
-import type {NavItem, NavLinkItem} from '@/sanity/lib/types'
+import type {NavItem, NavLinkItem, NavRooms} from '@/sanity/lib/types'
 import {isActiveHref, isWithinHref, resolveNavLink} from './navHelpers'
 
 type SideNavLinksProps = {
   navigation: NavItem[]
+  /** Program links' room variables by `_key`, computed server-side by `SideNav` (FB5). */
+  rooms?: NavRooms
   /** `settings.homepage` slug, so the Home item points at `/` (see navHelpers). */
   homepageSlug?: string | null
   /** Called after an in-panel navigation, so the mobile drawer can close. */
@@ -38,6 +40,7 @@ type Variant = 'rail' | 'drawer'
  */
 export default function SideNavLinks({
   navigation,
+  rooms,
   homepageSlug,
   onNavigate,
   variant = 'rail',
@@ -54,6 +57,7 @@ export default function SideNavLinks({
             <NavGroup
               title={item.title}
               links={item.links ?? []}
+              rooms={rooms}
               pathname={pathname}
               homepageSlug={homepageSlug}
               onNavigate={onNavigate}
@@ -64,6 +68,7 @@ export default function SideNavLinks({
           <li key={item._key}>
             <NavLeaf
               link={item}
+              room={rooms?.[item._key]}
               pathname={pathname}
               homepageSlug={homepageSlug}
               onNavigate={onNavigate}
@@ -93,17 +98,21 @@ const rowBase =
   'focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 ' +
   'focus-visible:ring-offset-background'
 
+// Surface behind each menu, for the active program row's cutout bar.
+const CUTOUT: Record<Variant, string> = {rail: 'bg-card', drawer: 'bg-background'}
+
 // ≥ 44px rows at the top level (SC 2.5.5, AAA); nested rows keep 44px too.
 const rowSize: Record<Variant, {top: string; nested: string}> = {
-  rail: {top: 'min-h-11 py-2 text-[0.9375rem] font-medium', nested: 'min-h-11 py-2 text-sm'},
+  rail: {top: 'min-h-11 py-2 text-[0.9375rem] font-medium', nested: 'min-h-11 py-2 pl-4 text-sm'},
   drawer: {
     top: 'min-h-13 py-3 font-display text-xl font-medium',
-    nested: 'min-h-12 py-2.5 text-base',
+    nested: 'min-h-12 py-2.5 pl-4 text-base',
   },
 }
 
 function NavLeaf({
   link,
+  room,
   pathname,
   homepageSlug,
   nested = false,
@@ -111,6 +120,7 @@ function NavLeaf({
   variant,
 }: {
   link: NavLinkItem
+  room?: CSSProperties
   pathname: string
   homepageSlug?: string | null
   nested?: boolean
@@ -143,8 +153,33 @@ function NavLeaf({
         'aria-[current=page]:bg-primary aria-[current=page]:font-semibold',
         'aria-[current=page]:text-primary-foreground aria-[current=page]:shadow-sm',
         'aria-[current=page]:hover:bg-primary aria-[current=page]:hover:text-primary-foreground',
+        // Program rows take their room (FB5; vars scoped by `style` below):
+        // tint + deep-tone text on hover (≥ 7:1), a solid deep-tone pill when
+        // current (white on it ≥ 7:1). Both guaranteed by lib/room.ts.
+        room && [
+          'relative hover:bg-room-tint hover:text-room-strong',
+          'aria-[current=page]:bg-room-strong aria-[current=page]:hover:bg-room-strong',
+        ],
       )}
+      style={room}
     >
+      {room && (
+        // Room colour (FB5): a solid bar in the row's left padding, echoing the
+        // group's indent rule. Absolute, so program labels stay aligned with
+        // their siblings. Decorative — the label names the program. On the
+        // active row (filled with the room colour) it becomes a cutout in the
+        // menu's own surface: white card on the rail, paper in the drawer.
+        <span
+          aria-hidden="true"
+          className={cn(
+            'absolute top-1/2 h-5 w-1 -translate-y-1/2 rounded-full',
+            // Nested rows carry 4px more left padding (rowSize), so the bar
+            // sits further in, clear of the pill's rounded edge.
+            nested ? 'left-1.5' : 'left-0.5',
+            isActive ? CUTOUT[variant] : 'bg-room',
+          )}
+        />
+      )}
       <span>{label}</span>
       {isExternal && (
         <>
@@ -159,6 +194,7 @@ function NavLeaf({
 function NavGroup({
   title,
   links,
+  rooms,
   pathname,
   homepageSlug,
   onNavigate,
@@ -166,6 +202,7 @@ function NavGroup({
 }: {
   title: string
   links: NavLinkItem[]
+  rooms?: NavRooms
   pathname: string
   homepageSlug?: string | null
   onNavigate?: () => void
@@ -211,11 +248,12 @@ function NavGroup({
       <CollapsibleContent className="overflow-hidden data-[state=closed]:animate-collapsible-up data-[state=open]:animate-collapsible-down">
         {/* Indent rule ties the children to their group without relying on
             colour alone. */}
-        <ul className="mb-1 ml-4 mt-0.5 flex flex-col gap-0.5 border-l border-border pl-2">
+        <ul className="mb-1 ml-4 mt-0.5 flex flex-col gap-0.5 border-l border-border pl-1">
           {links.map((child) => (
             <li key={child._key}>
               <NavLeaf
                 link={child}
+                room={rooms?.[child._key]}
                 pathname={pathname}
                 homepageSlug={homepageSlug}
                 nested

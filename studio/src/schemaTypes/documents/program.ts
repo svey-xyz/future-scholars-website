@@ -2,6 +2,7 @@ import {defineField, defineType} from 'sanity'
 import {BlockElementIcon} from '@sanity/icons/BlockElement'
 
 import {altField} from '../objects/shared'
+import {ColourInput, normaliseHex} from '../../components/ColourInput'
 
 /**
  * Program — one of FSMA's age-banded Montessori programs (Infants, Toddlers,
@@ -48,25 +49,28 @@ export const program = defineType({
       type: 'string',
       description: 'FSMA names its rooms — Roses, Shamrock, Violet.',
     }),
-    // FB5: an explicit enum rather than deriving the colour from
-    // `classroomName` — a rename (or stega in draft mode) would silently drop
-    // the accent. The colour is decorative; the room name is always in text.
+    // FB5: one picked colour per program. The frontend derives the text and
+    // tint tones from it (frontend/lib/room.ts), so any pick stays AAA — the
+    // editor never chooses a text colour. Decorative everywhere: the room
+    // name is always in text.
     defineField({
       name: 'accent',
       title: 'Room colour',
       type: 'string',
       description:
-        'Colours the banner rule, the "At a glance" card and the program card. Matches the room: Roses = red, Shamrock = green, Violet = blue.',
-      options: {
-        list: [
-          {title: 'Roses (red)', value: 'roses'},
-          {title: 'Shamrock (green)', value: 'shamrock'},
-          {title: 'Violet (blue)', value: 'violet'},
-        ],
-        layout: 'radio',
-        direction: 'horizontal',
-      },
-      validation: (Rule) => Rule.required(),
+        'Themes the program: banner, headings, "At a glance" card, tour panel, program card and the dot beside it in the menu. Text uses an automatically darkened shade, so any colour stays readable.',
+      components: {input: ColourInput},
+      validation: (Rule) => [
+        Rule.required().custom((value) =>
+          !value || normaliseHex(value) ? true : 'Use a hex colour, e.g. #2222d8',
+        ),
+        Rule.custom((value) => {
+          const hex = normaliseHex(value)
+          return hex && contrastOnWhite(hex) < 1.5
+            ? 'Very light — the coloured rules and menu dot will be hard to see. Text stays readable.'
+            : true
+        }).warning(),
+      ],
     }),
     defineField({
       name: 'summary',
@@ -122,3 +126,13 @@ export const program = defineType({
     },
   },
 })
+
+/** WCAG contrast of `hex` against white — only used for the "too light" warning. */
+function contrastOnWhite(hex: string): number {
+  const n = parseInt(hex.slice(1), 16)
+  const [r, g, b] = [n >> 16, n >> 8, n].map((c) => {
+    const v = (c & 255) / 255
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4
+  })
+  return 1.05 / (0.2126 * r + 0.7152 * g + 0.0722 * b + 0.05)
+}

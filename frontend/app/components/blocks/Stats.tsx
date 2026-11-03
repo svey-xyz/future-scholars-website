@@ -32,7 +32,7 @@ export default function Stats({block, className}: Props) {
       {(heading || subheading) && (
         <header className="max-w-3xl">
           {heading && (
-            <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
               {heading}
             </Reveal>
           )}
@@ -63,7 +63,7 @@ export default function Stats({block, className}: Props) {
                 <span className="mt-1 block text-sm text-muted-foreground">{stat.description}</span>
               )}
             </dt>
-            <dd className="font-display text-4xl font-medium tracking-tight text-primary tabular-nums lg:text-5xl">
+            <dd className="font-display text-4xl font-medium tracking-tight text-primary room:text-room-strong tabular-nums lg:text-5xl">
               {stat.value}
             </dd>
           </Reveal>

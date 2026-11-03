@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {TextIcon} from '@sanity/icons/Text'
 
-import {anchorField} from './shared'
+import {anchorField, roomField} from './shared'
 
 export const infoSection = defineType({
   name: 'infoSection',
@@ -43,6 +43,7 @@ export const infoSection = defineType({
       },
     }),
     anchorField,
+    roomField,
   ],
   preview: {
     select: {

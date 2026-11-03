@@ -11,7 +11,9 @@ const navLinkProjection = /* groq */ `
       "pageType": page->_type
     }
   },
-  "resolvedTitle": coalesce(title, link.page->name, link.href)
+  "resolvedTitle": coalesce(title, link.page->name, link.href),
+  // Program links only (pages have no accent): the room-colour dot in the nav.
+  "accent": link.page->accent
 `
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
@@ -101,6 +103,8 @@ export const getPageQuery = defineQuery(`
     seo,
     "pageBuilder": pageBuilder[]{
       ...,
+      // FB5: a block linked to a program themes itself in that room's colour.
+      "roomAccent": room->accent,
       _type == "callToAction" => {
         ...,
         button {
@@ -259,7 +263,8 @@ export const programQuery = defineQuery(`
         _id,
         name,
         "slug": slug.current,
-        ageRange
+        ageRange,
+        accent
       }
   }
 `)
