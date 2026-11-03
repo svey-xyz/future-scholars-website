@@ -338,6 +338,7 @@ One line per session.
 | 09-18 | Drop template | Detached from `sanity-next-clean`; template types, blocks, dark mode, PWA and docs removed; school icon set; blueprint pointed at `wzs9gcps` |
 | 09-18 | S9 + 404 | `pullQuote` block; `/montessori` restructured (saved as a **draft**, publish after deploy); themed `app/not-found.tsx`; prose capped at 58ch; Key facts top-aligned |
 | 11-02 | F1 (feedback R1) | Content pass as drafts: gmail address everywhere (incl. three `mailto:` CTA buttons the sweep found), deposit wording, hours rows school/office/core, prose + `scheduleNote` cleared, program mastheads → sky, Toddlers copy, Agata bio, Priyanka NAMC credential, Galleries last in nav |
+| 11-02 | F3 (feedback R1) | About: map beside Facility; faculty `split` layout (intro left, round headshots right, bio dialog); About draft restructured (`afaculty` merged into the grid) |
 | 11-02 | F2 (feedback R1) | Black cap on reversed logos; home logo large + bottom centre; room accents; "At a glance" reads Core program from settings; masthead heights → min-heights (fixes clipped banners) |
 
 ---
@@ -360,6 +361,15 @@ Only decisions that are still relevant and not already covered in §3–§7.
   `text-pretty` and a capped measure; the note to the client is in `CLIENT-FEEDBACK-R1.md` §5.
 - Program colours use an explicit `program.accent` enum rather than matching `classroomName`: labels
   are editor prose and carry stega in draft mode.
+- **Faculty `split` layout (FB6, FB7).** Teachers are round headshots in a 2/3/4-column grid; each is a
+  `<button>` ("{name}, {role}: read bio") opening a Radix dialog with credentials + bio. Portraits are
+  `alt=""` there (the name is the adjacent text). The dialog sits at `z-[70]`, above the mobile top bar
+  (`z-[60]`), and forces `animate-none` under reduced motion: shadcn's `data-[state]` enter/exit
+  animations are **not** gated by tw-animate-css, contrary to the old A11Y.md note (the gallery
+  lightbox and the mobile Sheet share that gap — see OWNER-TODO).
+- `PageBuilder` is `'use client'`, so every block (and its imports) ships in the client bundle; "server
+  children" in the bio dialog only pay off if the page builder becomes a server component. Worth a
+  separate session (server PageBuilder; optimistic client wrapper only in draft mode).
 - Masthead heights are min-heights (fix in F2). The fixed `h-[…vh]` clipped the eyebrow and logo on
   compact banners at short laptop heights.
 - JSON-LD type is `['Preschool', 'ChildCare']`, hard-coded.
@@ -368,8 +378,11 @@ Only decisions that are still relevant and not already covered in §3–§7.
 - `linkType: 'href'` links are internal when the href starts with `/`.
 - The mobile menu is a non-modal Radix Sheet (the top bar stays live); `inert` on the rest of the page + an `<html>` scroll lock restore the modal contract — see docs/A11Y.md → Navigation.
 - Nav groups unmount when closed. Force-mounting put hidden links in the tab order.
-- The map is a link, not an iframe. With no `mapUrl` set, it falls back to a search on the Settings
-  address.
+- About → Facility shows a lazy Google Maps embed beside the copy (client request, 2026-11-02); the
+  visible link remains for keyboard/AT users and as the fallback. (Reverses "the map is a link, not an
+  iframe", FB11.) The `infoSection.aside: 'map'` option reads the Settings address via the page query,
+  so the block adds no fetch. Elsewhere the map is still a link; with no `mapUrl` set, it falls back to
+  a search on the Settings address.
 - `telHref()` adds the country code.
 - Content Lake doesn't validate what seed scripts write, so check the rendered page in the same
   session as any seeding. A CTA body once shipped as a string instead of Portable Text.

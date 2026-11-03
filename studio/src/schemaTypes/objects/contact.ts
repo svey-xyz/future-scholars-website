@@ -135,7 +135,7 @@ export const contact = defineType({
       name: 'mapUrl',
       type: 'url',
       description:
-        'Link to the location on a map provider. Rendered as a plain link — no embedded iframe.',
+        'Link to the location on a map provider. Shown as the "Open in Google Maps" link (also under the embedded map on About). Leave empty to search the address instead.',
     }),
     defineField({
       title: 'Socials',

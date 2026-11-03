@@ -24,15 +24,24 @@ export const facultyGrid = defineType({
       type: 'string',
       initialValue: 'cards',
       description:
-        'Cards: full staff cards with portraits and biographies (About page). Highlight: a single text column with names, roles and credentials, plus a link onward (homepage teaser).',
+        "Cards: full staff cards with portraits and biographies. Highlight: a single text column with names, roles and credentials, plus a link onward (homepage teaser). Intro left, teachers right: an introduction beside a grid of round portraits; each opens that teacher's bio (About page).",
       options: {
         list: [
           {title: 'Cards', value: 'cards'},
           {title: 'Highlight', value: 'highlight'},
+          {title: 'Intro left, teachers right', value: 'split'},
         ],
         layout: 'radio',
         direction: 'horizontal',
       },
+    }),
+    // FB6/FB7: the text that sits beside the portrait grid.
+    defineField({
+      name: 'intro',
+      title: 'Introduction',
+      type: 'blockContentTextOnly',
+      description: 'Shown to the left of the portraits (above them on phones).',
+      hidden: ({parent}) => parent?.layout !== 'split',
     }),
     defineField({
       name: 'mode',
@@ -69,7 +78,8 @@ export const facultyGrid = defineType({
       type: 'boolean',
       initialValue: true,
       description: 'Off shows name, role and credentials only — useful for a large staff list.',
-      hidden: ({parent}) => parent?.layout === 'highlight',
+      // Split always puts the bio in the dialog; highlight never shows one.
+      hidden: ({parent}) => parent?.layout === 'highlight' || parent?.layout === 'split',
     }),
     defineField({
       name: 'button',
@@ -80,14 +90,17 @@ export const facultyGrid = defineType({
     }),
     {
       ...columnsField,
-      hidden: ({parent}: {parent?: {layout?: string}}) => parent?.layout === 'highlight',
+      // Highlight is one column; split has its own fixed portrait grid.
+      hidden: ({parent}: {parent?: {layout?: string}}) =>
+        parent?.layout === 'highlight' || parent?.layout === 'split',
     },
     anchorField,
   ],
   preview: {
     select: {heading: 'heading', mode: 'mode', layout: 'layout'},
     prepare({heading, mode, layout}) {
-      const kind = layout === 'highlight' ? 'Highlight' : 'Cards'
+      const kind =
+        layout === 'highlight' ? 'Highlight' : layout === 'split' ? 'Intro + portraits' : 'Cards'
       return {
         title: heading || 'Faculty Grid',
         subtitle: `${kind} · ${mode === 'selected' ? 'hand-picked' : 'everyone'}`,

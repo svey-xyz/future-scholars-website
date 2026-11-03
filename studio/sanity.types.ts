@@ -99,7 +99,8 @@ export type FacultyGrid = {
   _type: 'facultyGrid'
   heading?: string
   subheading?: string
-  layout?: 'cards' | 'highlight'
+  layout?: 'cards' | 'highlight' | 'split'
+  intro?: BlockContentTextOnly
   mode?: 'all' | 'selected'
   people?: Array<
     {
@@ -355,6 +356,7 @@ export type InfoSection = {
   heading?: string
   subheading?: string
   content?: BlockContent
+  aside?: 'none' | 'map'
   anchor?: string
 }
 

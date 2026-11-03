@@ -5,9 +5,12 @@ import {ArrowRightIcon} from '@heroicons/react/24/outline'
 import ResolvedLink from '@/app/components/common/ResolvedLink'
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
+import SitePortableText from '@/app/components/portable-text/PortableText'
 import {Card} from '@/components/ui/card'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
+import {dataAttr} from '@/sanity/lib/utils'
+import FacultyBioDialog from './FacultyBioDialog'
 
 type Props = {
   block: ExtractPageBuilderType<'facultyGrid'>
@@ -48,8 +51,12 @@ export default function FacultyGrid({block, className}: Props) {
   if (items.length === 0) return null
 
   // `stegaClean`: enum values carry stega characters in draft mode.
-  if (stegaClean(block.layout) === 'highlight') {
+  const layout = stegaClean(block.layout)
+  if (layout === 'highlight') {
     return <FacultyHighlight block={block} className={className} />
+  }
+  if (layout === 'split') {
+    return <FacultySplit block={block} className={className} />
   }
 
   return (
@@ -206,6 +213,152 @@ function FacultyHighlight({
             </ResolvedLink>
           </Reveal>
         )}
+      </div>
+    </section>
+  )
+}
+
+type Person = NonNullable<ExtractPageBuilderType<'facultyGrid'>['people']>[number]
+
+/* Portrait sizes for the round headshots: 2 / 3 / 4 per row inside the right
+   column (≈55% of the content width from `lg`). */
+const PORTRAIT_SIZES = '(min-width: 80rem) 10rem, (min-width: 40rem) 30vw, 45vw'
+
+function initials(person: Person) {
+  return [person.firstName, person.lastName]
+    .map((part) => stegaClean(part)?.trim()?.[0])
+    .filter(Boolean)
+    .join('')
+}
+
+/** Round portrait, or a sky circle with initials when there's no photo. */
+function Portrait({person, className}: {person: Person; className?: string}) {
+  const ref = person.picture?.asset?._ref
+  return (
+    <span
+      className={cn(
+        'relative block aspect-square overflow-hidden rounded-full bg-secondary',
+        className,
+      )}
+    >
+      {ref ? (
+        // Decorative: the name is right beside it (button text / dialog title),
+        // so alt text would only make screen readers say the name twice.
+        <Image
+          id={ref}
+          alt=""
+          width={320}
+          height={320}
+          mode="cover"
+          hotspot={person.picture?.hotspot}
+          crop={person.picture?.crop}
+          sizes={PORTRAIT_SIZES}
+          className="absolute inset-0 h-full w-full object-cover"
+        />
+      ) : (
+        <span
+          aria-hidden="true"
+          className="absolute inset-0 flex items-center justify-center font-display text-3xl text-secondary-foreground"
+        >
+          {initials(person)}
+        </span>
+      )}
+    </span>
+  )
+}
+
+/**
+ * Split layout (FB6, FB7) — intro on the left, teachers on the right as round
+ * headshots in a grid (the client's "T-E-A-C-H-E-R" circles sketch). Each
+ * card is a button that opens that teacher's bio in a dialog.
+ *
+ * Server component: credentials and bio are rendered here and handed to the
+ * `FacultyBioDialog` island as children, so the island carries only the
+ * dialog behaviour. Names live in the buttons and the dialog titles, so this
+ * layout adds no per-person headings.
+ */
+function FacultySplit({
+  block,
+  className,
+}: {
+  block: ExtractPageBuilderType<'facultyGrid'>
+  className?: string
+}) {
+  const {heading, subheading, intro} = block
+  const items = block.people ?? []
+
+  return (
+    <section className={cn('container my-12 lg:my-16', className)}>
+      <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-16">
+        <header className="flex min-w-0 flex-col gap-3">
+          {heading && (
+            <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+              {heading}
+            </Reveal>
+          )}
+          {subheading && (
+            <Reveal as="p" i={1} className="text-lg leading-8 text-pretty text-muted-foreground">
+              {subheading}
+            </Reveal>
+          )}
+          {intro?.length ? (
+            <Reveal i={2} className="mt-1">
+              <SitePortableText value={intro as PortableTextBlock[]} />
+            </Reveal>
+          ) : null}
+        </header>
+
+        <ul className="grid min-w-0 grid-cols-2 content-start gap-6 sm:grid-cols-3 sm:gap-8 xl:grid-cols-4">
+          {items.map((person, i) => {
+            const name = [person.firstName, person.lastName].filter(Boolean).join(' ')
+            const credentials = person.credentials ?? []
+            return (
+              <Reveal as="li" key={person._id} i={i + 2} variant="scale">
+                <FacultyBioDialog
+                  dataSanity={dataAttr({
+                    id: person._id,
+                    type: 'person',
+                    path: 'picture',
+                  }).toString()}
+                  name={name}
+                  role={person.role}
+                  media={<Portrait person={person} className="w-28 shrink-0 sm:w-32" />}
+                  trigger={
+                    <>
+                      <Portrait
+                        person={person}
+                        className="w-full transition-transform duration-300 motion-safe:group-hover/teacher:scale-[1.03] motion-safe:group-focus-visible/teacher:scale-[1.03]"
+                      />
+                      <span className="flex flex-col gap-0.5">
+                        <span className="font-display text-lg leading-snug">{name}</span>
+                        {person.role ? (
+                          <span className="text-sm text-muted-foreground">
+                            <span className="sr-only">, </span>
+                            {person.role}
+                          </span>
+                        ) : null}
+                        <span className="sr-only">: read bio</span>
+                      </span>
+                    </>
+                  }
+                >
+                  {credentials.length > 0 && (
+                    <ul className="flex flex-col gap-1 border-l-2 border-primary/30 pl-4 text-sm text-muted-foreground">
+                      {credentials.map((credential, c) => (
+                        <li key={`${person._id}-${c}`}>{credential}</li>
+                      ))}
+                    </ul>
+                  )}
+                  {person.bio?.length ? (
+                    <div className="prose max-w-none leading-7 text-pretty">
+                      <PortableText value={person.bio as PortableTextBlock[]} />
+                    </div>
+                  ) : null}
+                </FacultyBioDialog>
+              </Reveal>
+            )
+          })}
+        </ul>
       </div>
     </section>
   )

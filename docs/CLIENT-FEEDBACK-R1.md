@@ -326,8 +326,8 @@ Send it with the F2 screenshots.
 | Home logo large + bottom centre (FB9) | F2 | ☑ code; drafts set |
 | Room accents red / green / blue (FB5) | F2 | ☑ code; drafts set |
 | "At a glance" reads Core program from settings (FB10) | F2 | ☑ code; drafts set |
-| Map beside Facility (FB11) | F3 | ☐ |
-| Faculty split + circular headshots + bio dialog (FB6, FB7) | F3 | ☐ |
+| Map beside Facility (FB11) | F3 | ☑ code; About draft set |
+| Faculty split + circular headshots + bio dialog (FB6, FB7) | F3 | ☑ code; About draft set |
 | Mission, Faculty intro, Priyanka bio, teachers, infant photos, toddler curriculum | F4 | ☐ waiting on client |
 | Justify pushback note sent (FB2) | svey | ☐ |
 
