@@ -14,16 +14,21 @@ type Props = {
   subheading?: string | null
   /** Raw `page.titleDisplay` (may be stega-encoded). `none` keeps the h1 sr-only. */
   titleDisplay?: string | null
+  /** Raw `program.accent` (may be stega-encoded): adds the room-colour rule (FB5). */
+  accent?: string | null
 }
 
 /* Heights (schema `masthead.height`, §7.6): tall ≈ 60vh desktop / 42vh mobile,
-   standard ≈ 48/34vh, compact ≈ 34/26vh. Min-heights keep the logo lockup
-   legible on very short viewports. The fixed vh sizing also means no CLS —
-   the box never depends on image load. */
+   standard ≈ 48/34vh, compact ≈ 34/26vh, each with a rem floor for very short
+   viewports. These are MIN-heights: a fixed height clipped the top of the copy
+   (eyebrow + logo) whenever eyebrow + logo + h1 + subheading outgrew the box,
+   e.g. compact program banners on a 1366×700 laptop lost ~88px. Growing the
+   box adds no CLS — its contents are server-rendered text and a vector logo
+   with intrinsic dimensions, and the photograph is absolutely positioned. */
 const HEIGHTS: Record<string, string> = {
-  tall: 'h-[42vh] min-h-72 lg:h-[60vh] lg:min-h-96',
-  standard: 'h-[34vh] min-h-60 lg:h-[48vh] lg:min-h-80',
-  compact: 'h-[26vh] min-h-52 lg:h-[34vh] lg:min-h-64',
+  tall: 'min-h-[max(42vh,18rem)] lg:min-h-[max(60vh,24rem)]',
+  standard: 'min-h-[max(34vh,15rem)] lg:min-h-[max(48vh,20rem)]',
+  compact: 'min-h-[max(26vh,13rem)] lg:min-h-[max(34vh,16rem)]',
 }
 
 /* Brand panel tones (schema `masthead.tone`). `secondary` is a light surface,
@@ -51,6 +56,46 @@ const SCRIM_GRADIENT: Record<string, string> = {
   strong: 'bg-gradient-to-t from-black/85 via-black/55 to-black/25',
 }
 
+/* Logo placement (schema `masthead.logoPlacement`). `bottomCenter` (FB9) sits
+   the lockup low and centred, behind the gradient scrim like `bottomLeft`. */
+type Placement = 'center' | 'bottomLeft' | 'bottomCenter'
+const PLACEMENT: Record<Placement, {header: string; inner: string}> = {
+  center: {
+    header: 'items-center justify-center text-center',
+    inner: 'items-center px-6 sm:px-10 lg:px-14',
+  },
+  // Left placement shares the content column's `container` (max-width, auto
+  // margins, 2rem gutter) so the lockup's left edge lines up with every block
+  // below it.
+  bottomLeft: {header: 'items-end', inner: 'container items-start'},
+  bottomCenter: {
+    header: 'items-end justify-center text-center',
+    inner: 'items-center px-6 sm:px-10 lg:px-14',
+  },
+}
+
+/* Logo widths (schema `masthead.logoSize`). The box height is fixed and the
+   logo is a vector with intrinsic dimensions, so a larger logo adds no CLS. */
+const LOGO_SIZES: Record<string, string> = {
+  standard: 'w-48 sm:w-64 lg:w-80',
+  large: 'w-64 sm:w-96 lg:w-[30rem]',
+}
+
+/* Room accents (FB5, `program.accent`). The rule is decorative — the room name
+   is always in text (1.4.1) — so base tones are fine for it. The eyebrow text
+   uses the `-strong` tones only, and only on the light (sky) panel they were
+   measured against (docs/A11Y.md). */
+const ACCENT_RULE: Record<string, string> = {
+  roses: 'border-b-[6px] border-room-roses',
+  shamrock: 'border-b-[6px] border-room-shamrock',
+  violet: 'border-b-[6px] border-room-violet',
+}
+const ACCENT_TEXT: Record<string, string> = {
+  roses: 'text-room-roses-strong',
+  shamrock: 'text-room-shamrock-strong',
+  violet: 'text-room-violet-strong',
+}
+
 // Inline custom-property helper (typed) for the mount-entrance cascade;
 // `.enter` is gated on prefers-reduced-motion in
 // globals.css, so reduced-motion users get everything instantly.
@@ -73,12 +118,15 @@ const delay = (ms: number) => ({'--enter-d': `${ms}ms`}) as CSSProperties
  * `lg` up. Never animated — animating the LCP image delays perceived load;
  * only the overlaid copy rides the `.enter` cascade.
  */
-export default function Masthead({masthead, heading, subheading, titleDisplay}: Props) {
+export default function Masthead({masthead, heading, subheading, titleDisplay, accent}: Props) {
   const variant = stegaClean(masthead.variant)
   const height = HEIGHTS[stegaClean(masthead.height) ?? 'standard'] ?? HEIGHTS.standard
   const showLogo = masthead.showLogo !== false
-  const centered = (stegaClean(masthead.logoPlacement) ?? 'center') === 'center'
+  const placementKey = stegaClean(masthead.logoPlacement) ?? 'center'
+  const placement: Placement = placementKey in PLACEMENT ? (placementKey as Placement) : 'center'
+  const logoSize = LOGO_SIZES[stegaClean(masthead.logoSize) ?? 'standard'] ?? LOGO_SIZES.standard
   const hideHeading = stegaClean(titleDisplay) === 'none'
+  const accentKey = stegaClean(accent) ?? ''
 
   const imageRef = masthead.image?.asset?._ref
   const isImage = variant === 'image' && Boolean(imageRef)
@@ -86,7 +134,9 @@ export default function Masthead({masthead, heading, subheading, titleDisplay}: 
   // Light panel → standard lockup; dark panels (and any photograph) → reversed.
   const reversedLogo = isImage || tone !== TONES.secondary
   const overlay = stegaClean(masthead.overlay) ?? 'medium'
-  const scrim = centered ? SCRIM_FLAT[overlay] : SCRIM_GRADIENT[overlay]
+  const scrim = placement === 'center' ? SCRIM_FLAT[overlay] : SCRIM_GRADIENT[overlay]
+  const lightPanel = !isImage && tone === TONES.secondary
+  const eyebrowAccent = lightPanel ? ACCENT_TEXT[accentKey] : undefined
 
   return (
     <header
@@ -94,7 +144,8 @@ export default function Masthead({masthead, heading, subheading, titleDisplay}: 
         'relative isolate flex w-full overflow-hidden',
         height,
         !isImage && tone,
-        centered ? 'items-center justify-center text-center' : 'items-end',
+        PLACEMENT[placement].header,
+        ACCENT_RULE[accentKey],
       )}
     >
       {isImage && imageRef ? (
@@ -121,10 +172,7 @@ export default function Masthead({masthead, heading, subheading, titleDisplay}: 
       <div
         className={cn(
           'flex flex-col gap-4 py-8 lg:py-12',
-          // Left placement shares the content column's `container` (max-width,
-          // auto margins, 2rem gutter) so the lockup's left edge lines up with
-          // every block below it. Centred copy keeps its own padding.
-          centered ? 'items-center px-6 sm:px-10 lg:px-14' : 'container items-start',
+          PLACEMENT[placement].inner,
           // Photographs take the on-dark token (white) for copy; brand panels
           // inherit their tone's foreground from the header element.
           isImage && 'text-primary-foreground',
@@ -132,14 +180,19 @@ export default function Masthead({masthead, heading, subheading, titleDisplay}: 
       >
         {masthead.eyebrow ? (
           <p
-            className="enter text-xs font-semibold uppercase tracking-[0.2em] opacity-90"
+            className={cn(
+              'enter text-xs font-semibold uppercase tracking-[0.2em]',
+              // Accent eyebrows stay fully opaque: opacity would eat the
+              // measured contrast of the -strong tone.
+              eyebrowAccent ?? 'opacity-90',
+            )}
             style={delay(0)}
           >
             {masthead.eyebrow}
           </p>
         ) : null}
         {showLogo ? (
-          <div className="enter w-48 sm:w-64 lg:w-80" style={delay(90)}>
+          <div className={cn('enter', logoSize)} style={delay(90)}>
             <BrandMark
               variant="full"
               reversed={reversedLogo}

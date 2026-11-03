@@ -44,6 +44,7 @@ const programCardFields = /* groq */ `
   ageRange,
   ratio,
   classroomName,
+  accent,
   summary,
   image,
   "order": coalesce(order, 99)

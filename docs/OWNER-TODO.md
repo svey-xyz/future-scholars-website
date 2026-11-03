@@ -1,7 +1,7 @@
 # FSMA — owner action list
 
 Things an agent session can't do: they need your credentials, a browser, or an answer from the client.
-**Updated:** 2026-09-18
+**Updated:** 2026-11-02
 
 ---
 
@@ -47,6 +47,25 @@ Things an agent session can't do: they need your credentials, a browser, or an a
       would show as "Unknown block". Review it in Presentation first.
 - [ ] **Check the 404** at any made-up URL on the preview, including on a phone.
 
+## Client feedback R1 — `feat/fsma-f2-brand-banners` (also carries the F1 notes)
+
+- [ ] **Review the F1 content drafts in Presentation:** About (email, deposit, Facility hours line,
+      tour CTA), Home + Programs (tour CTA now mails the gmail address), all three programs (sky
+      masthead, no schedule note; Toddlers copy), both directors, and the side nav (Galleries last,
+      link titles). Ten drafts in total: `settings`, `page-about`, `page-home`, `page-programs`,
+      the three programs and both directors.
+- [ ] **Deploy the schema and Studio** after merging F2:
+      `cd studio && npx sanity schema deploy && npx sanity deploy` (adds `masthead.logoSize`,
+      `bottomCenter`, `program.accent`, `hoursRow.key`).
+- [ ] **Then publish the drafts.** F2 also set `page-home.masthead` (large, bottom centre), each
+      program's `accent`, and the hours row keys on the same drafts. Publish only after the new
+      frontend is live: the current one ignores `accent`/`key`, so the "At a glance" hours row would
+      disappear until it deploys.
+- [ ] **Send the client** the F2 screenshots and the justified-text note
+      (`CLIENT-FEEDBACK-R1.md` §5). Ask them to approve the bigger home logo and the room colours.
+- [ ] **info@futurescholarsmontessori.com:** ask the client to keep it forwarding to gmail (old
+      flyers and directories still list it).
+
 ## Repo housekeeping (on your Mac, as its own commit)
 
 - [ ] Remove `react-dom` from the root `package.json`; it conflicts with the `^19.2.7` in each
@@ -60,8 +79,8 @@ Things an agent session can't do: they need your credentials, a browser, or an a
       confirmed:
       - 1920 Bank St., Ottawa ON K1V 7Z8
       - phone (613) 244-FSMA (3762) · fax (613) 244-3764
-      - info@futurescholarsmontessori.com · futurescholarsmontessori@gmail.com
-      - open 7:30–5:30, Montessori day 8:30–3:30
+      - futurescholarsmontessori@gmail.com (the only address on the site since feedback R1)
+      - school 7:30–5:30 · office 9:30–3:30 · core program 9:00–4:00 (from the R1 notes)
       - opened January 2013
       - directors Agata Attersoll and Priyanka Aggarwal
 

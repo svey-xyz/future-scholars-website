@@ -66,7 +66,18 @@ export const contact = defineType({
       name: 'hours',
       type: 'array',
       description:
-        'One row per distinct schedule, e.g. "Monday – Friday" / "7:00 AM – 6:00 PM". Order is the display order.',
+        'The only place hours are stored (D16, FB10). One row per schedule, e.g. "School hours" / "Mon – Fri, 7:30 am – 5:30 pm". Order is the display order.',
+      // A row the site looks up by `key` must be unambiguous.
+      validation: (Rule) =>
+        Rule.custom((rows) => {
+          const keys = ((rows ?? []) as Array<{key?: string}>)
+            .map((r) => r.key)
+            .filter((k): k is string => Boolean(k))
+          const dupes = keys.filter((k, i) => keys.indexOf(k) !== i)
+          return dupes.length
+            ? `Each row type can be used once. Duplicate: ${[...new Set(dupes)].join(', ')}.`
+            : true
+        }),
       of: [
         defineArrayMember({
           name: 'hoursRow',
@@ -74,10 +85,28 @@ export const contact = defineType({
           type: 'object',
           fields: [
             defineField({
-              name: 'days',
-              title: 'Days',
+              name: 'key',
+              title: 'Row type',
               type: 'string',
-              description: 'Human-readable day range, e.g. "Monday – Friday".',
+              description:
+                "Lets the site find this row, e.g. the program pages' 'At a glance' reads Core program",
+              options: {
+                list: [
+                  {title: 'School hours', value: 'school'},
+                  {title: 'Office hours', value: 'office'},
+                  {title: 'Core program', value: 'core'},
+                ],
+                layout: 'radio',
+                direction: 'horizontal',
+              },
+            }),
+            // Field name kept as `days` (no migration); it now holds any row
+            // label, e.g. "School hours".
+            defineField({
+              name: 'days',
+              title: 'Label',
+              type: 'string',
+              description: 'What this row is, e.g. "School hours" or "Monday – Friday".',
               validation: (Rule) => Rule.required(),
             }),
             defineField({

@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
@@ -24,6 +25,16 @@ const colClass: Record<number, string> = {
 // Card images are ~33vw at desktop; the legacy source is 720×480, so asking the
 // CDN for more than ~720 buys nothing (build plan Q5 / IMAGE-MANIFEST).
 const SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
+
+/* Room accent (FB5): the same 4px top rule as the program page's "At a glance"
+   card, so the colour-to-room mapping repeats across the site. Decorative —
+   the classroom is in the card's facts as text. The hover repeat keeps the
+   rule from fading into the card's `hover:border-primary/30`. */
+const ACCENT_TOP: Record<string, string> = {
+  roses: 'border-t-4 border-t-room-roses hover:border-t-room-roses',
+  shamrock: 'border-t-4 border-t-room-shamrock hover:border-t-room-shamrock',
+  violet: 'border-t-4 border-t-room-violet hover:border-t-room-violet',
+}
 
 /**
  * Programs grid (build plan S6) — cards for FSMA's age-banded programs, either
@@ -79,7 +90,12 @@ export default function ProgramsGrid({block, className}: Props) {
 
           return (
             <Reveal as="li" key={program._id} i={i} variant="scale">
-              <Card className="group/prog h-full overflow-hidden p-0 transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg">
+              <Card
+                className={cn(
+                  'group/prog h-full overflow-hidden p-0 transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg',
+                  ACCENT_TOP[stegaClean(program.accent) ?? ''],
+                )}
+              >
                 <Link
                   href={`/programs/${program.slug}`}
                   transitionTypes={['nav-forward']}

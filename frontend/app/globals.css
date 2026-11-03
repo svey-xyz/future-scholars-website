@@ -36,6 +36,17 @@
   --input: 36 14% 50%; /* control boundaries must clear 3:1 (WCAG 1.4.11) — 3.49:1 */
   --ring: 232 52% 32%;
   --radius: 0.75rem;
+
+  /* Room accents (FB5), sampled from the legacy room thumbnails (red roses,
+     green shamrocks, blue violets). Base = decorative fills/rules ONLY.
+     -strong = the only text colours. Ratios measured on --secondary (sky) and
+     --background (paper); table in docs/A11Y.md and plan §7.2. */
+  --room-roses: 356 100% 37%; /* #bd000d — 5.46:1 on sky */
+  --room-roses-strong: 356 90% 30%; /* #910811 — 7.67:1 on sky, 8.81:1 on paper */
+  --room-shamrock: 95 87% 39%; /* #55ba0d — 2.05:1 on sky: NEVER text/icons */
+  --room-shamrock-strong: 100 75% 18%; /* #22500b — 7.74:1 on sky */
+  --room-violet: 240 73% 49%; /* #2222d8 — 7.55:1 on sky */
+  --room-violet-strong: 240 70% 38%; /* #1d1da5 — 9.75:1 on sky */
 }
 
 @theme inline {
@@ -64,6 +75,12 @@
   --color-brand-accent: hsl(var(--brand-accent));
   --color-brand-accent-foreground: hsl(var(--brand-accent-foreground));
   --color-brand-accent-strong: hsl(var(--brand-accent-strong));
+  --color-room-roses: hsl(var(--room-roses));
+  --color-room-roses-strong: hsl(var(--room-roses-strong));
+  --color-room-shamrock: hsl(var(--room-shamrock));
+  --color-room-shamrock-strong: hsl(var(--room-shamrock-strong));
+  --color-room-violet: hsl(var(--room-violet));
+  --color-room-violet-strong: hsl(var(--room-violet-strong));
 
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

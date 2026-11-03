@@ -1,6 +1,6 @@
 # FSMA Build Plan — Future Scholars Montessori Academy
 
-**Status:** S0–S9 done; most of S11 done; 404 page built. Next up: S10. · **Updated:** 2026-09-18 (rev 18) · **Owner:** Hayden Soule (svey)
+**Status:** S0–S9 done; most of S11 done; 404 page built. Next up: S10. · **Updated:** 2026-11-02 (rev 19, client feedback R1 F1–F2) · **Owner:** Hayden Soule (svey)
 **Repo:** `github.com/svey-xyz/future-scholars-website` (started from `sanity-next-clean`; no longer synced with it)
 **Owner actions and client questions:** `docs/OWNER-TODO.md`
 
@@ -203,11 +203,30 @@ white, walls of text, and identical mastheads.
 | input / background | 3.49 (UI pass) |
 | border / background | 1.28 (decorative, exempt) |
 
+**Room accents (FB5, client feedback R1).** Sampled from the legacy room thumbnails. Base tones are
+decorative fills and rules only; `-strong` tones are the only text colours. Measured on `--secondary`
+(sky) and `--background` (paper):
+
+| Token | Hex | On sky | On paper | Use |
+|---|---|---|---|---|
+| `room-roses` | `#bd000d` | 5.46 | 6.27 | rules/fills |
+| `room-roses-strong` | `#910811` | 7.67 AAA | 8.81 AAA | text |
+| `room-shamrock` | `#55ba0d` | 2.05 | 2.36 | rules/fills only, **never text or icons** |
+| `room-shamrock-strong` | `#22500b` | 7.74 AAA | 8.89 AAA | text |
+| `room-violet` | `#2222d8` | 7.55 | 8.68 | rules/fills |
+| `room-violet-strong` | `#1d1da5` | 9.75 AAA | 11.21 AAA | text |
+
+Roses = Infants, Shamrock = Toddlers, Violet = Casa (`program.accent`). The colour repeats on the
+program banner (6px bottom rule + eyebrow), the "At a glance" card and the programs grid cards (4px top
+rule). It is decorative: the room name is always in text (1.4.1).
+
 **7.3 Type.** Body is Inter; headings are **Outfit** (provisional until the client sees it next to
 Poppins). Orbitron appears only inside the logo, as outlines.
 
 **7.4 Logo.** SVGs live in `frontend/public/brand/`; the source JPG is in `docs/brand/`. It must never
-ship. The favicon is the cap alone on `--primary`, because "FSMA" is illegible below about 48px.
+ship. The cap is black (`#191E2E`) on every variant (FB3); on the reversed art it carries a white
+keyline drawn as one silhouette around board + skull, so dark grounds (including the ink panel) never
+swallow it. The favicon is the cap alone on `--primary`, because "FSMA" is illegible below about 48px.
 
 **7.6 Masthead.** Two variants:
 - `image`: a 1600×600 hotspot crop from the CDN, loaded eagerly with `fetchPriority="high"`, with
@@ -217,8 +236,10 @@ ship. The favicon is the cap alone on `--primary`, because "FSMA" is illegible b
 
 Heights are tall, standard or compact. Give each page a different combination. Home, About, Montessori
 and Programs currently use Unsplash placeholders; Gallery and Testimonials use brand panels.
-Image combos in use: Home tall/centre, Montessori tall/bottom-left, About standard/centre/strong,
-Programs standard/bottom-left.
+Image combos in use: Home tall/bottom-centre/large logo, Montessori tall/bottom-left, About
+standard/centre/strong, Programs standard/bottom-left. Program pages use the `secondary` brand panel
+with a room-accent rule (FB5). Heights are **minimums**: the box grows rather than clipping the copy.
+Logo placement is `center` | `bottomLeft` | `bottomCenter`; `logoSize` is `standard` | `large`.
 
 **7.7 ContactHub.** One component, fed by `settings.contact`:
 - From `lg` up: floating pills on the right edge.
@@ -316,6 +337,8 @@ One line per session.
 | 09-18 | Docs trim | Plan and OWNER-TODO cut to open work only |
 | 09-18 | Drop template | Detached from `sanity-next-clean`; template types, blocks, dark mode, PWA and docs removed; school icon set; blueprint pointed at `wzs9gcps` |
 | 09-18 | S9 + 404 | `pullQuote` block; `/montessori` restructured (saved as a **draft**, publish after deploy); themed `app/not-found.tsx`; prose capped at 58ch; Key facts top-aligned |
+| 11-02 | F1 (feedback R1) | Content pass as drafts: gmail address everywhere (incl. three `mailto:` CTA buttons the sweep found), deposit wording, hours rows school/office/core, prose + `scheduleNote` cleared, program mastheads → sky, Toddlers copy, Agata bio, Priyanka NAMC credential, Galleries last in nav |
+| 11-02 | F2 (feedback R1) | Black cap on reversed logos; home logo large + bottom centre; room accents; "At a glance" reads Core program from settings; masthead heights → min-heights (fixes clipped banners) |
 
 ---
 
@@ -329,6 +352,16 @@ Only decisions that are still relevant and not already covered in §3–§7.
 - The fax number is kept because the old site advertises it. The client decides whether to drop it.
 - `openingHours` in JSON-LD only uses rows that have an explicit `schemaOrg` value; nothing is
   inferred.
+- **Hours live only in `settings.contact.hours`** (FB10, extends D16). Rows carry a `key`
+  (`school` | `office` | `core`, each used once); code finds rows by `key`, never by label. Program
+  pages show the `core` row as "Montessori program"; `program.scheduleNote` is only for a
+  program-specific note under it. Prose must not repeat hours.
+- **Justified text was declined** (FB2): it fails WCAG 1.4.8 (AAA). Body copy stays left-aligned with
+  `text-pretty` and a capped measure; the note to the client is in `CLIENT-FEEDBACK-R1.md` §5.
+- Program colours use an explicit `program.accent` enum rather than matching `classroomName`: labels
+  are editor prose and carry stega in draft mode.
+- Masthead heights are min-heights (fix in F2). The fixed `h-[…vh]` clipped the eyebrow and logo on
+  compact banners at short laptop heights.
 - JSON-LD type is `['Preschool', 'ChildCare']`, hard-coded.
 - The homepage title uses `{absolute}`, because the root layout's `title.template` doesn't apply to
   its own segment.
