@@ -109,22 +109,22 @@ export default function ProgramsGrid({block, className}: Props) {
                     </div>
                   ) : null}
 
-                  <div className="flex flex-1 flex-col gap-3 p-6">
-                    {program.classroomName && (
-                      // Room badge: the colour's text equivalent. The dot is
-                      // decorative (base tone may be < 3:1 — shamrock).
-                      <p className="inline-flex items-center gap-2 self-start rounded-full bg-room-tint px-3 py-1 text-xs font-semibold uppercase tracking-wider text-room-strong">
-                        <span aria-hidden="true" className="size-2 rounded-full bg-room" />
-                        {program.classroomName} room
-                      </p>
-                    )}
+                  <div className="flex flex-1 flex-col gap-2 p-6">
+                   
 
-                    <CardHeading className="font-display text-xl text-room-strong">
+                    <CardHeading className="font-display text-2xl text-room-strong flex font-bold justify-between items-baseline">
                       {program.name}
+											{program.classroomName && (
+												// Room badge: the colour's text equivalent. The dot is
+												// decorative (base tone may be < 3:1 — shamrock).
+												<p className="inline-flex items-center gap-1 text-xs font-semibold uppercase tracking-wider text-room-strong">
+													{program.classroomName} room
+												</p>
+											)}
                     </CardHeading>
 
                     {facts.length > 0 && (
-                      <dl className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
+                      <dl className="-mt-2 mb-2 flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
                         {facts.map((fact) => (
                           <div key={fact.term} className="flex gap-1.5">
                             <dt className="font-medium">{fact.term}:</dt>
