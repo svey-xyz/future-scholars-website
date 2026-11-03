@@ -40,6 +40,12 @@ Request-time APIs (`cookies()`, `params`, `searchParams`) are forbidden inside
 `'use cache'`. `draftMode()` is the one exception — a top-level component that
 only awaits `draftMode()` still prerenders into the static shell.
 
+`params` must also be awaited **inside** `<Suspense>`, in both modes. It is URL
+data: the App Shell Next renders for client navigations within a dynamic
+segment is shared by every slug, so a top-level `await props.params` blocks the
+navigation (dev error `instant-shell-url-data`). Direct visits lose nothing —
+slugs from `generateStaticParams` resolve at build, so the static HTML is full.
+
 Draft mode bypasses **every** `'use cache'` boundary: with draft mode enabled,
 cached components re-run as uncached request-time fetches. Layers 2–3 must
 therefore always render inside `<Suspense>` — a fetching component left
@@ -49,21 +55,28 @@ pinned to `perspective: 'published'` (e.g. `SiteJsonLd`): pinning fixes the
 *data*, not the cache bypass.
 
 ```tsx
-// Layer 1 — Page/Layout: branch on draftMode() ONLY. No 'use cache' here.
+// Layer 1 — Page/Layout: branch on draftMode() ONLY. No 'use cache' here,
+// and never await params here (see above).
 export default async function Page(props: Props) {
   const {isEnabled: isDraftMode} = await draftMode()
-  if (isDraftMode) {
-    return (
-      <Suspense fallback={<Fallback />}>
-        <DynamicPage params={props.params} /> {/* params NOT awaited here */}
-      </Suspense>
-    )
-  }
-  const {slug} = await props.params
+  return (
+    <Suspense fallback={<Fallback />}>
+      {isDraftMode ? (
+        <DynamicPage params={props.params} />
+      ) : (
+        <PublishedPage params={props.params} />
+      )}
+    </Suspense>
+  )
+}
+
+// Layer 2 (published) — resolve the slug inside the boundary.
+async function PublishedPage({params}: Pick<Props, 'params'>) {
+  const {slug} = await params
   return <CachedPage slug={slug} perspective="published" stega={false} />
 }
 
-// Layer 2 — draft mode only: resolve request state, pass plain props.
+// Layer 2 (draft mode) — resolve request state, pass plain props.
 async function DynamicPage({params}: Pick<Props, 'params'>) {
   const [{slug}, {perspective, stega}] = await Promise.all([params, getDynamicFetchOptions()])
   return <CachedPage slug={slug} perspective={perspective} stega={stega} />

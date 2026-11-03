@@ -1,3 +1,4 @@
+import type {CSSProperties} from 'react'
 import type {StegaBranded} from '@sanity/client/stega'
 import type {GetPageQueryResult, SettingsQueryResult} from '@/sanity.types'
 
@@ -45,6 +46,8 @@ export type DereferencedLink = {
 type SettingsNavigation = NonNullable<NonNullable<MaybeStega<SettingsQueryResult>>['navigation']>
 export type NavItem = SettingsNavigation[number]
 export type NavLinkItem = Extract<NavItem, {_type: 'navLink'}>
+/** Nav leaf `_key` → room CSS variables (`roomStyle()`), built server-side by `SideNav`. */
+export type NavRooms = Record<string, CSSProperties>
 export type NavDropdownItem = Extract<NavItem, {_type: 'navDropdown'}>
 
 // Contact + legal content from Settings (rail, drawer, footer, contact block).

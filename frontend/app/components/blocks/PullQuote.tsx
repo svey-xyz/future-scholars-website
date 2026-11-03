@@ -33,7 +33,13 @@ export default function PullQuote({block, className}: Props) {
   const hidden = block.repeatsText === true
 
   return (
-    <div className={cn('my-12 lg:my-16', isPanel && 'bg-secondary py-12 lg:py-16', className)}>
+    <div
+      className={cn(
+        'my-12 lg:my-16',
+        isPanel && 'bg-secondary py-12 room:bg-room-tint lg:py-16',
+        className,
+      )}
+    >
       <div className="container">
         <Reveal
           as="figure"
@@ -51,6 +57,7 @@ export default function PullQuote({block, className}: Props) {
               className={cn(
                 'font-display text-2xl leading-snug text-pretty md:text-3xl lg:text-[2.125rem] lg:leading-tight',
                 isPanel ? 'text-secondary-foreground' : 'text-primary',
+                'room:text-room-strong',
               )}
             >
               {quote}

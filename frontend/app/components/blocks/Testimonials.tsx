@@ -73,7 +73,7 @@ export default function Testimonials({block, className}: Props) {
     <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
-          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+          <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
             {heading}
           </Reveal>
         )}
@@ -107,7 +107,7 @@ export default function Testimonials({block, className}: Props) {
                     cards is static at rest. */}
                   <span
                     aria-hidden="true"
-                    className="quote-mark pointer-events-none absolute -top-6 -right-2 select-none font-serif text-[15rem] leading-none text-primary/12 transition-colors duration-300 group-hover/quote:text-primary/25 md:-top-8 md:text-[18rem]"
+                    className="quote-mark pointer-events-none absolute -top-6 -right-2 select-none font-serif text-[15rem] leading-none text-primary/12 transition-colors duration-300 group-hover/quote:text-primary/25 room:text-room/15 room:group-hover/quote:text-room/30 md:-top-8 md:text-[18rem]"
                   >
                     &rdquo;
                   </span>

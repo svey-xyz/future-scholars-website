@@ -1,5 +1,7 @@
+import type {CSSProperties} from 'react'
 import Link from 'next/link'
 
+import {roomStyle} from '@/lib/room'
 import type {DynamicFetchOptions} from '@/sanity/lib/live'
 import BrandMark from './BrandMark'
 import ContactHub from './ContactHub'
@@ -23,6 +25,7 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
   const settings = await getSettings({perspective, stega})
 
   const navigation = settings?.navigation ?? []
+  const rooms = navRooms(navigation)
   const contact = settings?.contact ?? null
   const homepageSlug = settings?.homepage?.slug?.current ?? null
   const siteTitle = settings?.title || 'Future Scholars Montessori Academy'
@@ -54,13 +57,14 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
             Contact details no longer sit under it — phone, email and socials
             all live in the floating `ContactHub` now. */}
         <nav aria-label="Main" className="flex-1 overflow-y-auto overscroll-contain px-4 pb-8">
-          <SideNavLinks navigation={navigation} homepageSlug={homepageSlug} />
+          <SideNavLinks navigation={navigation} rooms={rooms} homepageSlug={homepageSlug} />
         </nav>
       </div>
 
       {/* ---- Top bar + drawer (<1024px) ---- */}
       <SideNavMobile
         navigation={navigation}
+        rooms={rooms}
         contact={contact}
         homepageSlug={homepageSlug}
         siteTitle={siteTitle}
@@ -71,4 +75,24 @@ export default async function SideNav({perspective, stega}: DynamicFetchOptions)
       <ContactHub contact={contact} />
     </>
   )
+}
+
+/**
+ * Program links' room variables (FB5), keyed by nav `_key`. Computed here, in
+ * the cached RSC, so the client nav islands get plain CSS custom properties
+ * instead of shipping the colour derivation. Page links have no accent.
+ */
+function navRooms(
+  navigation: {
+    _key: string
+    accent?: string | null
+    links?: {_key: string; accent?: string | null}[] | null
+  }[],
+): Record<string, CSSProperties> {
+  const rooms: Record<string, CSSProperties> = {}
+  for (const leaf of navigation.flatMap((item) => [item, ...(item.links ?? [])])) {
+    const room = roomStyle(leaf.accent)
+    if (room) rooms[leaf._key] = room
+  }
+  return rooms
 }

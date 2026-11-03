@@ -1,7 +1,7 @@
 import {defineField, defineType} from 'sanity'
 import {EnvelopeIcon} from '@sanity/icons/Envelope'
 
-import {anchorField} from './shared'
+import {anchorField, roomField} from './shared'
 
 /**
  * Contact details (build plan S7).
@@ -52,6 +52,7 @@ export const contactDetails = defineType({
       validation: (Rule) => Rule.email().warning('That does not look like an email address.'),
     }),
     anchorField,
+    roomField,
   ],
   preview: {
     select: {heading: 'heading', anchor: 'anchor'},

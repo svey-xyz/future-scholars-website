@@ -44,6 +44,36 @@
     }
   },
   {
+    "type": "type",
+    "name": "program.reference",
+    "value": {
+      "type": "object",
+      "attributes": {
+        "_ref": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string"
+          }
+        },
+        "_type": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "string",
+            "value": "reference"
+          }
+        },
+        "_weak": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "boolean"
+          },
+          "optional": true
+        }
+      },
+      "dereferencesTo": "program"
+    }
+  },
+  {
     "name": "pullQuote",
     "type": "type",
     "value": {
@@ -98,6 +128,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
@@ -310,6 +348,14 @@
             "type": "string"
           },
           "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
+          },
+          "optional": true
         }
       }
     }
@@ -392,6 +438,14 @@
             "type": "string"
           },
           "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
+          },
+          "optional": true
         }
       }
     }
@@ -448,6 +502,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
@@ -621,38 +683,16 @@
             "type": "string"
           },
           "optional": true
-        }
-      }
-    }
-  },
-  {
-    "type": "type",
-    "name": "program.reference",
-    "value": {
-      "type": "object",
-      "attributes": {
-        "_ref": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "string"
-          }
         },
-        "_type": {
+        "room": {
           "type": "objectAttribute",
           "value": {
-            "type": "string",
-            "value": "reference"
-          }
-        },
-        "_weak": {
-          "type": "objectAttribute",
-          "value": {
-            "type": "boolean"
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
-      },
-      "dereferencesTo": "program"
+      }
     }
   },
   {
@@ -835,6 +875,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
@@ -1061,6 +1109,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
@@ -1402,6 +1458,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }
@@ -2231,6 +2295,14 @@
             "type": "string"
           },
           "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
+          },
+          "optional": true
         }
       }
     }
@@ -2291,6 +2363,14 @@
           "type": "objectAttribute",
           "value": {
             "type": "string"
+          },
+          "optional": true
+        },
+        "room": {
+          "type": "objectAttribute",
+          "value": {
+            "type": "inline",
+            "name": "program.reference"
           },
           "optional": true
         }

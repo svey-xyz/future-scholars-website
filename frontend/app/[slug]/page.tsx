@@ -46,21 +46,28 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
 /**
  * Layer 1 of the three-layer pattern (see docs/CACHING.md): branch on
- * `draftMode()` only. Published requests render the cached page directly
- * (maximal static shell); draft requests resolve request-time perspective /
- * stega inside a Suspense boundary.
+ * `draftMode()` only, and never await `params` here. `params` is URL data:
+ * the App Shell used for client navigations between `/[slug]` pages is shared
+ * by every slug, so awaiting it outside `<Suspense>` blocks the navigation
+ * (Next's instant-shell-url-data error). Direct visits are unaffected — slugs
+ * from `generateStaticParams` resolve at build, so the static HTML is complete.
  */
 export default async function Page(props: Props) {
   const {isEnabled: isDraftMode} = await draftMode()
-  if (isDraftMode) {
-    return (
-      <Suspense fallback={<PageFallback />}>
-        {/* `params` stays un-awaited here so the Suspense boundary works. */}
+  return (
+    <Suspense fallback={<PageFallback />}>
+      {isDraftMode ? (
         <DynamicPage params={props.params} />
-      </Suspense>
-    )
-  }
-  const {slug} = await props.params
+      ) : (
+        <PublishedPage params={props.params} />
+      )}
+    </Suspense>
+  )
+}
+
+/** Layer 2 (published): resolve the slug inside the boundary. */
+async function PublishedPage({params}: Pick<Props, 'params'>) {
+  const {slug} = await params
   return <CachedPage slug={slug} perspective="published" stega={false} />
 }
 

@@ -82,7 +82,7 @@ export default function FacultyGrid({block, className}: Props) {
     <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
-          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+          <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
             {heading}
           </Reveal>
         )}
@@ -182,7 +182,7 @@ function FacultyHighlight({
       <div className="flex max-w-3xl flex-col gap-6">
         <header className="flex flex-col gap-3">
           {heading && (
-            <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
               {heading}
             </Reveal>
           )}
@@ -230,7 +230,7 @@ function FacultyHighlight({
             <ResolvedLink
               link={button.link}
               transitionTypes={['nav-forward']}
-              className="group/more -mx-2 inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 py-1 font-sans text-sm font-semibold text-primary underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+              className="group/more -mx-2 inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 py-1 font-sans text-sm font-semibold text-primary room:text-room-strong underline-offset-4 hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
             >
               {button.buttonText}
               <ArrowRightIcon
@@ -264,7 +264,7 @@ function Portrait({person, className}: {person: Person; className?: string}) {
   return (
     <span
       className={cn(
-        'relative block aspect-square overflow-hidden rounded-full bg-secondary',
+        'relative block aspect-square overflow-hidden rounded-full bg-secondary room:bg-room-tint',
         className,
       )}
     >
@@ -319,7 +319,7 @@ function FacultySplit({
       <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.25fr)] lg:gap-16">
         <header className="flex min-w-0 flex-col gap-3">
           {heading && (
-            <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+            <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
               {heading}
             </Reveal>
           )}

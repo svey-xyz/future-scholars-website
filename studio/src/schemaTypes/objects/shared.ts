@@ -57,6 +57,22 @@ export const anchorField = defineField({
 })
 
 /**
+ * Optional program link for a block (FB5): the block takes that program's room
+ * colour — headings, controls, accents — e.g. a facilities gallery per room.
+ * Purely presentational; the frontend derives AAA-safe tones from the
+ * program's `accent` (frontend/lib/room.ts) and themes via `room:` classes.
+ */
+export const roomField = defineField({
+  name: 'room',
+  title: 'Room colour',
+  type: 'reference',
+  to: [{type: 'program'}],
+  description:
+    "Optional. Use a program's room colour for this section's headings and controls, e.g. a gallery of the Roses room.",
+  options: {disableNew: true},
+})
+
+/**
  * Validator for a "pull quote" field: the value must be a verbatim excerpt of a
  * sibling long-form field. Comparison normalises whitespace, case and any
  * leading/trailing ellipsis or quotation marks, so an editor can capitalise the

@@ -85,17 +85,27 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   } satisfies Metadata
 }
 
-/** Layer 1 (docs/CACHING.md): branch on `draftMode()` only. */
+/**
+ * Layer 1 (docs/CACHING.md): branch on `draftMode()` only. `params` is read
+ * inside `<Suspense>` so client navigations between programs stay instant
+ * (the App Shell is shared by every slug — see `app/[slug]/page.tsx`).
+ */
 export default async function ProgramPage(props: Props) {
   const {isEnabled: isDraftMode} = await draftMode()
-  if (isDraftMode) {
-    return (
-      <Suspense fallback={<ProgramFallback />}>
+  return (
+    <Suspense fallback={<ProgramFallback />}>
+      {isDraftMode ? (
         <DynamicProgram params={props.params} />
-      </Suspense>
-    )
-  }
-  const {slug} = await props.params
+      ) : (
+        <PublishedProgram params={props.params} />
+      )}
+    </Suspense>
+  )
+}
+
+/** Layer 2 (published): resolve the slug inside the boundary. */
+async function PublishedProgram({params}: Pick<Props, 'params'>) {
+  const {slug} = await params
   return <CachedProgram slug={slug} perspective="published" stega={false} />
 }
 
@@ -237,6 +247,12 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
               className={cn(
                 buttonVariants({size: 'lg'}),
                 'mt-6 min-h-11 focus-visible:ring-2 focus-visible:ring-offset-2',
+                // Room deep tone (FB5): white on it ≥ 7:1 for any pick
+                // (lib/room.ts). Hover darkens rather than the default /90
+                // fade, which would lighten toward the tint and eat that ratio.
+                // Ring in the same tone: ≥ 7:1 against the tint behind it.
+                'bg-room-strong text-primary-foreground focus-visible:ring-room-strong focus-visible:ring-offset-room-tint',
+                'hover:bg-[color-mix(in_oklab,hsl(var(--room-strong)),black_18%)]',
               )}
             >
               How to book a tour

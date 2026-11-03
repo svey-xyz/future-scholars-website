@@ -103,6 +103,8 @@ export const getPageQuery = defineQuery(`
     seo,
     "pageBuilder": pageBuilder[]{
       ...,
+      // FB5: a block linked to a program themes itself in that room's colour.
+      "roomAccent": room->accent,
       _type == "callToAction" => {
         ...,
         button {

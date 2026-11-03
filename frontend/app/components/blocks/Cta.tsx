@@ -32,7 +32,7 @@ export default function CTA({block, className}: CtaProps) {
         'relative isolate overflow-x-clip',
         // Brand panel: the academy blue with the sunflower button — the one
         // place the bright accent may be a fill (§7.2).
-        isBrand && 'bg-primary text-primary-foreground',
+        isBrand && 'bg-primary text-primary-foreground room:bg-room-strong',
         className,
       )}
     >
@@ -52,7 +52,16 @@ export default function CTA({block, className}: CtaProps) {
               </Reveal>
             )}
             {heading && (
-              <Reveal as="h2" i={1} className="text-2xl md:text-3xl lg:text-4xl">
+              <Reveal
+                as="h2"
+                i={1}
+                // On the brand panel the heading inherits white (the panel
+                // itself takes the room's deep tone); on light, the deep tone.
+                className={cn(
+                  'text-2xl md:text-3xl lg:text-4xl',
+                  !isBrand && 'room:text-room-strong',
+                )}
+              >
                 {heading}
               </Reveal>
             )}

@@ -1,7 +1,7 @@
 import {defineArrayMember, defineField, defineType} from 'sanity'
 import {NumberIcon} from '@sanity/icons/Number'
 
-import {anchorField} from './shared'
+import {anchorField, roomField} from './shared'
 
 /**
  * Key facts — a row of short figures with labels, e.g. the classroom ratios
@@ -73,6 +73,7 @@ export const stats = defineType({
       },
     }),
     anchorField,
+    roomField,
   ],
   preview: {
     select: {heading: 'heading', count: 'items'},

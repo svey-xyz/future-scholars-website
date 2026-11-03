@@ -9,6 +9,7 @@ import LightboxProvider from './LightboxProvider'
 import Reveal from '@/app/components/motion/Reveal'
 import {getVideoEmbed} from './utils'
 import type {ExtractPageBuilderType, GalleryAspect, GalleryItem} from '@/sanity/lib/types'
+import {roomStyle} from '@/lib/room'
 import {cn} from '@/lib/utils'
 
 type Props = {
@@ -46,7 +47,7 @@ export default function Gallery({block, className}: Props) {
   const items = (block.items ?? []).filter(isRenderable)
 
   const headingEl = heading ? (
-    <Reveal as="h2" className="mb-8 text-2xl md:text-3xl lg:text-4xl">
+    <Reveal as="h2" className="mb-8 text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
       {heading}
     </Reveal>
   ) : null
@@ -84,7 +85,7 @@ export default function Gallery({block, className}: Props) {
         <LightboxProvider>
           {headingEl}
           {layoutEl}
-          <GalleryLightbox items={items} heading={heading} />
+          <GalleryLightbox items={items} heading={heading} room={roomStyle(block.roomAccent)} />
         </LightboxProvider>
       ) : (
         <>

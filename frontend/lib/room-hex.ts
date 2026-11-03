@@ -1,8 +1,9 @@
 import {stegaClean} from '@sanity/client/stega'
 
 /**
- * `program.accent` → normalised `#rrggbb`. Kept apart from `room.ts` so client
- * components (the nav dot) can use it without shipping the colour derivation.
+ * `program.accent` → normalised `#rrggbb` (used by `room.ts`). Standalone and
+ * dependency-light, so a client component can import it without pulling in the
+ * colour derivation — prefer passing `roomStyle()` output from an RSC instead.
  */
 
 /** Pre-picker enum values (FB5 v1), until `studio/migrations/accent-to-hex` has run. */

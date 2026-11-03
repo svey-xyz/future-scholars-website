@@ -85,7 +85,7 @@ export default function FeaturesGrid({block, className}: Props) {
     <section className={cn('container my-12 lg:my-16', className)}>
       <header className="max-w-3xl">
         {heading && (
-          <Reveal as="h2" className="text-2xl md:text-3xl lg:text-4xl">
+          <Reveal as="h2" className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
             {heading}
           </Reveal>
         )}
@@ -106,7 +106,7 @@ export default function FeaturesGrid({block, className}: Props) {
           const hasLink = Boolean(link && (link.href || link.page))
 
           const iconEl = Icon && (
-            <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-300 group-hover/feat:bg-primary group-hover/feat:text-primary-foreground">
+            <span className="inline-flex h-11 w-11 items-center justify-center rounded-lg bg-secondary text-secondary-foreground transition-colors duration-300 group-hover/feat:bg-primary group-hover/feat:text-primary-foreground room:bg-room-tint room:text-room-strong room:group-hover/feat:bg-room-strong room:group-hover/feat:text-primary-foreground">
               <Icon className="h-6 w-6" aria-hidden="true" />
             </span>
           )

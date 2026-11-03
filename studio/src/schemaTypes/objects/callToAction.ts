@@ -5,7 +5,7 @@ import {LinkIcon} from '@sanity/icons/Link'
 import {ImageIcon} from '@sanity/icons/Image'
 import {ControlsIcon} from '@sanity/icons/Controls'
 
-import {altField, anchorField} from './shared'
+import {altField, anchorField, roomField} from './shared'
 
 /**
  * Call to action — eyebrow, heading, short body, one button, optional image.
@@ -100,6 +100,7 @@ export const callToAction = defineType({
       group: 'designSystem',
     }),
     {...anchorField, group: 'designSystem'},
+    {...roomField, group: 'designSystem'},
   ],
   preview: {
     select: {

@@ -13,6 +13,7 @@ import Gallery from '@/app/components/blocks/gallery/Gallery'
 import Faq from './Faq'
 import Note from './Note'
 import PullQuote from './PullQuote'
+import {roomStyle} from '@/lib/room'
 import {cn} from '@/lib/utils'
 import {dataAttr} from '@/sanity/lib/utils'
 import {PageBuilderSection} from '@/sanity/lib/types'
@@ -73,11 +74,18 @@ export default function BlockRenderer({block, index, pageId, pageType, className
     // characters would silently break the match.
     const anchor = stegaClean(('anchor' in block ? block.anchor : null) || '') || undefined
 
+    // Optional linked program (`room`, FB5): its colour's derived tones are set
+    // as CSS variables on the wrapper, and `data-room` switches on the block's
+    // `room:` classes. No program → no attribute, the block looks as before.
+    const room = roomStyle('roomAccent' in block ? block.roomAccent : null)
+
     return (
       <div
         key={block._key}
         id={anchor}
         className={cn(anchor && 'scroll-mt-20 lg:scroll-mt-8')}
+        style={room}
+        data-room={room ? '' : undefined}
         data-sanity={dataAttr({
           id: pageId,
           type: pageType,

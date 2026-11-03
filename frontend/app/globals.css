@@ -46,6 +46,12 @@
   --room-tint: var(--secondary);
 }
 
+/* `room:` — applies only inside a room-scoped element (`data-room`, set
+   alongside `roomStyle()` by BlockRenderer and the gallery lightbox). Lets a
+   block opt into its linked program's colour without changing its look when
+   no program is linked: `text-primary room:text-room-strong`. */
+@custom-variant room (&:where([data-room], [data-room] *));
+
 @theme inline {
   --font-sans: var(--font-inter);
   --font-display: var(--font-outfit);

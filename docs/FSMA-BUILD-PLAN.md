@@ -228,6 +228,12 @@ on white, since rules and dots would then be hard to see. Components use the `ro
   its own room (side rule, `-strong` name, tint on hover).
 - **Programs grid cards:** 4px top rule, room badge ("Roses room", tint + dot), `-strong` title and CTA,
   tint wash + room border on hover.
+- **Page-builder blocks:** an optional `room` reference → `program` on every block except the programs
+  grid (cards carry their own) and `note` (its tones carry meaning). `BlockRenderer` scopes the tones on
+  the wrapper with `data-room`; blocks opt in via the `room:` variant — headings, links and figures in
+  `room-strong`, icon tiles / panels / avatars in `room-tint`, brand CTA panel in `room-strong`, gallery
+  carousel arrows/dots and lightbox controls themed (the lightbox gets the style as a prop: it portals).
+  No room → identical to before.
 - **Side nav:** a dot in the pick beside each program link (from `link.page->accent`). The active pill
   shows it on a white disc so blue picks don't vanish into the navy.
 

@@ -25,7 +25,7 @@ export default function InfoSectionBlock({block, className}: InfoProps) {
   const copy = (
     <>
       {block?.heading && (
-        <Reveal as="h2" i={0} className="text-2xl md:text-3xl lg:text-4xl">
+        <Reveal as="h2" i={0} className="text-2xl room:text-room-strong md:text-3xl lg:text-4xl">
           {block.heading}
         </Reveal>
       )}
@@ -115,7 +115,7 @@ function MapEmbed({map}: {map: NonNullable<InfoBlock['map']>}) {
           href={href}
           target="_blank"
           rel="noopener noreferrer"
-          className="-mx-2 inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 font-medium text-primary underline underline-offset-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+          className="-mx-2 inline-flex min-h-11 items-center gap-1.5 rounded-md px-2 font-medium text-primary room:text-room-strong underline underline-offset-4 hover:no-underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         >
           Open in Google Maps
           <ArrowTopRightOnSquareIcon aria-hidden="true" className="size-4" />

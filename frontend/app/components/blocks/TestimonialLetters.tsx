@@ -70,7 +70,7 @@ export default function TestimonialLetters({items, blockKey, hasHeading}: Props)
               >
                 <span
                   aria-hidden="true"
-                  className="-mb-10 block h-16 select-none font-serif text-8xl leading-none text-primary/40"
+                  className="-mb-10 block h-16 select-none font-serif text-8xl leading-none text-primary/40 room:text-room/45"
                 >
                   &ldquo;
                 </span>
