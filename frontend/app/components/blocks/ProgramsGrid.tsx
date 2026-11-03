@@ -1,9 +1,9 @@
 import Link from 'next/link'
-import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/common/SanityImage'
 import Reveal from '@/app/components/motion/Reveal'
 import {Card} from '@/components/ui/card'
+import {roomStyle} from '@/lib/room'
 import {cn} from '@/lib/utils'
 import {ExtractPageBuilderType} from '@/sanity/lib/types'
 
@@ -26,15 +26,11 @@ const colClass: Record<number, string> = {
 // CDN for more than ~720 buys nothing (build plan Q5 / IMAGE-MANIFEST).
 const SIZES = '(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw'
 
-/* Room accent (FB5): the same 4px top rule as the program page's "At a glance"
-   card, so the colour-to-room mapping repeats across the site. Decorative —
-   the classroom is in the card's facts as text. The hover repeat keeps the
-   rule from fading into the card's `hover:border-primary/30`. */
-const ACCENT_TOP: Record<string, string> = {
-  roses: 'border-t-4 border-t-room-roses hover:border-t-room-roses',
-  shamrock: 'border-t-4 border-t-room-shamrock hover:border-t-room-shamrock',
-  violet: 'border-t-4 border-t-room-violet hover:border-t-room-violet',
-}
+/* Room colour (FB5) is scoped by `roomStyle()` on each card (lib/room.ts),
+   so the classes below are room-agnostic: a 4px top rule in the base tone, the
+   title, room badge and CTA in the `-strong` text tone, and a tint wash on
+   hover. Every colour use is redundant with text — the badge names the room
+   (1.4.1). Without an accent the card falls back to the brand palette. */
 
 /**
  * Programs grid (build plan S6) — cards for FSMA's age-banded programs, either
@@ -85,16 +81,13 @@ export default function ProgramsGrid({block, className}: Props) {
           const facts = [
             program.ageRange ? {term: 'Ages', value: program.ageRange} : null,
             program.ratio ? {term: 'Ratio', value: program.ratio} : null,
-            program.classroomName ? {term: 'Classroom', value: program.classroomName} : null,
           ].filter((f): f is {term: string; value: string} => f !== null)
 
           return (
             <Reveal as="li" key={program._id} i={i} variant="scale">
               <Card
-                className={cn(
-                  'group/prog h-full overflow-hidden p-0 transition-[transform,box-shadow,border-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-primary/30 hover:shadow-lg',
-                  ACCENT_TOP[stegaClean(program.accent) ?? ''],
-                )}
+                style={roomStyle(program.accent)}
+                className="group/prog h-full overflow-hidden border-t-4 border-t-room p-0 transition-[transform,box-shadow,border-color,background-color] duration-300 will-change-transform motion-safe:hover:-translate-y-1.5 hover:border-room/40 hover:border-t-room hover:bg-room-tint/50 hover:shadow-lg"
               >
                 <Link
                   href={`/programs/${program.slug}`}
@@ -117,7 +110,18 @@ export default function ProgramsGrid({block, className}: Props) {
                   ) : null}
 
                   <div className="flex flex-1 flex-col gap-3 p-6">
-                    <CardHeading className="font-display text-xl">{program.name}</CardHeading>
+                    {program.classroomName && (
+                      // Room badge: the colour's text equivalent. The dot is
+                      // decorative (base tone may be < 3:1 — shamrock).
+                      <p className="inline-flex items-center gap-2 self-start rounded-full bg-room-tint px-3 py-1 text-xs font-semibold uppercase tracking-wider text-room-strong">
+                        <span aria-hidden="true" className="size-2 rounded-full bg-room" />
+                        {program.classroomName} room
+                      </p>
+                    )}
+
+                    <CardHeading className="font-display text-xl text-room-strong">
+                      {program.name}
+                    </CardHeading>
 
                     {facts.length > 0 && (
                       <dl className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
@@ -132,7 +136,7 @@ export default function ProgramsGrid({block, className}: Props) {
 
                     {program.summary && <p className="leading-7 text-pretty">{program.summary}</p>}
 
-                    <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-medium text-primary">
+                    <span className="mt-auto inline-flex items-center gap-1 pt-2 text-sm font-medium text-room-strong">
                       Explore this program
                       <span
                         aria-hidden="true"

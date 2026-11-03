@@ -601,7 +601,7 @@ export type Program = {
   ageRange: string
   ratio?: string
   classroomName?: string
-  accent: 'roses' | 'shamrock' | 'violet'
+  accent: string
   summary: string
   body?: BlockContent
   image?: {

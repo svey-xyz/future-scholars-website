@@ -601,7 +601,7 @@ export type Program = {
   ageRange: string
   ratio?: string
   classroomName?: string
-  accent: 'roses' | 'shamrock' | 'violet'
+  accent: string
   summary: string
   body?: BlockContent
   image?: {
@@ -947,7 +947,7 @@ export type AllSanitySchemaTypes =
 
 // Source: sanity/lib/queries.ts
 // Variable: settingsQuery
-// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href)			}		}	}}
+// Query: *[_type == "settings"][0]{	...,	homepage->,	contact,	legal,	navigation[]{		_type == "navLink" => {			  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href),  // Program links only (pages have no accent): the room-colour dot in the nav.  "accent": link.page->accent		},		_type == "navDropdown" => {			_key,			_type,			title,			links[]{				  _key,  _type,  title,  link {    ...,    _type == "link" => {      "page": page->slug.current,      "pageType": page->_type    }  },  "resolvedTitle": coalesce(title, link.page->name, link.href),  // Program links only (pages have no accent): the room-colour dot in the nav.  "accent": link.page->accent			}		}	}}
 export type SettingsQueryResult = {
   _id: string
   _type: 'settings'
@@ -1014,6 +1014,7 @@ export type SettingsQueryResult = {
             pageType: 'page' | 'program' | null
           }
           resolvedTitle: string | null
+          accent: null | string
         }> | null
       }
     | {
@@ -1030,6 +1031,7 @@ export type SettingsQueryResult = {
           pageType: 'page' | 'program' | null
         }
         resolvedTitle: string | null
+        accent: null | string
       }
   > | null
   legal: string | null
@@ -1409,7 +1411,7 @@ export type GetPageQueryResult = {
           ageRange: string
           ratio: string | null
           classroomName: string | null
-          accent: 'roses' | 'shamrock' | 'violet'
+          accent: string
           summary: string
           image: {
             asset?: SanityImageAssetReference
@@ -1496,7 +1498,7 @@ export type SitemapDataResult = Array<
 
 // Source: sanity/lib/queries.ts
 // Variable: programQuery
-// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  accent,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange      }  }
+// Query: *[_type == "program" && slug.current == $slug][0]{      _id,  name,  "slug": slug.current,  ageRange,  ratio,  classroomName,  accent,  summary,  image,  "order": coalesce(order, 99),    scheduleNote,    masthead,    body[]{      ...,      markDefs[]{        ...,          _type == "link" => {    "page": page->slug.current,    "pageType": page->_type  }      }    },    "parentName": *[_type == "page" && slug.current == "programs"][0].name,    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]      | order(coalesce(order, 99) asc, name asc){        _id,        name,        "slug": slug.current,        ageRange,        accent      }  }
 export type ProgramQueryResult = {
   _id: string
   name: string
@@ -1504,7 +1506,7 @@ export type ProgramQueryResult = {
   ageRange: string
   ratio: string | null
   classroomName: string | null
-  accent: 'roses' | 'shamrock' | 'violet'
+  accent: string
   summary: string
   image: {
     asset?: SanityImageAssetReference
@@ -1557,6 +1559,7 @@ export type ProgramQueryResult = {
     name: string
     slug: string
     ageRange: string
+    accent: string
   }>
 } | null
 
@@ -1577,10 +1580,10 @@ export type PagesSlugsResult = Array<{
 // Query TypeMap
 declare global {
   interface SanityQueries {
-    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href)\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
+    '*[_type == "settings"][0]{\n\t...,\n\thomepage->,\n\tcontact,\n\tlegal,\n\tnavigation[]{\n\t\t_type == "navLink" => {\n\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href),\n  // Program links only (pages have no accent): the room-colour dot in the nav.\n  "accent": link.page->accent\n\n\t\t},\n\t\t_type == "navDropdown" => {\n\t\t\t_key,\n\t\t\t_type,\n\t\t\ttitle,\n\t\t\tlinks[]{\n\t\t\t\t\n  _key,\n  _type,\n  title,\n  link {\n    ...,\n    _type == "link" => {\n      "page": page->slug.current,\n      "pageType": page->_type\n    }\n  },\n  "resolvedTitle": coalesce(title, link.page->name, link.href),\n  // Program links only (pages have no accent): the room-colour dot in the nav.\n  "accent": link.page->accent\n\n\t\t\t}\n\t\t}\n\t}\n}': SettingsQueryResult
     '\n  *[_type == \'page\' && slug.current == $slug][0]{\n    _id,\n    _type,\n    name,\n    slug,\n    heading,\n    subheading,\n    titleDisplay,\n    masthead,\n    seo,\n    "pageBuilder": pageBuilder[]{\n      ...,\n      _type == "callToAction" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n\n        }\n      },\n      _type == "infoSection" => {\n        // FB11: the map aside reads the Settings address (D16) \u2014 projected\n        // here so the block needs no fetch of its own. Unconditional key\n        // (select \u2192 null) keeps ONE infoSection shape for TypeGen.\n        "map": select(\n          aside == "map" => *[_type == "settings"][0]{\n            "name": title,\n            "address": contact.address,\n            "mapUrl": contact.mapUrl\n          }\n        ),\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n          }\n        }\n      },\n      _type == "featuresGrid" => {\n        ...,\n        // Unconditional key (select \u2192 null) so TypeGen emits ONE featuresGrid\n        // shape; a "cond => {...}" spread yields a union where contact is absent.\n        "contact": select(\n          count(features[showContact == true]) > 0 => *[_type == "settings"][0].contact{phone, email}\n        ),\n        features[]{\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n\n        }\n      },\n      _type == "gallery" => {\n        ...,\n        items[]{\n          ...,\n          _type == "galleryImage" => {\n            "aspectRatio": asset->metadata.dimensions.aspectRatio\n          },\n          _type == "galleryVideo" => {\n            "poster": poster{\n              ...,\n              "aspectRatio": asset->metadata.dimensions.aspectRatio\n            }\n          }\n        }\n      },\n      _type == "programsGrid" => {\n        ...,\n        "programs": select(\n          mode == "selected" => programs[]->{ \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  accent,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n },\n          *[_type == "program" && defined(slug.current)] | order(coalesce(order, 99) asc, name asc){\n            \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  accent,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "testimonials" => {\n        ...,\n        "documentTestimonials": *[\n          _type == "testimonial" && (^.featuredOnly != true || featured == true)\n        ] | order(coalesce(order, 99) asc, _createdAt asc)[0...24]{\n          \n  _id,\n  quote,\n  highlight,\n  authorName,\n  authorRole,\n  authorImage\n\n        },\n        // The page that shows testimonials in full (a letters-layout block).\n        // Card "Read more" deep-links there instead of expanding in place;\n        // null (no such page yet) falls back to the in-card disclosure.\n        "fullPageSlug": *[\n          _type == "page" && defined(slug.current)\n          && count(pageBuilder[_type == "testimonials" && layout == "letters"]) > 0\n        ] | order(_updatedAt desc)[0].slug.current\n      },\n      _type == "facultyGrid" => {\n        ...,\n        button {\n          ...,\n          \n  link {\n      ...,\n      \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n\n        },\n        "people": select(\n          mode == "selected" => people[]->{ \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n },\n          *[_type == "person"] | order(coalesce(order, 99) asc, lastName asc){\n            \n  _id,\n  firstName,\n  lastName,\n  role,\n  credentials,\n  bio,\n  picture,\n  "order": coalesce(order, 99)\n\n          }\n        )\n      },\n      _type == "contactDetails" => {\n        ...,\n        "contact": *[_type == "settings"][0].contact\n      },\n      _type == "faq" => {\n        ...,\n        items[]{\n          ...,\n          answer[]{\n            ...,\n            markDefs[]{\n              ...,\n              \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n            }\n          }\n        }\n      },\n      _type == "note" => {\n        ...,\n        tone,\n        icon,\n        content[]{\n          ...,\n          markDefs[]{\n            ...,\n            \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n          }\n        }\n      },\n    },\n  }\n': GetPageQueryResult
     '\n  *[(_type == "page" || _type == "program")\n    && defined(slug.current)\n    && !(_type == "page" && slug.current == *[_type == "settings"][0].homepage->slug.current)] | order(_type asc) {\n    "slug": slug.current,\n    _type,\n    _updatedAt,\n  }\n': SitemapDataResult
-    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  accent,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange\n      }\n  }\n': ProgramQueryResult
+    '\n  *[_type == "program" && slug.current == $slug][0]{\n    \n  _id,\n  name,\n  "slug": slug.current,\n  ageRange,\n  ratio,\n  classroomName,\n  accent,\n  summary,\n  image,\n  "order": coalesce(order, 99)\n,\n    scheduleNote,\n    masthead,\n    body[]{\n      ...,\n      markDefs[]{\n        ...,\n        \n  _type == "link" => {\n    "page": page->slug.current,\n    "pageType": page->_type\n  }\n\n      }\n    },\n    "parentName": *[_type == "page" && slug.current == "programs"][0].name,\n    "siblings": *[_type == "program" && defined(slug.current) && slug.current != $slug]\n      | order(coalesce(order, 99) asc, name asc){\n        _id,\n        name,\n        "slug": slug.current,\n        ageRange,\n        accent\n      }\n  }\n': ProgramQueryResult
     '\n  *[_type == "program" && defined(slug.current)]\n  {"slug": slug.current}\n': ProgramSlugsQueryResult
     '\n  *[_type == "page" && defined(slug.current)\n    && slug.current != *[_type == "settings"][0].homepage->slug.current]\n  {"slug": slug.current}\n': PagesSlugsResult
   }

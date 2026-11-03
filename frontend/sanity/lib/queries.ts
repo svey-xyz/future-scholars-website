@@ -11,7 +11,9 @@ const navLinkProjection = /* groq */ `
       "pageType": page->_type
     }
   },
-  "resolvedTitle": coalesce(title, link.page->name, link.href)
+  "resolvedTitle": coalesce(title, link.page->name, link.href),
+  // Program links only (pages have no accent): the room-colour dot in the nav.
+  "accent": link.page->accent
 `
 
 export const settingsQuery = defineQuery(`*[_type == "settings"][0]{
@@ -259,7 +261,8 @@ export const programQuery = defineQuery(`
         _id,
         name,
         "slug": slug.current,
-        ageRange
+        ageRange,
+        accent
       }
   }
 `)

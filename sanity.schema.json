@@ -3934,21 +3934,7 @@
       "accent": {
         "type": "objectAttribute",
         "value": {
-          "type": "union",
-          "of": [
-            {
-              "type": "string",
-              "value": "roses"
-            },
-            {
-              "type": "string",
-              "value": "shamrock"
-            },
-            {
-              "type": "string",
-              "value": "violet"
-            }
-          ]
+          "type": "string"
         },
         "optional": false
       },

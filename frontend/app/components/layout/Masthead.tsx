@@ -3,6 +3,7 @@ import {stegaClean} from '@sanity/client/stega'
 
 import Image from '@/app/components/common/SanityImage'
 import BrandMark from './BrandMark'
+import {roomStyle} from '@/lib/room'
 import {cn} from '@/lib/utils'
 import type {GetPageQueryResult} from '@/sanity.types'
 import type {MaybeStega} from '@/sanity/lib/types'
@@ -15,7 +16,7 @@ type Props = {
   subheading?: string | null
   /** Raw `page.titleDisplay` (may be stega-encoded). `none` keeps the h1 sr-only. */
   titleDisplay?: string | null
-  /** Raw `program.accent` (may be stega-encoded): adds the room-colour rule (FB5). */
+  /** Raw `program.accent` (may be stega-encoded): themes the masthead in the room colour (FB5). */
   accent?: string | null
 }
 
@@ -82,19 +83,17 @@ const LOGO_SIZES: Record<string, string> = {
   large: 'w-64 sm:w-96 lg:w-[30rem]',
 }
 
-/* Room accents (FB5, `program.accent`). The rule is decorative — the room name
-   is always in text (1.4.1) — so base tones are fine for it. The eyebrow text
-   uses the `-strong` tones only, and only on the light (sky) panel they were
-   measured against (docs/A11Y.md). */
-const ACCENT_RULE: Record<string, string> = {
-  roses: 'border-b-[6px] border-room-roses',
-  shamrock: 'border-b-[6px] border-room-shamrock',
-  violet: 'border-b-[6px] border-room-violet',
-}
-const ACCENT_TEXT: Record<string, string> = {
-  roses: 'text-room-roses-strong',
-  shamrock: 'text-room-shamrock-strong',
-  violet: 'text-room-violet-strong',
+/* Room theming (FB5, `program.accent`), scoped by `roomStyle()` on the
+   header (lib/room.ts). Brand panels take the room instead of the brand colour:
+   `primary` → the deep `-strong` tone with white copy (≥ 9.33:1), `secondary`
+   → the room tint with `-strong` copy (≥ 8.25:1). `ink` stays neutral — the
+   editor's escape hatch. Photographs keep their black scrim (the contrast
+   guarantee) and gain a multiply wash in the room colour: multiply can only
+   darken, so it never lowers the contrast of the white copy. The bottom rule
+   is decorative; the room name is always in text (1.4.1). */
+const ROOM_TONES: Record<string, string> = {
+  primary: 'bg-room-strong text-primary-foreground',
+  secondary: 'bg-room-tint text-room-strong',
 }
 
 // Inline custom-property helper (typed) for the mount-entrance cascade;
@@ -127,26 +126,31 @@ export default function Masthead({masthead, heading, subheading, titleDisplay, a
   const placement: Placement = placementKey in PLACEMENT ? (placementKey as Placement) : 'center'
   const logoSize = LOGO_SIZES[stegaClean(masthead.logoSize) ?? 'standard'] ?? LOGO_SIZES.standard
   const hideHeading = stegaClean(titleDisplay) === 'none'
-  const accentKey = stegaClean(accent) ?? ''
+  const room = roomStyle(accent)
 
   const imageRef = masthead.image?.asset?._ref
   const isImage = variant === 'image' && Boolean(imageRef)
-  const tone = TONES[stegaClean(masthead.tone) ?? 'primary'] ?? TONES.primary
+  const toneKey = stegaClean(masthead.tone) ?? 'primary'
+  const baseTone = TONES[toneKey] ?? TONES.primary
+  const tone = (room && ROOM_TONES[toneKey]) || baseTone
   // Light panel → standard lockup; dark panels (and any photograph) → reversed.
-  const reversedLogo = isImage || tone !== TONES.secondary
+  const reversedLogo = isImage || baseTone !== TONES.secondary
   const overlay = stegaClean(masthead.overlay) ?? 'medium'
   const scrim = placement === 'center' ? SCRIM_FLAT[overlay] : SCRIM_GRADIENT[overlay]
-  const lightPanel = !isImage && tone === TONES.secondary
-  const eyebrowAccent = lightPanel ? ACCENT_TEXT[accentKey] : undefined
+  const lightPanel = !isImage && baseTone === TONES.secondary
+  // On the light panel the eyebrow takes the room's text tone (fully opaque —
+  // opacity would eat its measured contrast).
+  const eyebrowAccent = room && lightPanel ? 'text-room-strong' : undefined
 
   return (
     <header
+      style={room}
       className={cn(
         'relative isolate flex w-full overflow-hidden',
         height,
         !isImage && tone,
         PLACEMENT[placement].header,
-        ACCENT_RULE[accentKey],
+        room && 'border-b-[6px] border-room',
       )}
     >
       {isImage && imageRef ? (
@@ -164,6 +168,12 @@ export default function Masthead({masthead, heading, subheading, titleDisplay, a
             sizes="(min-width: 64rem) calc(100vw - 17rem), 100vw"
             className="absolute inset-0 -z-20 h-full w-full object-cover"
           />
+          {room ? (
+            <div
+              aria-hidden="true"
+              className="absolute inset-0 -z-10 bg-room opacity-35 mix-blend-multiply"
+            />
+          ) : null}
           {scrim ? (
             <div aria-hidden="true" className={cn('absolute inset-0 -z-10', scrim)} />
           ) : null}
@@ -217,7 +227,11 @@ export default function Masthead({masthead, heading, subheading, titleDisplay, a
         )}
         {subheading && !hideHeading ? (
           <p
-            className="enter max-w-2xl text-sm uppercase leading-relaxed tracking-wide opacity-90 lg:text-base"
+            className={cn(
+              'enter max-w-2xl text-sm uppercase leading-relaxed tracking-wide lg:text-base',
+              // Opaque on the room tint: at 90% shamrock-strong falls to 6.60:1.
+              eyebrowAccent ? undefined : 'opacity-90',
+            )}
             style={delay(showLogo ? 260 : 170)}
           >
             {subheading}

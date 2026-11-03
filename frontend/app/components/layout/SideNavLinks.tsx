@@ -6,6 +6,7 @@ import {ArrowTopRightOnSquareIcon, ChevronDownIcon} from '@heroicons/react/24/ou
 
 import {Collapsible, CollapsibleContent, CollapsibleTrigger} from '@/components/ui/collapsible'
 import ResolvedLink from '@/app/components/common/ResolvedLink'
+import {roomHex} from '@/lib/room-hex'
 import {cn} from '@/lib/utils'
 import type {NavItem, NavLinkItem} from '@/sanity/lib/types'
 import {isActiveHref, isWithinHref, resolveNavLink} from './navHelpers'
@@ -125,6 +126,7 @@ function NavLeaf({
     opensInNewTab,
   } = resolveNavLink(link, homepageSlug)
   const isActive = isActiveHref(href, pathname)
+  const dot = roomHex(link.accent)
 
   return (
     <ResolvedLink
@@ -146,6 +148,24 @@ function NavLeaf({
       )}
     >
       <span>{label}</span>
+      {dot && (
+        // Room colour (FB5): decorative — the label names the program. Right
+        // side keeps labels aligned with dot-less siblings. At rest a hairline
+        // ring gives light picks an edge; on the navy active pill the colour
+        // sits on a white disc, since a blue pick would vanish into the pill.
+        <span
+          aria-hidden="true"
+          className={cn(
+            'shrink-0 rounded-full',
+            isActive ? 'size-3.5' : 'size-2.5 ring-1 ring-foreground/15',
+          )}
+          style={{
+            background: isActive
+              ? `radial-gradient(circle, ${dot} 0 52%, hsl(var(--primary-foreground)) 56%)`
+              : dot,
+          }}
+        />
+      )}
       {isExternal && (
         <>
           <ArrowTopRightOnSquareIcon className="size-4 shrink-0 opacity-70" aria-hidden="true" />

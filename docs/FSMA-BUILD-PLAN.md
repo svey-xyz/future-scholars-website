@@ -203,22 +203,36 @@ white, walls of text, and identical mastheads.
 | input / background | 3.49 (UI pass) |
 | border / background | 1.28 (decorative, exempt) |
 
-**Room accents (FB5, client feedback R1).** Sampled from the legacy room thumbnails. Base tones are
-decorative fills and rules only; `-strong` tones are the only text colours. Measured on `--secondary`
-(sky) and `--background` (paper):
+**Room colours (FB5, client feedback R1; picker since FB5 v2).** Each program has one editor-picked
+colour (`program.accent`, `#rrggbb`, custom Studio input with the original rooms as presets: Roses
+`#bd000d`, Shamrock `#55ba0d`, Violet `#2222d8`). `frontend/lib/room.ts` derives three tones from it on
+the server and sets them inline on a wrapper (`roomStyle()`):
 
-| Token | Hex | On sky | On paper | Use |
-|---|---|---|---|---|
-| `room-roses` | `#bd000d` | 5.46 | 6.27 | rules/fills |
-| `room-roses-strong` | `#910811` | 7.67 AAA | 8.81 AAA | text |
-| `room-shamrock` | `#55ba0d` | 2.05 | 2.36 | rules/fills only, **never text or icons** |
-| `room-shamrock-strong` | `#22500b` | 7.74 AAA | 8.89 AAA | text |
-| `room-violet` | `#2222d8` | 7.55 | 8.68 | rules/fills |
-| `room-violet-strong` | `#1d1da5` | 9.75 AAA | 11.21 AAA | text |
+| Tone | Derivation | Use | Guarantee |
+|---|---|---|---|
+| `room` | the pick, as-is | rules, dots, washes — **never text or icons** | none (may be < 3:1) |
+| `room-strong` | same hue, ≥ 6 pts darker (≤ 40% L), darkened until it passes | the only text tone | ≥ 7:1 on tint and paper; white on it ≥ 7:1 |
+| `room-tint` | same hue, sat ≤ 70%, 96% L, lightened until it passes | light surfaces | `--foreground` and `--muted-foreground` on it ≥ 7:1 |
 
-Roses = Infants, Shamrock = Toddlers, Violet = Casa (`program.accent`). The colour repeats on the
-program banner (6px bottom rule + eyebrow), the "At a glance" card and the programs grid cards (4px top
-rule). It is decorative: the room name is always in text (1.4.1).
+Fuzzed over 5,000 random picks: every pair ≥ 7.0:1. Studio warns (doesn't block) when a pick is < 1.5:1
+on white, since rules and dots would then be hard to see. Components use the `room` / `room-strong` /
+`room-tint` utilities, which fall back to the brand palette outside a room wrapper. Legacy enum values
+(`roses` …) still resolve until `studio/migrations/accent-to-hex` has run.
+
+- **Program banner:** `primary` panel → room `-strong` fill, white copy; `secondary` panel → room tint,
+  `-strong` copy (subheading opaque — shamrock at 90% drops to 6.60:1); photographs keep their black
+  scrim plus a 35% multiply wash (multiply only darkens, so the white copy's contrast can't drop);
+  6px bottom rule. `ink` stays neutral. Without a masthead, `PageTitle` renders the tinted panel.
+- **Program page:** lead paragraph rule, list markers, "At a glance" card (tint, top rule, `-strong`
+  labels), "Book a tour" panel (tint + side rule, `-strong` heading), and each "Other programs" link in
+  its own room (side rule, `-strong` name, tint on hover).
+- **Programs grid cards:** 4px top rule, room badge ("Roses room", tint + dot), `-strong` title and CTA,
+  tint wash + room border on hover.
+- **Side nav:** a dot in the pick beside each program link (from `link.page->accent`). The active pill
+  shows it on a white disc so blue picks don't vanish into the navy.
+
+Colour is always redundant with text: the room / program name is in the badge, facts and nav label (1.4.1). Buttons and links
+stay brand blue so CTAs read the same site-wide.
 
 **7.3 Type.** Body is Inter; headings are **Outfit** (provisional until the client sees it next to
 Poppins). Orbitron appears only inside the logo, as outlines.
