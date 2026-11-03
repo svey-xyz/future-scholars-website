@@ -17,6 +17,8 @@ const PROMOTED_TYPES = ['program', 'testimonial']
 
 const DISABLED_TYPES = ['settings', 'assist.instruction.context']
 
+const MEDIA_TYPES = ['media.folder', 'media.tag']
+
 // Define the actions that should be available for singleton documents
 const singletonActions = new Set(['publish', 'discardChanges', 'restore'])
 
@@ -57,12 +59,14 @@ export const structure = (S: StructureBuilder, context: StructureResolverContext
         .filter(
           (listItem: any) =>
             !DISABLED_TYPES.includes(listItem.getId()) &&
-            !PROMOTED_TYPES.includes(listItem.getId()),
+            !PROMOTED_TYPES.includes(listItem.getId()) &&
+						!MEDIA_TYPES.includes(listItem.getId()),
         )
         // Pluralize the title of each document type.  This is not required but just an option to consider.
         .map((listItem) => {
           return listItem.title(pluralize(listItem.getTitle() as string))
         }),
+
     ])
 
 export const schemaOptions = {
