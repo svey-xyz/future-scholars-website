@@ -5,8 +5,9 @@ import Image from '@/app/components/common/SanityImage'
 import BrandMark from './BrandMark'
 import {cn} from '@/lib/utils'
 import type {GetPageQueryResult} from '@/sanity.types'
+import type {MaybeStega} from '@/sanity/lib/types'
 
-type MastheadData = NonNullable<GetPageQueryResult>['masthead']
+type MastheadData = NonNullable<MaybeStega<GetPageQueryResult>>['masthead']
 
 type Props = {
   masthead: NonNullable<MastheadData>

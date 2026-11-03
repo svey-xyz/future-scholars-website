@@ -20,17 +20,14 @@
     "typegen:frontend": "npm run typegen --workspace=frontend",
     "typegen:studio": "npm run typegen --workspace=studio"
   },
-  "dependencies": {
-    "@sanity/blueprints": "^0.21.0",
-    "@sanity/functions": "^1.4.0",
-    "react-dom": "^19.3.0"
-  },
   "devDependencies": {
+    "@sanity/blueprints": "^0.32.0",
+    "@sanity/functions": "^1.11.0",
     "@sanity/prettier-config": "^3.0.0",
-    "@types/node": "^22.19.17",
-    "npm-run-all2": "^9.0.2",
-    "prettier": "^3.9.4",
-    "shadcn": "^4.13.0"
+    "@types/node": "^22.20.5",
+    "npm-run-all2": "^9.0.4",
+    "prettier": "^3.9.10",
+    "shadcn": "^4.23.0"
   },
   "engines": {
     "node": ">=22.12"

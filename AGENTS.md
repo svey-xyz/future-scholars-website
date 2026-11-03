@@ -26,7 +26,7 @@ Before adding, restyling, or refactoring any UI (components, routes, page-builde
 
 # View transitions: always consider them when building UI
 
-This repo ships React View Transitions (`experimental.viewTransition` in `frontend/next.config.ts`). **Whenever you add or change a component, page, route, or navigation, consider how it should transition** — don't ship UI that ignores the system. Read [`docs/TRANSITIONS.md`](docs/TRANSITIONS.md) before touching navigation, route content, Suspense boundaries, or any element that visually persists across routes.
+This repo ships React View Transitions (Next ≥16.3 integrates them by default; no config flag). **Whenever you add or change a component, page, route, or navigation, consider how it should transition** — don't ship UI that ignores the system. Read [`docs/TRANSITIONS.md`](docs/TRANSITIONS.md) before touching navigation, route content, Suspense boundaries, or any element that visually persists across routes.
 
 Defaults already in place: app-wide crossfade + directional slides (`app/components/motion/PageTransition.tsx`, wired in `app/layout.tsx`) and anchored shell chrome (side rail, mobile top bar, contact hub). New work should fit this model: tag new `<Link>`s with `transitionTypes` (`nav-forward`/`nav-back`), give elements that persist across routes a matching `<ViewTransition name>`, wrap new streaming `<Suspense>` boundaries in enter/exit `<ViewTransition>`s, and add any new CSS classes to the view-transition block in `app/globals.css`. Keep transition components RSC and honour `prefers-reduced-motion` (handled globally in `globals.css` — don't bypass it).
 

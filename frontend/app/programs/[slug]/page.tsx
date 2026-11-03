@@ -146,7 +146,7 @@ async function CachedProgram({slug, perspective, stega}: {slug: string} & Dynami
     coreRow?.time
       ? {term: 'Montessori program', value: coreRow.time, note: program.scheduleNote}
       : {term: 'Schedule', value: program.scheduleNote},
-  ].filter((f): f is Fact => Boolean(f.value))
+  ].filter((f): f is typeof f & Fact => Boolean(f.value))
   const accent = stegaClean(program.accent) ?? ''
 
   const imageRef = program.image?.asset?._ref

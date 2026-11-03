@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
   // invalidate-tags Function) the only invalidation path instead of the
   // default 15-minute time-based revalidation.
   cacheComponents: true,
+  // Pairs with Cache Components (Next 16.4+): prefetch only the static shell of
+  // PPR routes. Becomes the default in the next major.
+  partialPrefetching: true,
   cacheLife: {default: sanity},
   // Emit browser source maps in production so first-party stack traces are
   // debuggable (satisfies Lighthouse's valid-source-maps best-practice).
@@ -33,11 +36,8 @@ const nextConfig: NextConfig = {
     // Matches the behavior of `sanity dev` which sets styled-components to use the fastest way of inserting CSS rules in both dev and production. It's default behavior is to disable it in dev mode.
     SC_DISABLE_SPEEDY: 'false',
   },
-  experimental: {
-    // Enables React's <ViewTransition> integration so route navigations,
-    // Suspense reveals, and shared-element morphs animate. See docs/TRANSITIONS.md.
-    viewTransition: true,
-  },
+  // `<ViewTransition>` route/Suspense integration is on by default since Next
+  // 16.3 (the `experimental.viewTransition` flag was removed). See docs/TRANSITIONS.md.
   images: {
     remotePatterns: [new URL('https://cdn.sanity.io/**')],
   },

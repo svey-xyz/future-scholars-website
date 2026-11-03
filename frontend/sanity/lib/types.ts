@@ -1,4 +1,13 @@
-import {GetPageQueryResult, SettingsQueryResult} from '@/sanity.types'
+import type {StegaBranded} from '@sanity/client/stega'
+import type {GetPageQueryResult, SettingsQueryResult} from '@/sanity.types'
+
+/**
+ * A query result as `sanityFetch` may return it: stega-branded when `stega: true`
+ * (next-sanity ≥13.4 brands those strings as `StegaString`), plain otherwise.
+ * Components that render CMS data take this so both paths type-check, and any
+ * literal comparison is forced through `stegaClean`.
+ */
+export type MaybeStega<T> = T | StegaBranded<T>
 
 export type PageBuilderSection = NonNullable<NonNullable<GetPageQueryResult>['pageBuilder']>[number]
 export type ExtractPageBuilderType<T extends PageBuilderSection['_type']> = Extract<
@@ -21,7 +30,7 @@ export type TitleDisplay = 'plain' | 'highlighted' | 'none'
 // document's slug and `pageType` its `_type` (see `documentHref`).
 export type DereferencedLink = {
   _type: 'link'
-  linkType?: 'href' | 'page'
+  linkType?: MaybeStega<'href' | 'page'>
   href?: string
   page?: string | null
   pageType?: string | null
@@ -33,11 +42,11 @@ export type DereferencedLink = {
 // CMS-driven site navigation — derived from the typed `settingsQuery` result
 // so the nav islands never hand-widen the shape. `navigation` is a discriminated
 // union on `_type` (navLink leaf | navDropdown group).
-type SettingsNavigation = NonNullable<NonNullable<SettingsQueryResult>['navigation']>
+type SettingsNavigation = NonNullable<NonNullable<MaybeStega<SettingsQueryResult>>['navigation']>
 export type NavItem = SettingsNavigation[number]
 export type NavLinkItem = Extract<NavItem, {_type: 'navLink'}>
 export type NavDropdownItem = Extract<NavItem, {_type: 'navDropdown'}>
 
 // Contact + legal content from Settings (rail, drawer, footer, contact block).
-export type SettingsContact = NonNullable<SettingsQueryResult>['contact']
-export type SettingsLegal = NonNullable<SettingsQueryResult>['legal']
+export type SettingsContact = NonNullable<MaybeStega<SettingsQueryResult>>['contact']
+export type SettingsLegal = NonNullable<MaybeStega<SettingsQueryResult>>['legal']

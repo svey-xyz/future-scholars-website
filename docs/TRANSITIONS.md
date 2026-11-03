@@ -2,13 +2,13 @@
 
 How animated navigation works in this repo, and the rules for keeping it consistent. **Read this before adding or changing any component, page, route, or navigation** — page transitions are a first-class concern here, not an afterthought.
 
-Built on React's [`<ViewTransition>`](https://react.dev/reference/react/ViewTransition) + the browser [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API), integrated by Next via `experimental.viewTransition`. Reference: [Next.js — Designing view transitions](https://nextjs.org/docs/app/guides/view-transitions). Where browser support is missing, the app works normally — transitions just don't animate (progressive enhancement).
+Built on React's [`<ViewTransition>`](https://react.dev/reference/react/ViewTransition) + the browser [View Transitions API](https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API), integrated by Next out of the box (the old `experimental.viewTransition` flag was removed in Next 16.3). Reference: [Next.js — Designing view transitions](https://nextjs.org/docs/app/guides/view-transitions). Where browser support is missing, the app works normally — transitions just don't animate (progressive enhancement).
 
 ## How it's wired
 
 | Concern | Where | Notes |
 | --- | --- | --- |
-| Feature flag | `frontend/next.config.ts` → `experimental.viewTransition: true` | Required for Next to trigger transitions on navigation. |
+| Feature flag | none (Next ≥16.3) | Navigation integration is on by default; the former `experimental.viewTransition` flag no longer exists. |
 | App-wide boundary | `frontend/app/components/motion/PageTransition.tsx` | RSC. Wraps `{children}` inside `<main>` in `app/layout.tsx`. Maps `transitionTypes` → directional slides; untyped navigations crossfade. |
 | Directional intent | `<Link transitionTypes={[…]}>` | `nav-forward` (going deeper) / `nav-back` (going up). Set on rail/drawer links (`SideNavLinks`), the logo link, program cards (`ProgramsGrid`), sibling-program links and breadcrumbs. |
 | Shell anchors | `SideNav.tsx` (`site-rail`), `SideNavMobile.tsx` (`site-topbar`), `ContactHub.tsx` (`contact-hub`) | CSS pins them so fixed chrome doesn't slide/fade with the content it frames. The draft-mode fallback in `app/layout.tsx` reuses the same names. |

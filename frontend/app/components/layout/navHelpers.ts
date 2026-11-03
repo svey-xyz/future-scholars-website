@@ -1,7 +1,7 @@
 import {stegaClean} from '@sanity/client/stega'
 
 import {linkResolver} from '@/sanity/lib/utils'
-import type {NavLinkItem} from '@/sanity/lib/types'
+import type {DereferencedLink, NavLinkItem} from '@/sanity/lib/types'
 
 export type ResolvedNavLink = {
   /** Resolved, normalised href — `null` when the link resolves to nothing. */
@@ -11,7 +11,7 @@ export type ResolvedNavLink = {
    * unless normalisation changed the href, in which case it is rewritten so the
    * rendered anchor and the active check agree on one URL.
    */
-  link: NavLinkItem['link']
+  link: DereferencedLink
   label: string
   /** True only for links that leave the site (http(s), mailto:, tel:, …). */
   isExternal: boolean
