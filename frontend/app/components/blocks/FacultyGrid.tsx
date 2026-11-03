@@ -27,6 +27,25 @@ const colClass: Record<number, string> = {
 }
 
 /**
+ * Display name with stega stripped. In draft mode each name part carries a
+ * ~100-char invisible stega payload, and headings get negative `tracking-tight`
+ * — letter-spacing applies to every invisible char, so a mid-line payload
+ * drags the pen back several ems and the next word overprints the previous
+ * one. Click-to-edit is preserved via an explicit `data-sanity` attribute
+ * (see `nameAttr`) instead.
+ */
+function personName(person: {firstName?: string | null; lastName?: string | null}) {
+  return [person.firstName, person.lastName]
+    .map((part) => stegaClean(part)?.trim())
+    .filter(Boolean)
+    .join(' ')
+}
+
+function nameAttr(id: string) {
+  return dataAttr({id, type: 'person', path: 'firstName'}).toString()
+}
+
+/**
  * Faculty grid (build plan S7) — `person` documents as staff cards.
  *
  * Each card is a `<figure>`: the portrait is the figure's image and the name,
@@ -77,7 +96,7 @@ export default function FacultyGrid({block, className}: Props) {
       <ul className={cn('mt-10 grid grid-cols-1 gap-6', colClass[cols])}>
         {items.map((person, i) => {
           const ref = person.picture?.asset?._ref
-          const name = [person.firstName, person.lastName].filter(Boolean).join(' ')
+          const name = personName(person)
           const credentials = person.credentials ?? []
 
           return (
@@ -98,7 +117,12 @@ export default function FacultyGrid({block, className}: Props) {
                   ) : null}
 
                   <figcaption className="flex flex-1 flex-col gap-2">
-                    <NameHeading className="font-display text-lg">{name}</NameHeading>
+                    <NameHeading
+                      data-sanity={nameAttr(person._id)}
+                      className="font-display text-lg"
+                    >
+                      {name}
+                    </NameHeading>
                     {person.role && (
                       <p className="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
                         {person.role}
@@ -171,7 +195,7 @@ function FacultyHighlight({
 
         <ul className="flex flex-col gap-4">
           {items.map((person, i) => {
-            const name = [person.firstName, person.lastName].filter(Boolean).join(' ')
+            const name = personName(person)
             const credentials = person.credentials ?? []
             return (
               <Reveal
@@ -180,7 +204,10 @@ function FacultyHighlight({
                 i={i + 2}
                 className="border-l-2 border-primary/30 pl-4"
               >
-                <NameHeading className="font-display text-lg">
+                <NameHeading
+                  data-sanity={nameAttr(person._id)}
+                  className="font-display text-lg"
+                >
                   {name}
                   {person.role && (
                     <span className="font-sans text-base font-normal text-muted-foreground">
@@ -310,7 +337,7 @@ function FacultySplit({
 
         <ul className="grid min-w-0 grid-cols-2 content-start gap-6 sm:grid-cols-3 sm:gap-8 xl:grid-cols-4">
           {items.map((person, i) => {
-            const name = [person.firstName, person.lastName].filter(Boolean).join(' ')
+            const name = personName(person)
             const credentials = person.credentials ?? []
             return (
               <Reveal as="li" key={person._id} i={i + 2} variant="scale">
